@@ -1,0 +1,18 @@
+{
+  "name": "mowund",
+  "version": "1.0.0",
+  "main": "index.js",
+  "dependencies": {
+    "discord.io": "^2.5.3",
+    "discord.js": "^11.5.1",
+    "git": "^0.1.5",
+    "winston": "^3.2.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": ""
+}
