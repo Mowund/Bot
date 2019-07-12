@@ -1,6 +1,7 @@
 const botconfig = require("./botconfig.json");
 const tokenfile = require("./token.json");
 const Discord = require("discord.js");
+const token = process.env.token;
 const fs = require("fs");
 const bot = new Discord.Client();
 bot.commands = new Discord.Collection();
@@ -131,4 +132,4 @@ bot.on("message", async message => {
 
 });
 
-bot.login(tokenfile.token);
+bot.login(token).catch(err => console.log(err));
