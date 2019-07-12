@@ -1,13 +1,12 @@
 const Discord = require("discord.js");
 const fs = require("fs");
-let config = require("../botconfig.json");
 
 module.exports.noPerms = (message, perm) => {
     let embed = new Discord.RichEmbed()
         .setAuthor(message.author.username)
-        .setTitle("Insufficient Permission")
-        .setColor(config.red)
-        .addField("Permission needed", perm);
+        .setTitle("Permissão Insuficiente")
+        .setColor("#ff0000")
+        .addField("Permissão Necessária", perm);
 
     message.channel.send(embed).then(m => m.delete(5000));
 }
@@ -16,9 +15,9 @@ module.exports.equalPerms = (message, user, perms) => {
 
     let embed = new Discord.RichEmbed()
         .setAuthor(message.author.username)
-        .setColor(config.red)
-        .setTitle("Error")
-        .addField(`${user} has perms`, perms);
+        .setColor("#ff0000")
+        .setTitle("Erro")
+        .addField(`${user} tem permissões`, perms);
 
     message.channel.send(embed).then(m => m.delete(5000));
 
@@ -26,27 +25,36 @@ module.exports.equalPerms = (message, user, perms) => {
 
 module.exports.botuser = (message) => {
     let embed = new Discord.RichEmbed()
-        .setTitle("Error")
-        .setDescription("You cannot ban a bot.")
-        .setColor(config.red);
+        .setTitle("Erro")
+        .setDescription("Você não pode banir um bot.")
+        .setColor("#ff0000");
 
     message.channel.send(embed).then(m => m.delete(5000));
 }
 
 module.exports.cantfindUser = (channel) => {
     let embed = new Discord.RichEmbed()
-        .setTitle("Error")
-        .setDescription("Could not find that user.")
-        .setColor(config.red);
+        .setTitle("Erro")
+        .setDescription("Não foi possível encontrar este usuário.")
+        .setColor("#ff0000");
 
     channel.send(embed).then(m => m.delete(5000));
 }
 
 module.exports.noReason = (channel) => {
     let embed = new Discord.RichEmbed()
-        .setTitle("Error")
-        .setDescription("Please supply a reason.")
-        .setColor(config.red);
+        .setTitle("Erro")
+        .setDescription("Por favor, providencie um motivo.")
+        .setColor("#ff0000");
+
+    channel.send(embed).then(m => m.delete(5000));
+}
+
+module.exports.noMsgQuantity = (channel) => {
+    let embed = new Discord.RichEmbed()
+        .setTitle("Erro")
+        .setDescription("Por favor, providencie uma quantidade de mensagens.")
+        .setColor("#ff0000");
 
     channel.send(embed).then(m => m.delete(5000));
 }

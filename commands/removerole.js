@@ -3,25 +3,25 @@ const errors = require("../utils/errors.js");
 
 module.exports.run = async (bot, message, args) => {
 
-  if (!message.member.hasPermission("MANAGE_ROLES")) return errors.noPerms(message, "MANAGE_ROLES");
+  if (!message.member.hasPermission("MANAGE_ROLES")) return errors.noPerms(message, "Gerenciar Cargos");
   if(args[0] == "help"){
-    message.reply("Usage: !removerole <user> <role>");
+    message.reply("Uso: !removerole <usuário> <cargo>");
     return;
   }
   let rMember = message.guild.member(message.mentions.users.first()) || message.guild.members.get(args[0]);
-  if(!rMember) return message.reply("Couldn't find that user, yo.");
+  if(!rMember) return message.reply("Não foi possível encontrar este usuário.");
   let role = args.join(" ").slice(22);
-  if(!role) return message.reply("Specify a role!");
+  if(!role) return message.reply("Especifique um cargo!");
   let gRole = message.guild.roles.find(`name`, role);
-  if(!gRole) return message.reply("Couldn't find that role.");
+  if(!gRole) return message.reply("Não foi possível encontrar este.");
 
-  if(!rMember.roles.has(gRole.id)) return message.reply("They don't have that role.");
+  if(!rMember.roles.has(gRole.id)) return message.reply(`${rMember} já tem este cargo.`);
   await(rMember.removeRole(gRole.id));
 
   try{
-    await rMember.send(`RIP, you lost the ${gRole.name} role.`)
+    await rMember.send(`Você perdeu o cargo ${gRole.name}.`)
   }catch(e){
-    message.channel.send(`RIP to <@${rMember.id}>, We removed ${gRole.name} from them. We tried to DM them, but their DMs are locked.`)
+    message.channel.send(`<@${rMember.id}> perdeu o cargo ${gRole.name}.`)
   }
 }
 

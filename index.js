@@ -6,7 +6,6 @@ const bot = new Discord.Client();
 bot.commands = new Discord.Collection();
 let coins = require("./coins.json");
 let xp = require("./xp.json");
-let purple = botconfig.purple;
 let cooldown = new Set();
 let cdseconds = 1;
 var colors = require('colors');
@@ -16,7 +15,7 @@ fs.readdir("./commands/", (err, files) => {
   if(err) console.log(err);
   let jsfile = files.filter(f => f.split(".").pop() === "js");
   if(jsfile.length <= 0){
-    console.log("Couldn't find commands.");
+    console.log("Não foi possível encontrar comandos.");
     return;
   }
 
@@ -97,7 +96,7 @@ bot.on("message", async message => {
     xp[message.author.id].level = curlvl + 1;
     let lvlup = new Discord.RichEmbed()
     .setTitle("Upou de Nível!")
-    .setColor(purple)
+    .setColor("#d604cf")
     .addField("Novo Nível", curlvl + 1);
 
     message.channel.send(lvlup);

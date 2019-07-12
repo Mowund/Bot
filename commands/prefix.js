@@ -1,10 +1,11 @@
 const Discord = require("discord.js");
+const errors = require("../utils/errors.js");
 const fs = require("fs");
 
 module.exports.run = async (bot, message, args) => {
 
-  if(!message.member.hasPermission("MANAGE_SERVER")) return message.reply("No no no.");
-  if(!args[0] || args[0 == "help"]) return message.reply("Usage: !prefix <desired prefix here>");
+  if(!message.member.hasPermission("MANAGE_SERVER")) return errors.noPerms(message, "Gerenciar Servidor");
+  if(!args[0] || args[0 == "help"]) return message.reply("Uso: !prefix <novo prefix>");
 
   let prefixes = JSON.parse(fs.readFileSync("./prefixes.json", "utf8"));
 
@@ -18,8 +19,8 @@ module.exports.run = async (bot, message, args) => {
 
   let sEmbed = new Discord.RichEmbed()
   .setColor("#FF9900")
-  .setTitle("Prefix Set!")
-  .setDescription(`Set to ${args[0]}`);
+  .setTitle("Prefixo Setado!")
+  .setDescription("Setado para `", `${args[0]}`, "`");
 
   message.channel.send(sEmbed);
 

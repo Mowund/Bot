@@ -1,6 +1,4 @@
 const Discord = require("discord.js");
-const botconfig = require("../botconfig");
-let purple = botconfig.purple;
 let xp = require("../xp.json");
 
 module.exports.run = async (bot, message, args) => {
@@ -18,10 +16,10 @@ module.exports.run = async (bot, message, args) => {
 
   let lvlEmbed = new Discord.RichEmbed()
   .setAuthor(message.author.username)
-  .setColor(purple)
-  .addField("Level", curlvl, true)
+  .setColor("#d604cf")
+  .addField("Nível", curlvl, true)
   .addField("XP", curxp, true)
-  .setFooter(`${difference} XP til level up`, message.author.displayAvatarURL);
+  .setFooter(`${difference} XPs restantes para upar de nível`, message.author.displayAvatarURL);
 
   message.channel.send(lvlEmbed);
 
