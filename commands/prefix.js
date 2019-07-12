@@ -20,7 +20,7 @@ module.exports.run = async (bot, message, args) => {
   let sEmbed = new Discord.RichEmbed()
   .setColor("#FF9900")
   .setTitle("Prefixo Setado!")
-  .setDescription("Setado para `", `${args[0]}`, "`");
+  .setDescription(`Setado para ${args[0]}`);
 
   message.channel.send(sEmbed);
 
