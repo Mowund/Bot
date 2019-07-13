@@ -50,11 +50,11 @@ module.exports.noReason = (channel) => {
     channel.send(embed).then(m => m.delete(5000));
 }
 
-module.exports.noMsgQuantity = (channel) => {
+module.exports.noMsgQuantity = (message) => {
     let embed = new Discord.RichEmbed()
         .setTitle("Erro")
         .setDescription("Por favor, providencie uma quantidade de mensagens.")
         .setColor("#ff0000");
 
-    channel.send(embed).then(m => m.delete(5000));
+    message.channel.send(embed).then(m => m.delete(5000));
 }
