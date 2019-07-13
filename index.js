@@ -2,13 +2,7 @@ const botconfig = require("./botconfig.json");
 const Discord = require("discord.js");
 const token = process.env.token;
 const fs = require("fs");
-
-const bot = new Discord.Client({
-  shardId: process.argv[1],
-  shardCount: process.argv[2],
-  fetchAllMembers: true
-});
-
+const bot = new Discord.Client();
 bot.commands = new Discord.Collection();
 let coins = require("./coins.json");
 let xp = require("./xp.json");
