@@ -1,4 +1,5 @@
 const Discord = require("discord.js");
+let pack = require("../package.json");
 
 module.exports.run = async (bot, message, args) => {
     let bicon = bot.user.displayAvatarURL;
@@ -7,7 +8,7 @@ module.exports.run = async (bot, message, args) => {
     .setColor("#15f153")
     .setThumbnail(bicon)
     .addField("Nome do Bot", bot.user.username, true)
-    .addField("Versão do Bot", package.version, true)
+    .addField("Versão do Bot", pack.version, true)
     .addField("Criado em", bot.user.createdAt);
 
     message.channel.send(botembed);
