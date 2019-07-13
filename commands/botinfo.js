@@ -9,7 +9,7 @@ module.exports.run = async (bot, message, args) => {
     .setThumbnail(bicon)
     .addField("Nome do Bot", bot.user.username, true)
     .addField("Versão do Bot", pack.version, true)
-    .addField("Criado em", bot.user.createdAt);
+    .addField("Criado em", bot.user.createdAt)
     .addField("Shards", bot.shard.fetchClientValues);
 
     message.channel.send(botembed);
