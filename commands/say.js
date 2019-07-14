@@ -6,12 +6,11 @@ module.exports.run = async (bot, message, args) => {
   
   args = args.shift();
   
-    let chat = client.channels.find("id", args[0]);
+    let chat = bot.channels.find("id", args[0]);
     if(chat) {
         chat.send(args.shift().join(" "));
     } else {
-    let botmessage = args.join(" ");
-  message.channel.send(botmessage);
+    message.channel.send(args.join(" "));
     }
 }
 
