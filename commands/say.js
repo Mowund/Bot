@@ -6,7 +6,9 @@ module.exports.run = async (bot, message, args) => {
   
   args = args.shift();
   
-    let chat = bot.channels.get(args[0]);
+  let args0 = args[0]
+  
+    let chat = bot.channels.find(x => x.id === args0);
     if(chat) {
         chat.send(args.shift().join(" "));
     } else {
