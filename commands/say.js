@@ -12,6 +12,7 @@ module.exports.run = async (bot, message, args) => {
     } else {
     let botmessage = args.join(" ");
   message.channel.send(botmessage);
+    }
 }
 
 module.exports.help = {
