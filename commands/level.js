@@ -23,8 +23,8 @@ module.exports.run = async (bot, message, args) => {
 
   message.channel.send(lvlEmbed);
 
-}
+}*/
 
 module.exports.help = {
   name: "level"
-}*/
+}
