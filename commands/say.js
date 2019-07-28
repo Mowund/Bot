@@ -4,16 +4,11 @@ module.exports.run = async (bot, message, args) => {
 
   message.delete();
   
-  args = args.shift();
+  if(!message.member.hasPermission("MANAGE_MESSAGES")) return errors.noPerms(message, "Gerenciar Mensagens");
   
-  let args0 = args[0]
+  let botmessage = args.join(" ");
   
-    let chat = bot.channels.find(x => x.id === args0);
-    if(chat) {
-        chat.send(args.shift().join(" "));
-    } else {
-    message.channel.send(args.join(" "));
-    }
+  message.channel.send(botmessage);
 }
 
 module.exports.help = {
