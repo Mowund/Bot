@@ -1,5 +1,5 @@
 const Discord = require("discord.js");
-let coins = require("../coins.json");
+/*let coins = require("../coins.json");
 
 module.exports.run = async (bot, message, args) => {
   //!coins
@@ -23,4 +23,4 @@ module.exports.run = async (bot, message, args) => {
 
 module.exports.help = {
   name: "coins"
-}
+}*/
