@@ -46,7 +46,7 @@ bot.on("message", async message => {
     };
   }
 
-  if(!message.member.roles.find(x => x.name === "Não Registrados")){
+\*  if(!message.member.roles.find(x => x.name === "Não Registrados")){
   if(!coins[message.author.id]){
     coins[message.author.id] = {
       coins: 0
@@ -104,7 +104,7 @@ bot.on("message", async message => {
   fs.writeFile("./xp.json", JSON.stringify(xp), (err) => {
     if(err) console.log(err)
  })
-};
+};*\
 
   let prefix = prefixes[message.guild.id].prefixes;
   if(!message.content.startsWith(prefix)) return;
