@@ -3,9 +3,9 @@ const errors = require("../utils/errors.js");
 
 module.exports.run = async (bot, message, args) => {
 
-  let msgq = ("mensagens")
-  if(!args[0] || args[0 == "1"]) return
-  let msgq = ("mensagem")
+  let msgq = ("mensagens");
+  if(!args[0] || args[0 == "1"]) return;
+  let msgq = ("mensagem");
   
   if(!message.member.hasPermission("MANAGE_MESSAGES")) return errors.noPerms(message, "Gerenciar Mensagens");
   if(!args[0]) return errors.noMsgQuantity();
