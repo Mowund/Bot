@@ -1,5 +1,5 @@
 const Discord = require("discord.js");
-const fs = require("fs");
+/*const fs = require("fs");
 let coins = require("../coins.json");
 
 module.exports.run = async (bot, message, args) => {
@@ -41,4 +41,4 @@ module.exports.run = async (bot, message, args) => {
 
 module.exports.help = {
   name: "pay"
-}
+}*/
