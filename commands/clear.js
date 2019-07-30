@@ -7,7 +7,7 @@ module.exports.run = async (bot, message, args) => {
   return msgq = ("mensagem deletada");
   } else {
   return msgq = ("mensagens deletadas");
-  }
+  };
   
   if(!message.member.hasPermission("MANAGE_MESSAGES")) return errors.noPerms(message, "Gerenciar Mensagens");
   if(!args[0]) return errors.noMsgQuantity();
