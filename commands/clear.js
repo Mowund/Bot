@@ -4,9 +4,9 @@ const errors = require("../utils/errors.js");
 module.exports.run = async (bot, message, args) => {
 
   if(args[0] === "1") {
-  msgq = ("mensagem deletada");
+  return msgq = ("mensagem deletada");
   } else {
-  msgq = ("mensagens deletadas");
+  return msgq = ("mensagens deletadas");
   }
   
   if(!message.member.hasPermission("MANAGE_MESSAGES")) return errors.noPerms(message, "Gerenciar Mensagens");
