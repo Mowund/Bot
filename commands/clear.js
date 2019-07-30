@@ -3,7 +3,7 @@ const errors = require("../utils/errors.js");
 
 module.exports.run = async (bot, message, args) => {
 
-  var msgc = parseInt(args[1]);
+  var msgc = parseInt(args[0]);
   var msgt = Math.floor(msgc + 1);
   
   if(args[0] === "0") {
