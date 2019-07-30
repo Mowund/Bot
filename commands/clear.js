@@ -3,10 +3,12 @@ const errors = require("../utils/errors.js");
 
 module.exports.run = async (bot, message, args) => {
 
-  if(args[0] === "1") {
-  var msgq = ("1 mensagem deletada");
+  if(args[0] === "0") {
+    var msgq = ("Impossível deletar 0 mensagens");
+  } else if (args[0] === "1") {
+    msgq = (`1 mensagem deletada`);
   } else {
-  msgq = ("${args[0]} mensagens deletadas");
+    msgq = (`${args[0]} mensagens deletadas`);
   };
   
   if(!message.member.hasPermission("MANAGE_MESSAGES")) return errors.noPerms(message, "Gerenciar Mensagens");
