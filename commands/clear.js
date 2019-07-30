@@ -15,7 +15,7 @@ module.exports.run = async (bot, message, args) => {
   if(!args[0]) return errors.noMsgQuantity(message.channel);
   
   message.channel
-    .bulkDelete(args[0])
+    .bulkDelete(args[0] + 1)
     .then(() => {message.channel.send(`${msgq}.`).then(msg => msg.delete(5000))
     .catch(console.error);
   });
