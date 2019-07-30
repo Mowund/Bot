@@ -8,7 +8,7 @@ module.exports.noPerms = (message, perm) => {
         .setColor("#ff0000")
         .addField("Permissão Necessária", perm);
 
-    message.channel.send(embed).then(m => m.delete(5000));
+    message.channel.send(embed).then(m => m.delete(10000));
 }
 
 module.exports.equalPerms = (message, user, perms) => {
@@ -19,7 +19,7 @@ module.exports.equalPerms = (message, user, perms) => {
         .setTitle("Erro")
         .addField(`${user} tem permissões`, perms);
 
-    message.channel.send(embed).then(m => m.delete(5000));
+    message.channel.send(embed).then(m => m.delete(10000));
 
 }
 
@@ -29,7 +29,7 @@ module.exports.botuser = (message) => {
         .setDescription("Você não pode banir um bot.")
         .setColor("#ff0000");
 
-    message.channel.send(embed).then(m => m.delete(5000));
+    message.channel.send(embed).then(m => m.delete(10000));
 }
 
 module.exports.cantfindUser = (channel) => {
@@ -38,7 +38,7 @@ module.exports.cantfindUser = (channel) => {
         .setDescription("Não foi possível encontrar este usuário.")
         .setColor("#ff0000");
 
-    channel.send(embed).then(m => m.delete(5000));
+    channel.send(embed).then(m => m.delete(10000));
 }
 
 module.exports.noReason = (channel) => {
@@ -47,7 +47,7 @@ module.exports.noReason = (channel) => {
         .setDescription("Por favor, providencie um motivo.")
         .setColor("#ff0000");
 
-    channel.send(embed).then(m => m.delete(5000));
+    channel.send(embed).then(m => m.delete(10000));
 }
 
 module.exports.noMsgQuantity = (message) => {
@@ -56,5 +56,5 @@ module.exports.noMsgQuantity = (message) => {
         .setDescription("Por favor, providencie uma quantidade de mensagens.")
         .setColor("#ff0000");
 
-    message.channel.send(embed).then(m => m.delete(5000));
+    message.channel.send(embed).then(m => m.delete(10000));
 }
