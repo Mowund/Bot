@@ -38,7 +38,7 @@ module.exports.cantfindUser = (channel) => {
         .setDescription("Não foi possível encontrar este usuário.")
         .setColor("#ff0000");
 
-    channel.send(embed).then(m => m.delete(10000));
+    message.channel.send(embed).then(m => m.delete(10000));
 }
 
 module.exports.noReason = (channel) => {
@@ -47,7 +47,7 @@ module.exports.noReason = (channel) => {
         .setDescription("Por favor, providencie um motivo.")
         .setColor("#ff0000");
 
-    channel.send(embed).then(m => m.delete(10000));
+    message.channel.send(embed).then(m => m.delete(10000));
 }
 
 module.exports.noMsgQuantity = (channel) => {
@@ -56,5 +56,5 @@ module.exports.noMsgQuantity = (channel) => {
         .setDescription("Por favor, providencie uma quantidade de mensagens.")
         .setColor("#ff0000");
 
-    channel.send(embed).then(m => m.delete(10000));
+    message.channel.send(embed).then(m => m.delete(10000));
 }
