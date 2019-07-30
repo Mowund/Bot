@@ -3,7 +3,7 @@ const errors = require("../utils/errors.js");
 
 module.exports.run = async (bot, message, args) => {
 
-  if(args[0] === "1") {
+  if(args[0] === '1') {
   let msgq = ("mensagem deletada");
   } else {
   msgq = ("mensagens deletadas");
