@@ -9,7 +9,7 @@ module.exports.run = async (bot, message, args) => {
     bot.user.setActivity(act, {type: actype});
     message.channel.send("Feito")
     
-    if(args[0] === "streaming")
+    if(actype === "STREAMING")
         var acturl = args[1]
         act = args.slice(2).join(" ")
     
