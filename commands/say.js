@@ -7,9 +7,16 @@ module.exports.run = async (bot, message, args) => {
   
   if(!message.member.hasPermission("MANAGE_MESSAGES")) return errors.noPerms(message, "Gerenciar Mensagens");
   
-  let botmessage = args.join(" ");
+  if(args[0] === "/tts") {
+  var tts = ("true");
+  var bmsg = args[1].join(" ");
+  } else {
+  tts = ("false")
+  bmsg = args.join(" ");
+  };
   
-  message.channel.send(botmessage);
+  
+  message.channel.send(bmsg, {tts: tts});
 }
 
 module.exports.help = {
