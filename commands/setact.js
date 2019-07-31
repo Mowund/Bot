@@ -3,13 +3,13 @@ const Discord = require("discord.js");
 module.exports.run = async (bot, message, args) => {
     if(!message.member.hasPermission("ADMINISTRATOR")) return errors.noPerms(message, "Administrador");
     
-    var type = args[0]
-    var act = args[1]
+    var actype = args[0].toUpperCase();
+    var act = args[1];
     
-    bot.user.setActivity(act, type);
+    bot.user.setActivity(act, {type: actype});
 
 }
 
 module.exports.help = {
-  name:"setstatus"
+  name:"setact"
 }
