@@ -12,7 +12,7 @@ module.exports.run = async (bot, message, args) => {
     
     message.channel.send("Feito")
     
-    if(actype === "STREAMING")
+    if(actype === "STREAMING") {
         var acturl = args[1]
         act = args.slice(2).join(" ")
     
@@ -20,6 +20,7 @@ module.exports.run = async (bot, message, args) => {
     type: actype,
     url: acturl
 });
+}
 
 }
 
