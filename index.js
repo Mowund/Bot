@@ -34,7 +34,7 @@ bot.on("ready", async () => {
   setInterval(function() {
   
     let acts = ["teste1", "teste2"];
-    let act = acts[Math.floor(Math.random() * acts.lenght)];
+    let act = acts[Math.floor(Math.random() * acts.length)];
     bot.user.setActivity(act, "WATCHING");
 
   }, 10000);
