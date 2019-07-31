@@ -6,9 +6,9 @@ module.exports.run = async (bot, message, args) => {
   var msgc = parseInt(args[0]);
   var msgt = Math.floor(msgc + 1);
   
-  if(args[0] === "0") {
+  if(msgc === "0") {
     var msgq = ("Impossível deletar 0 mensagens");
-  } else if (args[0] === "1") {
+  } else if (msgc === "1") {
     msgq = (`1 mensagem deletada`);
   } else {
     msgq = (`${msgc} mensagens deletadas`);
