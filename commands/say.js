@@ -7,10 +7,12 @@ module.exports.run = async (bot, message, args) => {
   
   if(!message.member.hasPermission("MANAGE_MESSAGES")) return errors.noPerms(message, "Gerenciar Mensagens");
   
-  if(args[0] === "/tts");
-  if(!message.member.hasPermission("SEND_TTS_MESSAGES")) return  errors.noPerms(message, "Enviar Mensagens em TTS") {
+  if(args[0] === "/tts") {
+  if(!message.member.hasPermission("SEND_TTS_MESSAGES")) { 
   var tts = ("true");
   var bmsg = args.slice(1).join(" ");
+  } else {
+  errors.noPerms(message, "Enviar Mensagens em TTS");
   } else {
   tts = ("false");
   bmsg = args.join(" ");
