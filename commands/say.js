@@ -9,7 +9,7 @@ module.exports.run = async (bot, message, args) => {
   
   if(args[0] === "/tts") {
   var tts = ("true");
-  var bmsg = args[1].join(" ");
+  var bmsg = args.slice(1).join(" ");
   } else {
   tts = ("false")
   bmsg = args.join(" ");
