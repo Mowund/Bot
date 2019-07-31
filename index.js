@@ -10,6 +10,9 @@ let cooldown = new Set();
 let cdseconds = 1;
 var colors = require('colors');
 
+bot.user.setActivity('Carregando', {type: 'WATCHING'});
+bot.user.setStatus('dnd')
+
 fs.readdir("./commands/", (err, files) => {
 
   if(err) console.log(err);
