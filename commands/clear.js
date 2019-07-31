@@ -7,11 +7,11 @@ module.exports.run = async (bot, message, args) => {
   var msgt = Math.floor(msgc + 1);
   
   if(args[0] === "0") {
-    var msgq = ("Impossível deletar 0 mensagens");
+    var msgq = ("Impossível deletar 0 mensagens.");
   } else if (args[0] === "1") {
-    msgq = (`1 mensagem deletada`);
+    msgq = (`1 mensagem deletada.`);
   } else {
-    msgq = (`${msgc} mensagens deletadas`);
+    msgq = (`${msgc} mensagens deletadas.`);
   };
   
   if(!message.member.hasPermission("MANAGE_MESSAGES")) return errors.noPerms(message, "Gerenciar Mensagens");
@@ -19,7 +19,7 @@ module.exports.run = async (bot, message, args) => {
   
   message.channel
     .bulkDelete(msgt)
-    .then(() => {message.channel.send(`${msgq}.`).then(msg => msg.delete(5000))
+    .then(() => {message.channel.send(msgq).then(msg => msg.delete(5000))
     .catch(console.error);
   });
 }
