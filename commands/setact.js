@@ -6,14 +6,20 @@ module.exports.run = async (bot, message, args) => {
         var actype = args[0].toUpperCase();
         var act = args.slice(1).join(" ");
     
-    bot.user.setActivity(act, {type: actype});
+    bot.user.setActivity(act, {
+    type: actype
+});
+    
     message.channel.send("Feito")
     
     if(actype === "STREAMING")
         var acturl = args[1]
         act = args.slice(2).join(" ")
     
-    bot.user.setActivity(act, {type: STREAMING, url: acturl});
+    bot.user.setActivity(act, {
+    type: actype,
+    url: acturl
+});
 
 }
 
