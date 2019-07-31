@@ -13,7 +13,7 @@ module.exports.run = async (bot, message, args) => {
         var acturl = args[1]
         act = args.slice(2).join(" ")
     
-    client.user.setActivity(act, {type: actype, url: acturl});
+    bot.user.setActivity(act, {type: actype, url: acturl});
 
 }
 
