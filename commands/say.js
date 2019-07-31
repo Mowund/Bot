@@ -11,7 +11,7 @@ module.exports.run = async (bot, message, args) => {
   var tts = ("true");
   var bmsg = args.slice(1).join(" ");
   } else {
-  tts = ("false")
+  tts = ("false");
   bmsg = args.join(" ");
   };
   
