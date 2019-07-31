@@ -30,14 +30,6 @@ bot.on("ready", async () => {
 
   console.log(`${bot.user.username} foi ligado!` .red);
   bot.user.setStatus('online');
-  
-  setInterval(function() {
-  
-    let acts = ["teste1", "teste2"];
-    let act = acts[Math.floor(Math.random() * acts.length)];
-    bot.user.setActivity(act, "WATCHING");
-
-  }, 10000);
     
 });
 
