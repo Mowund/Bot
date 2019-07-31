@@ -16,11 +16,9 @@ module.exports.run = async (bot, message, args) => {
   if(!message.member.hasPermission("MANAGE_MESSAGES")) return errors.noPerms(message, "Gerenciar Mensagens");
   if(!args[0]) return message.delete().then(errors.noMsgQuantity(message.channel));
   
-  message.delete();
-  message.channel
-    .bulkDelete(msgc)
-    .then(() => {message.channel.send(`${msgq}.`).then(msg => msg.delete(5000))
-    .catch(console.error);
+  message.channel.bulkDelete(msgc);
+  message.delete()
+  .then(() => {message.channel.send(`${msgq}.`).then(msg => msg.delete(5000))
   });
 }
 
