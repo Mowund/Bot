@@ -11,8 +11,7 @@ module.exports.run = async (bot, message, args) => {
   if(!message.member.hasPermission("SEND_TTS_MESSAGES")) { 
   var tts = ("true");
   var bmsg = args.slice(1).join(" ");
-  } else {
-  errors.noPerms(message, "Enviar Mensagens em TTS");
+  } return  errors.noPerms(message, "Enviar Mensagens em TTS");
   } else {
   tts = ("false");
   bmsg = args.join(" ");
