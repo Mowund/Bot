@@ -10,9 +10,6 @@ let cooldown = new Set();
 let cdseconds = 1;
 var colors = require('colors');
 
-bot.user.setActivity("Carregando", {type: "WATCHING"});
-bot.user.setStatus('dnd')
-
 fs.readdir("./commands/", (err, files) => {
 
   if(err) console.log(err);
@@ -33,7 +30,15 @@ bot.on("ready", async () => {
 
   console.log(`${bot.user.username} foi ligado!` .red);
   bot.user.setStatus('online');
+  
+  setInterval(function() {
+  
+    let acts = ["teste1", "teste2"];
+    let act = acts[Math.floor(Math.random() * acts.lenght)];
+    bot.user.setAcitivity(act, "WATCHING")
 
+  }, 10000);
+    
 });
 
 
