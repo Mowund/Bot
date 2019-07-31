@@ -7,7 +7,7 @@ module.exports.run = async (bot, message, args) => {
     var act = args.slice(1).join(" ");
     
     bot.user.setActivity(act, {type: actype});
-    message.channel.send("Feito.")
+    message.channel.send("Feito")
 
 }
 
