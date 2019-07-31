@@ -35,7 +35,7 @@ bot.on("ready", async () => {
   
     let acts = ["teste1", "teste2"];
     let act = acts[Math.floor(Math.random() * acts.lenght)];
-    bot.user.setActivity(act, "WATCHING")
+    bot.user.setActivity(act, "WATCHING");
 
   }, 10000);
     
