@@ -28,6 +28,9 @@ fs.readdir("./commands/", (err, files) => {
 
 bot.on("ready", async () => {
 
+  msg.guild.members.get(bot.user.id).setNickname("Mowund")
+  bot.user.setUsername("Mowund")
+
   console.log(`${bot.user.username} foi ligado!` .red);
   bot.user.setStatus('online');
     
