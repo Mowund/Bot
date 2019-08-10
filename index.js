@@ -28,6 +28,8 @@ fs.readdir("./commands/", (err, files) => {
 
 bot.on("ready", async () => {
 
+  bot.user.setUsername("Mowund")
+
   console.log(`${bot.user.username} foi ligado!` .red);
   bot.user.setStatus('online');
     
