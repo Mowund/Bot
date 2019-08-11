@@ -1,10 +1,16 @@
 const Discord = require("discord.js");
+var tinycolor = require("tinycolor2");
 
 module.exports.run = async (bot, message, args) => {
 
   var roleC = args[0].replace(/#/g, '');
   if(roleC === "000000") {
     roleC = "000001"
+  }
+
+  var roleL = "000000"
+  if(tinycolor(roleC).isDark()) {
+    roleL = "ffffff"
   }
 
   let roleN = `USER-${message.author.id}`;
@@ -24,7 +30,7 @@ module.exports.run = async (bot, message, args) => {
     let cEmb = new Discord.RichEmbed()
     .setColor(parseInt(roleC, 16))
 		.setFooter('Cor alterada')
-    .setImage(`https://dummyimage.com/150x50/${roleC}/000000&text=${roleC}`);
+    .setImage(`https://dummyimage.com/150x50/${roleC}/${roleL}&text=${roleC}`);
     
     setTimeout(function(){
       role.setColor(roleC)
