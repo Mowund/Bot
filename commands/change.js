@@ -28,7 +28,7 @@ module.exports.run = async (bot, message, args) => {
     
     setTimeout(function(){
       role.setColor(roleC)
-    }, 2000);
+    }, 5000);
     message.channel.send(cEmb);
     message.member.addRole(role.id).catch(err => console.error(err));
   }
