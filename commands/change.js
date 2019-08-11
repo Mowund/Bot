@@ -26,8 +26,9 @@ module.exports.run = async (bot, message, args) => {
 		.setFooter('Cor alterada')
     .setImage(`https://dummyimage.com/150x50/${roleC}/000000&text=${roleC}`);
     
-    role.setColor(roleC);
-    role.setPosition(93)
+    setTimeout(function(){
+      role.setColor(roleC)
+    }, 1000);
     message.channel.send(cEmb);
     message.member.addRole(role.id).catch(err => console.error(err));
   }

@@ -1,5 +1,5 @@
 const Discord = require("discord.js");
-/*let xp = require("../xp.json");
+let xp = require("../xp.json");
 
 module.exports.run = async (bot, message, args) => {
 
@@ -23,7 +23,7 @@ module.exports.run = async (bot, message, args) => {
 
   message.channel.send(lvlEmbed);
 
-}*/
+}
 
 module.exports.help = {
   name: "level"
