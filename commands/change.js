@@ -5,6 +5,8 @@ let pr = (botconfig.prefix);
 
 module.exports.run = async (bot, message, args) => {
 
+  if (!['467133077475557376', '599375425445036049', '422236981586690048'].includes(message.channel.id)) return;
+
   var rolePC = tinycolor(args.join(" ")).toHexString();
   if(args[0] === "random") {
     rolePC = tinycolor.random().toHexString();
