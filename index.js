@@ -7,7 +7,7 @@ bot.commands = new Discord.Collection();
 let coins = require("./coins.json");
 let xp = require("./xp.json");
 let cooldown = new Set();
-let cdseconds = 5;
+let cdseconds = 2.5;
 var colors = require('colors');
 
 fs.readdir("./commands/", (err, files) => {
