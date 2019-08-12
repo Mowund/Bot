@@ -12,7 +12,7 @@ if(gNick === nick) {
     message.member.setNickname(nick)
 
 }
-message.channel.send(nick)
+message.channel.send(`O seu nick foi setado para \`${gNick}\``)
 }
 
 module.exports.help = {
