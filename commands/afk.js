@@ -10,7 +10,7 @@ if(gNick === nick) {
     message.channel.send(`O seu nick foi setado para \`[AFK] ${nick}\`.`)
 } else {
     message.member.setNickname(nick)
-    message.channel.send(`O seu nick foi setado para \`${nick}\`.`)
+    message.channel.send(`O seu nick foi resetado para \`${nick}\`.`)
 }
 }
 
