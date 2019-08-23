@@ -1,5 +1,6 @@
 const botconfig = require("./botconfig.json");
 const Discord = require("discord.js");
+const token = process.env.token;
 const fs = require("fs");
 const bot = new Discord.Client();
 bot.commands = new Discord.Collection();
@@ -8,7 +9,6 @@ let xp = require("./xp.json");
 let cooldown = new Set();
 let cdseconds = 2.5;
 var colors = require('colors');
-require('http').createServer().listen(3000)
 
 fs.readdir("./commands/", (err, files) => {
 
@@ -130,4 +130,4 @@ bot.on("message", async message => {
 
 });
 
-bot.login(process.env.token).catch(err => console.log(err));
+bot.login(token).catch(err => console.log(err));

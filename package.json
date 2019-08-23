@@ -12,8 +12,7 @@
   },
   "devDependencies": {},
   "scripts": {
-    "test": "node test.js",
-    "build": "index build"
+    "test": "node test.js"
   },
   "author": "Smidul",
   "license": "ISC",
