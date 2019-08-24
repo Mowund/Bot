@@ -6,6 +6,7 @@
     "discord.io": "^2.5.3",
     "discord.js": "^11.5.1",
     "git": "^0.1.5",
+    "log-timestamp": "^0.3.0",
     "tinycolor2": "^1.4.1",
     "typescript": "^3.5.3",
     "winston": "^3.2.1"
