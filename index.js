@@ -131,7 +131,7 @@ bot.on("message", async message => {
 
 });
 
-var j = schedule.scheduleJob('52 22 * * *', function(){
+var j = schedule.scheduleJob('54 22 * * *', function(){
   process.exit();
 });
 
