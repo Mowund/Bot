@@ -8,6 +8,7 @@ let coins = require("./coins.json");
 let xp = require("./xp.json");
 let cooldown = new Set();
 let cdseconds = 2.5;
+var schedule = require('node-schedule');
 var colors = require('colors');
 
 fs.readdir("./commands/", (err, files) => {
@@ -128,6 +129,10 @@ bot.on("message", async message => {
     cooldown.delete(message.author.id)
   }, cdseconds * 1000)
 
+});
+
+var j = schedule.scheduleJob('18 09 * * *', function(){
+  process.exit();
 });
 
 bot.login(token).catch(err => console.log(err));
