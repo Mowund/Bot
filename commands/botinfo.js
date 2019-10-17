@@ -4,7 +4,7 @@ let pack = require("../package.json");
 module.exports.run = async (bot, message, args) => {
     let bicon = bot.user.displayAvatarURL;
     let botembed = new Discord.RichEmbed()
-    .setDescription("Informações do Bot")
+    .setTitle("**Informações do Bot**")
     .setColor("#15f153")
     .setThumbnail(bicon)
     .addField("Nome do Bot", bot.user.username, true)
