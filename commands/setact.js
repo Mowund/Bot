@@ -10,7 +10,7 @@ module.exports.run = async (bot, message, args) => {
     type: actype
 });
     
-    message.channel.send(`Atividade setada para: ${act}`)
+    message.channel.send(`Atividade setada para: \`${act}\``)
     
     if(actype === "STREAMING") {
         var acturl = args[1]
