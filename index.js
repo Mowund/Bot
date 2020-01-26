@@ -26,6 +26,22 @@ fs.readdir("./commands/", (err, files) => {
   });
 });
 
+fs.readdir('./commands/test/', (err, files) => {
+
+  if(err) console.log(err);
+  let jsfile = files.filter(f => f.split('.').pop() === 'js');
+  if(jsfile.length <= 0){
+    console.log('Não foi possível encontrar comandos.');
+    return;
+  }
+
+  jsfile.forEach((f, i) => {
+    let props = require(`./commands/test/${f}`);
+    console.log(`${f}` .yellow.underline,  `carregado!` .yellow);
+    bot.commands.set(props.help.name, props);
+  });
+});
+
 bot.on("ready", async () => {
 
   console.log(`${bot.user.username} foi ligado!` .red);
