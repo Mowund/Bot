@@ -1,5 +1,4 @@
 node_modules/
 .vscode/
-commands/test/
 package-lock.json
 test.js
