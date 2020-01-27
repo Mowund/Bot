@@ -9,7 +9,7 @@ module.exports.run = async (bot, message, args) => {
 
     var e1 = new Discord.RichEmbed()
     .setThumbnail(`https://cdn.discordapp.com/icons/420007989261500418/7307c28f2b48677cb35619def07d6e00.png`)
-    .setTitle('**Snapshot 20w04b**')
+    .setTitle('**Snapshot 20w05a**')
     .addField('**__Comandos__**', '+ Novo comando: `-squote`\n\nㅤ• Comando usado para citar uma sugestão, tendo uma interface parecida com a do SCLM.\n\nㅤ• Uso correto: `-squote {ID da Mensagem da Sugestão}`')
     .addField('**__Erros__**', '∗ Erro corrigido:\n```Markdown\n#SRV-0013:\nO sistema de citação por link de mensagem não funciona.```')
     .addField('**__Geral__**', '∗ O changelog recebeu algumas mudanças:\n\nㅤ• O símbolo de mudança foi alterado de `*` para `∗`.\n\nㅤ• Os erros corrigidos agora são considerados mudanças, e não adições.\n\n∗ Os *fields* no sistema de sugestões agora são em negrito.\n\n∗ O sistema de citação por link de mensagem (SCLM) teve a interface atualizada.')
