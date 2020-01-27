@@ -4,8 +4,9 @@ const client = new Discord.Client();
 
 module.exports.run = async (bot, message, args) => {
 
+    const ctype = 'news'
     const cch = '420352343402348544'
-    const channel = message.guild.channels.find(c => c.id === cch && c.type === 'news')
+    const channel = message.guild.channels.find(c => c.id === cch && c.type === ctype)
 
     var e1 = new Discord.RichEmbed()
     .setThumbnail(`https://cdn.discordapp.com/icons/420007989261500418/7307c28f2b48677cb35619def07d6e00.png`)
@@ -27,7 +28,7 @@ module.exports.run = async (bot, message, args) => {
             message.channel.send('Você precisa ter o cargo **Fundador** para poder lançar uma versão.')
         }
     } else if(args[0] === 'old') {
-        utils.msgEdit(message, channel, '643612237562380289', e1);
+        utils.msgEdit(message, ctype, channel, '643612237562380289', e1);
     } else {
         message.channel.send(e1).then(sent => {
             sent.react('update:593220375320723466')
