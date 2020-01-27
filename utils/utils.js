@@ -1,12 +1,12 @@
 const Discord = require("discord.js");
 const client = new Discord.Client();
 
-module.exports.msgEdit = async (m, chan, id, medit) => {
+module.exports.msgEdit = async (m, ctype, chan, id, medit) => {
     
     /*const guild = client.guilds.get('420007989261500418');
     if (!guild) return console.log('Unable to find guild.');*/
     
-    const channel = m.channels.find(c => c.id === chan && c.type === 'news');
+    const channel = m.channels.find(c => c.id === chan && c.type === ctype);
     if (!channel) return console.log('Unable to find channel.');
     
     try {
