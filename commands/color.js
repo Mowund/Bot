@@ -70,7 +70,7 @@ if(tinycolor(args.slice(1).join(" ")).isValid() || !args[1]) {
   let uEmb = new Discord.RichEmbed()
   .setColor(parseInt(roleC, 16))
   .setTitle('Você gostaria dessa cor?')
-  .setImage(`https://dummyimage.com/150x50/${roleC}/${roleL}&text=${roleC}`);
+  .setImage(`https://dummyimage.com/150x50/${roleC}/${roleL}&text=+${roleC}`);
   message.channel.send(uEmb).then((msg) => {
   msg.react('⛔').then(() => msg.react('🔁')).then(() => msg.react('✅'));
 
@@ -86,7 +86,7 @@ function myFunction() {msg.awaitReactions(filter, {max: 1, time: 60000, errors: 
           let nEmb = new Discord.RichEmbed()
           .setColor(000000)
           .setTitle('Cancelado')
-          .setImage(`https://dummyimage.com/150x50/000000/ff0000&text=Cancelado`);
+          .setImage(`https://dummyimage.com/150x50/000000/ff0000&text=+Cancelado`);
           
           msg.edit(nEmb);
           msg.clearReactions();
@@ -98,7 +98,7 @@ function myFunction() {msg.awaitReactions(filter, {max: 1, time: 60000, errors: 
           let aEmb = new Discord.RichEmbed()
           .setColor(parseInt(roleC, 16))
           .setTitle('Você gostaria dessa cor?')
-          .setImage(`https://dummyimage.com/150x50/${roleC}/${roleL}&text=${roleC}`);
+          .setImage(`https://dummyimage.com/150x50/${roleC}/${roleL}&text=+${roleC}`);
           msg.edit(aEmb);
           reaction.remove(message.author.id);
 
@@ -124,7 +124,7 @@ function myFunction() {msg.awaitReactions(filter, {max: 1, time: 60000, errors: 
             let cEmb = new Discord.RichEmbed()
             .setColor(parseInt(roleC, 16))
             .setTitle('Cor alterada')
-            .setImage(`https://dummyimage.com/150x50/${roleC}/${roleL}&text=${roleC}`);
+            .setImage(`https://dummyimage.com/150x50/${roleC}/${roleL}&text=+${roleC}`);
 
             msg.edit(cEmb);
             msg.clearReactions()
@@ -135,7 +135,7 @@ function myFunction() {msg.awaitReactions(filter, {max: 1, time: 60000, errors: 
       let tEmb = new Discord.RichEmbed()
       .setColor(000000)
       .setTitle('Tempo esgotado')
-      .setImage(`https://dummyimage.com/150x50/000000/ff0000&text=Tempo%20esgotado`);
+      .setImage(`https://dummyimage.com/150x50/000000/ff0000&text=+Tempo%20esgotado`);
       
       msg.edit(tEmb);
       msg.clearReactions();
@@ -146,7 +146,7 @@ function myFunction() {msg.awaitReactions(filter, {max: 1, time: 60000, errors: 
   let iEmb = new Discord.RichEmbed()
     .setColor(000000)
     .setTitle('Cor inválida')
-    .setImage(`https://dummyimage.com/150x50/000000/ff0000&text=Inválido`);
+    .setImage(`https://dummyimage.com/150x50/000000/ff0000&text=+Inválido`);
     message.channel.send(iEmb);
 }
 
