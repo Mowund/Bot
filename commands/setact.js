@@ -19,8 +19,15 @@ module.exports.run = async (bot, message, args) => {
     bot.user.setActivity(act, {
     type: actype,
     url: acturl
-});
-}
+})};
+
+    if(actype === "CUSTOM") {
+        var acturl = args[1]
+        act = args.slice(2).join(" ")
+
+    bot.user.setActivity(act, {
+    type: actype
+})};
 
 }
 
