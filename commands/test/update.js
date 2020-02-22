@@ -67,10 +67,10 @@ module.exports.run = async (bot, message, args) => {
             message.channel.send('Você precisa ter o cargo **Fundador** para poder lançar uma versão.')
         }
     } else if(args[0] === 'old') {
-        utils.msgEdit(channel, '680794832071163938', e1);
+        /*utils.msgEdit(channel, '680794832071163938', e1);
         utils.msgEdit(channel, '680794833778245657', e2);
         utils.msgEdit(channel, '680794835388727296', e3);
-        utils.msgEdit(channel, '680794837498462233', e4);
+        utils.msgEdit(channel, '680794837498462233', e4);*/
         utils.msgEdit(channel, '680794858725703683', e5);
         message.channel.send('Changelog editado.')
     } else {
