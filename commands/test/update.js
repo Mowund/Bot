@@ -48,7 +48,7 @@ module.exports.run = async (bot, message, args) => {
 
     var e5 = new Discord.RichEmbed()
     .setDescription("ㅤㅤ• **Major Release**: \n\nㅤㅤㅤ• São as versões grandes, que são numeradas neste formato: **E.VV**.\n\nㅤㅤㅤㅤ• `E` = Era (Versão que redefine o servidor).\nㅤㅤㅤㅤ• `VV` = Versão.\n\nㅤㅤㅤ• Menciona o cargo <@&531267771162689546>.\n\nㅤㅤㅤ• Sua cor é **verde claro**.\n\nㅤㅤ• **Minor Release**: \n\nㅤㅤㅤ• São as versões pequenas, que são numeradas neste formato: **E.VV.R**.\n\nㅤㅤㅤㅤ• `E` = Era (Versão que redefine o servidor).\nㅤㅤㅤㅤ• `VV` = Versão.\nㅤㅤㅤㅤ• `R` = Revisão da versão.\n\nㅤㅤㅤ• Menciona o cargo <@&602143940321214475>.\n\nㅤㅤㅤ• Sua cor é **verde escuro**.\n\n∗ O sistema de níveis foi reformado:\n\nㅤ• Agora usa o <@485962834782453762> em vez do <@159985870458322944>.\n\nㅤ• Agora usa cargos elementais, sendo o <@&665396695588143127> o cargo de nível ganho após fazer o <#462669344841924618> e os outros cargos de **Água**, exceto os de **Fogo** e <@&619704555894210579>, sendo ganhos nos seus respectivos níveis.")
-    .addField("ㅤ", "ㅤ• Agora a cada 2 minutos sua próxima mensagem pode dar de **1** à **10** de xp, e a cada 4 minutos num canal de voz (sem estar sozinho), você ganha de **1** à **10** de xp.\n\nㅤ• Só é possível ganhar xp nos seguintes canais:\n\nㅤㅤ• **Chats:**\n\nㅤㅤㅤ• <#420352281486163998>, <#462618031701622784> e <#514120331456151553>.\n\nㅤㅤㅤ• <#458742137635209236> e <#458742603454611476>.\n\nㅤㅤㅤ• <#461584830925242399>, <#599984028036366346>, <#521772002088845322>, <#461631159965581312>, <#534499299392749568> e <#521719438613938177>.\nㅤㅤㅤ• <#522436531617660929>.\n\nㅤㅤ• **Canais de voz:**\n\nㅤㅤㅤ• **\\💎 EXCLUSIVO \\💎**, **\\💠 GERAL MUSICAL \\💠**, **\\💠 GERAL 1 \\💠** e **\\💠 GERAL 2 \\💠**\nㅤㅤㅤ• **\\💣 JOGOS MUSICAL \\💣**, **\\💣 JOGOS 1 \\💣** e **\\💣 JOGOS 2 \\💣**.\n\nㅤ• Os comandos para ver o seu nível e a leaderboard do servidor agora são, respectivamente, \`\\level\` e \`\\leaderboard\`.\n\nㅤㅤ• Só é possível usá-los no chat <#422207224228872192>")
+    .addField("ㅤ", "ㅤ• Agora a cada 2 minutos sua próxima mensagem pode dar de **1** à **10** de xp, e a cada 4 minutos num canal de voz (sem estar sozinho), você ganha de **1** à **10** de xp.\n\nㅤ• Só é possível ganhar xp nos seguintes canais:\n\nㅤㅤ• **Chats:**\n\nㅤㅤㅤ• <#420352281486163998>, <#462618031701622784> e <#514120331456151553>.\nㅤㅤㅤ• <#458742137635209236> e <#458742603454611476>.\nㅤㅤㅤ• <#461584830925242399>, <#599984028036366346>, <#521772002088845322>, <#461631159965581312>, <#534499299392749568> e <#521719438613938177>.\nㅤㅤㅤ• <#522436531617660929>.\n\nㅤㅤ• **Canais de voz:**\n\nㅤㅤㅤ• **\\💎 EXCLUSIVO \\💎**, **\\💠 GERAL MUSICAL \\💠**, **\\💠 GERAL 1 \\💠** e **\\💠 GERAL 2 \\💠**\nㅤㅤㅤ• **\\💣 JOGOS MUSICAL \\💣**, **\\💣 JOGOS 1 \\💣** e **\\💣 JOGOS 2 \\💣**.\n\nㅤ• Os comandos para ver o seu nível e a leaderboard do servidor agora são, respectivamente, \`\\level\` e \`\\leaderboard\`.\n\nㅤㅤ• Só é possível usá-los no chat <#422207224228872192>")
     .addField("ㅤ", "∗ Agora só tem como alterar o próprio apelido a partir do nível **15**.\n\n∗ O servidor foi renomeado de **Esquerdistas** para **Mowund** e o ícone foi alterado.\n\nㅤ• Esse não é o ícone final, mudanças ainda vão acontecer no ícone.\n\n∗ O símbolo `-` no nome do servidor foi alterado para `—`.\n\n∆ Todos os membros tiveram o nível resetado")
     .setFooter("Essa é a 1ª release da 1.17 e de 2020!")
     .setColor(65280);
@@ -67,11 +67,11 @@ module.exports.run = async (bot, message, args) => {
             message.channel.send('Você precisa ter o cargo **Fundador** para poder lançar uma versão.')
         }
     } else if(args[0] === 'old') {
-        utils.msgEdit(channel, '', e1);
-        utils.msgEdit(channel, '', e2);
-        utils.msgEdit(channel, '', e3);
-        utils.msgEdit(channel, '', e4);
-        utils.msgEdit(channel, '', e5);
+        utils.msgEdit(channel, '680794832071163938', e1);
+        utils.msgEdit(channel, '680794833778245657', e2);
+        utils.msgEdit(channel, '680794835388727296', e3);
+        utils.msgEdit(channel, '680794837498462233', e4);
+        utils.msgEdit(channel, '680794858725703683', e5);
         message.channel.send('Changelog editado.')
     } else {
         message.channel.send(e1).then(
