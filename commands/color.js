@@ -110,7 +110,7 @@ function myFunction() {msg.awaitReactions(filter, {max: 1, time: 60000, errors: 
                 message.guild.createRole({
                   name: roleN,
                   color: `${roleC}`,
-                  position: 0
+                  position: 86
                 });
                 message.member.addRole(role.id).catch(err => console.error(err));
               
