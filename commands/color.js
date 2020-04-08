@@ -5,7 +5,7 @@ let pr = (botconfig.prefix);
 
 module.exports.run = async (bot, message, args) => {
 
-if (!['467133077475557376', '599375425445036049', '422236981586690048'].includes(message.channel.id)) return;
+if (!['467133077475557376', '599375425445036049', '422236981586690048', '697454249067413519'].includes(message.channel.id)) return;
 
         if(!args[0])
           return message.channel.send(`Uso correto: \`${pr}color change (cor)\``);
@@ -112,7 +112,11 @@ function myFunction() {msg.awaitReactions(filter, {max: 1, time: 60000, errors: 
                   color: `${roleC}`,
                   position: 93
                 });
-                message.member.addRole(role.id).catch(err => console.error(err));
+                    
+                setTimeout(function(){
+                  var role = message.guild.roles.find(x => x.name == roleN)
+                  message.member.addRole(role.id).catch(err => console.error(err))
+                }, 2500);
               
                } else {
               setTimeout(function(){
