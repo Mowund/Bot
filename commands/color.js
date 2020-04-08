@@ -107,10 +107,16 @@ function myFunction() {msg.awaitReactions(filter, {max: 1, time: 60000, errors: 
         } else {
         
             if(!role) {
+                    
+            if (message.guild.id === '420007989261500418') {
+              var pos = '75'
+            } else if (message.guild.id === '589597300033323040') {
+              var pos = '27'
+            };
                 message.guild.createRole({
                   name: roleN,
                   color: `${roleC}`,
-                  position: 93
+                  position: pos
                 });
                     
                 setTimeout(function(){
