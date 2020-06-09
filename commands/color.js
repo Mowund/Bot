@@ -5,7 +5,7 @@ let pr = (botconfig.prefix);
 
 module.exports.run = async (bot, message, args) => {
 
-if (!['467133077475557376', '599375425445036049', '422236981586690048', '697454249067413519', '719960136101134337'].includes(message.channel.id)) return;
+if (!['467133077475557376', '599375425445036049', '422236981586690048', '697454249067413519', '719962756421255269'].includes(message.channel.id)) return;
 
         if(!args[0])
           return message.channel.send(`Uso correto: \`${pr}color change (cor)\``);
