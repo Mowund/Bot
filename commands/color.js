@@ -34,7 +34,7 @@ if(args[0] === "current") {
     let uID = args[1].replace(/[\\<>@#&!]/g, '');
     roleN = `USER-${uID}`;
     role = message.guild.roles.find(x => x.name == roleN);
-    let IDerr = 'O usuário mencionado não tem um cargo de cor.'
+    IDerr = 'O usuário mencionado não tem um cargo de cor.';
   }
 
   if(!role) return message.channel.send(${IDerr});
@@ -62,7 +62,7 @@ if(args[0] === "remove") {
     let uID = args[1].replace(/[\\<>@#&!]/g, '');
     roleN = `USER-${uID}`;
     role = message.guild.roles.find(x => x.name == roleN);
-    let IDerr = 'O usuário mencionado não já tem um cargo de cor.'
+    IDerr = 'O usuário mencionado não já tem um cargo de cor.';
   }
 
   if(!role) return message.channel.send(${IDerr});
