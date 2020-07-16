@@ -49,7 +49,7 @@ if(args[0] === "current") {
   let rEmb = new Discord.RichEmbed()
   .setColor(role.color)
   .setTitle('Cor atual')
-  .setImage(`https://dummyimage.com/150x50/${roleC}/${roleL}&text=${roleC}`);
+  .setImage(`https://dummyimage.com/300x100/${roleC}/${roleL}&text=${roleC}`);
 
   message.channel.send(rEmb);
 }
@@ -77,7 +77,7 @@ if(args[0] === "remove") {
   let rEmb = new Discord.RichEmbed()
   .setColor(role.color)
   .setTitle('Cor removida')
-  .setImage(`https://dummyimage.com/150x50/${roleC}/${roleL}&text=${roleC}`);
+  .setImage(`https://dummyimage.com/300x100/${roleC}/${roleL}&text=${roleC}`);
 
   message.channel.send(rEmb);
   role.delete();
@@ -88,7 +88,7 @@ if(tinycolor(args.slice(1).join(" ")).isValid() || !args[1]) {
   let uEmb = new Discord.RichEmbed()
   .setColor(parseInt(roleC, 16))
   .setTitle('Você gostaria dessa cor?')
-  .setImage(`https://dummyimage.com/150x50/${roleC}/${roleL}&text=+${roleC}`);
+  .setImage(`https://dummyimage.com/300x100/${roleC}/${roleL}&text=+${roleC}`);
   message.channel.send(uEmb).then((msg) => {
   msg.react('⛔').then(() => msg.react('🔁')).then(() => msg.react('✅'));
 
@@ -102,7 +102,7 @@ function myFunction() {msg.awaitReactions(filter, {max: 1, time: 60000, errors: 
 
         if (reaction.emoji.name === '⛔') {
           let nEmb = new Discord.RichEmbed()
-          .setColor(000000)
+          .setColor(parseInt(roleC, 16))
           .setTitle('Cancelado')
           .setImage(`https://dummyimage.com/300x100/${roleC}/${roleL}&text=+Cancelado`);
           
@@ -163,7 +163,7 @@ function myFunction() {msg.awaitReactions(filter, {max: 1, time: 60000, errors: 
     .catch(collected => {
       err => console.error(err)
       let tEmb = new Discord.RichEmbed()
-      .setColor(000000)
+      .setColor(parseInt(roleC, 16))
       .setTitle('Tempo esgotado')
       .setImage(`https://dummyimage.com/300x100/${roleC}/${roleL}&text=+Tempo%20esgotado`);
       
@@ -174,7 +174,7 @@ function myFunction() {msg.awaitReactions(filter, {max: 1, time: 60000, errors: 
 } myFunction(); });
 } else {
   let iEmb = new Discord.RichEmbed()
-    .setColor(000000)
+    .setColor(parseInt(roleC, 16))
     .setTitle('Cor inválida')
     .setImage(`https://dummyimage.com/300x100/000000/ffffff&text=+Inválido`);
     message.channel.send(iEmb);
