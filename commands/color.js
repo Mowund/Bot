@@ -37,7 +37,7 @@ if(args[0] === "current") {
     IDerr = 'O usuário mencionado não tem um cargo de cor.';
   }
 
-  if(!role) return message.channel.send(${IDerr});
+  if(!role) return message.channel.send(`${IDerr})`;
 
   roleC = role.hexColor.replace('#', '');
 
@@ -65,7 +65,7 @@ if(args[0] === "remove") {
     IDerr = 'O usuário mencionado não já tem um cargo de cor.';
   }
 
-  if(!role) return message.channel.send(${IDerr});
+  if(!role) return message.channel.send(`${IDerr}`);
 
   roleC = role.hexColor.replace('#', '');
 
