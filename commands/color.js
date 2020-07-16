@@ -28,6 +28,11 @@ if (!['467133077475557376', '599375425445036049', '422236981586690048', '6974542
 
 if(args[0] === "current") {
 
+  if(args[1]) {
+    let uID = args[1].replace(/[\\<>@#&!]/g);
+    roleN = `USER-${uID}`;
+    role = message.guild.roles.find(x => x.name == roleN);
+  }
 
   if(!role) return message.channel.send('Você não tem um cargo de cor.');
 
@@ -48,8 +53,8 @@ if(args[0] === "current") {
 
 if(args[0] === "remove") {
 
-  if(args[2]) {
-    let uID = args[2].replace(/[\\<>@#&!]/g
+  if(args[1]) {
+    let uID = args[1].replace(/[\\<>@#&!]/g);
     roleN = `USER-${uID}`;
     role = message.guild.roles.find(x => x.name == roleN);
   }
