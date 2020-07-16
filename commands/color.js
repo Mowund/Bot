@@ -49,7 +49,7 @@ if(args[0] === "current") {
   let rEmb = new Discord.RichEmbed()
   .setColor(role.color)
   .setTitle('Cor atual')
-  .setImage(`https://dummyimage.com/300x100/${roleC}/${roleL}&text=${roleC}`);
+  .setImage(`https://dummyimage.com/300x100/${roleC}/${roleL}&text=+${roleC}`);
 
   message.channel.send(rEmb);
 }
@@ -77,7 +77,7 @@ if(args[0] === "remove") {
   let rEmb = new Discord.RichEmbed()
   .setColor(role.color)
   .setTitle('Cor removida')
-  .setImage(`https://dummyimage.com/300x100/${roleC}/${roleL}&text=${roleC}`);
+  .setImage(`https://dummyimage.com/300x100/${roleC}/${roleL}&text=+${roleC}`);
 
   message.channel.send(rEmb);
   role.delete();
