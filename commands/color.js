@@ -10,7 +10,9 @@ if (!['467133077475557376', '599375425445036049', '422236981586690048', '6974542
         if(!args[0])
           return message.channel.send(`Uso correto: \`${pr}color change (cor)\``);
 
-        var uID = args[1].replace(/[\\<>@#&!]/g, '');
+        if(args[1]) {
+          var uID = args[1].replace(/[\\<>@#&!]/g, '');
+        }
 
         var roleC = tinycolor(args.slice(1).join(" ")).toHex();
         if(!args[1]) {
