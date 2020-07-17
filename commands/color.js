@@ -88,9 +88,9 @@ if(args[0] === "change")
 
     var roleO = message.member;
     var aN = 1;
-message.channel.send("b")
+message.channel.send("b");
  
-    if(!tinycolor(args.slice(1).join(" ")).isValid() || args[1]) return aN = 2;
+    if(tinycolor(args.slice(1).join(" ")).isValid() || args[1]) return aN = 2;
     
    message.channel.send("a");
 
