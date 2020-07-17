@@ -85,7 +85,17 @@ if(args[0] === "remove") {
 }
 
 if(args[0] === "change")    
-if(tinycolor(args.slice(1).join(" ")).isValid() || !args[1]) {
+
+    let roleO = message.member;
+
+    const aN = 1
+ 
+    if(!tinycolor(args.slice(1).join(" ")).isValid()) {
+    	aN = 2
+    } else {
+    
+   if(!tinycolor(args.slice(aN).join(" ")).isValid() || args[aN]) {
+    	
   let uEmb = new Discord.RichEmbed()
   .setColor(parseInt(roleC, 16))
   .setTitle('Você gostaria dessa cor?')
@@ -98,7 +108,17 @@ const filter = (reaction, user) => {
 };
 
 function f1() {
-
+	
+    let roleO = message.member;
+      
+    if(args[aN]) {
+    if (!message.member.hasPermission("MANAGE_ROLES")) return errors.noPerms(message, "Gerenciar Cargos");
+    let uID = args[aN].replace(/[\\<>@#&!]/g, '');
+    roleN = `USER-${uID}`;
+    role = message.guild.roles.find(x => x.name == roleN);
+    roleO = message.guild.members.get(uID);
+  }
+	
 msg.awaitReactions(filter, {max: 1, time: 60000, errors: ['time']})
     .then(collected => {
         const reaction = collected.first();
@@ -126,16 +146,6 @@ msg.awaitReactions(filter, {max: 1, time: 60000, errors: ['time']})
           f1();
 
         } else {
-      
-    let roleO = message.member;
-      
-    if(args[1]) {
-    if (!message.member.hasPermission("MANAGE_ROLES")) return errors.noPerms(message, "Gerenciar Cargos");
-    let uID = args[1].replace(/[\\<>@#&!]/g, '');
-    roleN = `USER-${uID}`;
-    role = message.guild.roles.find(x => x.name == roleN);
-    roleO = message.guild.members.get(uID);
-  }
   
             if(!role) {
                     
@@ -191,7 +201,7 @@ msg.awaitReactions(filter, {max: 1, time: 60000, errors: ['time']})
     .setTitle('Cor inválida')
     .setImage(`https://dummyimage.com/300x100/000000/ffffff&text=+Inválido`);
     message.channel.send(iEmb);
-}
+}}
 
 }
 
