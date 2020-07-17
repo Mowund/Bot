@@ -39,10 +39,10 @@ if (!['467133077475557376', '599375425445036049', '422236981586690048', '6974542
 
 
   if(args[0] === 'convert') {
-   
-    var tcvColor = tinycolor(args[1]).toHex();
-    if(tinycolor(tcvColor).isValid()) {
 
+    if(tinycolor(args[1]).isValid()) {
+
+    var tcvColor = tinycolor(args[1]).toHex();
     var cvRgb = tinycolor(tcvColor).toRgbString();
     var RgbLk = encodeURI(cvRgb);
     var cColorL = "000000"
