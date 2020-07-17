@@ -31,6 +31,11 @@ if (!['467133077475557376', '599375425445036049', '422236981586690048', '6974542
         let roleN = `USER-${message.author.id}`;
         var role = message.guild.roles.find(x => x.name == roleN);
 
+  if(args[0] === 'convert') {
+    var cvRGB = args[1].toRGB;
+    message.channel.send(cvRGB);
+  }
+
 if(args[0] === "current") {
 
   let IDerr = 'Você não tem um cargo de cor.'
