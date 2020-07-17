@@ -40,7 +40,7 @@ if (!['467133077475557376', '599375425445036049', '422236981586690048', '6974542
 
   if(args[0] === 'convert') {
 
-    if(tinycolor(args[1]).isValid()) {
+    if(!tinycolor(args[1]).isValid()) return message.channel.send(iEmb);
 
     var tcvColor = tinycolor(args[1]).toHex();
     var cvRgb = tinycolor(tcvColor).toRgbString();
@@ -57,9 +57,7 @@ if (!['467133077475557376', '599375425445036049', '422236981586690048', '6974542
     .setFooter(`${cvRgb}`);
   
     message.channel.send(rEmb);
-  } else {
-    message.channel.send(iEmb);
-  }};
+  };
 
 if(args[0] === "current") {
 
