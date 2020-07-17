@@ -32,8 +32,8 @@ if (!['467133077475557376', '599375425445036049', '422236981586690048', '6974542
         var role = message.guild.roles.find(x => x.name == roleN);
 
   if(args[0] === 'convert') {
-    var cvRGB = tinycolor(args[1]).toRGB();
-    message.channel.send(`${cvRGB}`);
+    var cvRgb = tinycolor(args[1]).toRgb();
+    message.channel.send(`${cvRgb}`);
   };
 
 if(args[0] === "current") {
