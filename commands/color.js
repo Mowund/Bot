@@ -93,6 +93,8 @@ if(args[0] === "change")
     	aN = 2
     } else {
     
+   message.channel.send("a")
+
    if(!tinycolor(args.slice(aN).join(" ")).isValid() || args[aN]) {
     	
   let uEmb = new Discord.RichEmbed()
