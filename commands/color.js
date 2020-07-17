@@ -96,12 +96,9 @@ if(args[0] === "change") {
       roleN = `USER-${uID}`;
       role = message.guild.roles.find(x => x.name == roleN);
 
-      var roleC = tinycolor(args.slice(2).join(" ")).toHex();
+      roleC = tinycolor(args.slice(2).join(" ")).toHex();
       if(!args[2]) {
         roleC = tinycolor.random().toHex();
-      }
-      if(roleC === "000000") {
-        roleC = "000001"
       }
 
       roleO = message.guild.members.get(uID);
