@@ -91,7 +91,7 @@ if(args[0] === "change") {
     var roleO = message.member;
     var aN = 1;
  
-    if(bot.fetchUser(uID)) {
+    if(message.guild.members.get(uID)) {
       aN = 2;
       if (!message.member.hasPermission("MANAGE_ROLES")) return errors.noPerms(message, "Gerenciar Cargos");
       roleN = `USER-${uID}`;
@@ -111,9 +111,7 @@ if(args[0] === "change") {
       }
 
       roleO = message.guild.members.get(uID);
-    }.catch(collected => {
-      err => console.error(err)
-    });
+    };
 
    if(tinycolor(args.slice(aN).join(" ")).isValid() || args[aN]) {
     	
