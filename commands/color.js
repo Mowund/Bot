@@ -59,10 +59,11 @@ if(args[0] === "remove") {
   let IDerr = 'Você já não tem um cargo de cor.'
 
   if(args[1]) {
+    if (!message.member.hasPermission("MANAGE_ROLES")) return errors.noPerms(message, "Gerenciar Cargos");
     let uID = args[1].replace(/[\\<>@#&!]/g, '');
     roleN = `USER-${uID}`;
     role = message.guild.roles.find(x => x.name == roleN);
-    IDerr = 'O usuário mencionado não já tem um cargo de cor.';
+    IDerr = 'O usuário mencionado já não tem um cargo de cor.';
   }
 
   if(!role) return message.channel.send(`${IDerr}`);
@@ -96,7 +97,9 @@ const filter = (reaction, user) => {
     return ['⛔', '🔁', '✅'].includes(reaction.emoji.name) && user.id === message.author.id;
 };
 
-function myFunction() {msg.awaitReactions(filter, {max: 1, time: 60000, errors: ['time']})
+function f1() {
+
+msg.awaitReactions(filter, {max: 1, time: 60000, errors: ['time']})
     .then(collected => {
         const reaction = collected.first();
 
@@ -120,10 +123,20 @@ function myFunction() {msg.awaitReactions(filter, {max: 1, time: 60000, errors: 
           msg.edit(aEmb);
           reaction.remove(message.author.id);
 
-          myFunction();
+          f1();
 
         } else {
-        
+      
+    let roleO = message.member;
+      
+    if(args[1]) {
+    if (!message.member.hasPermission("MANAGE_ROLES")) return errors.noPerms(message, "Gerenciar Cargos");
+    let uID = args[1].replace(/[\\<>@#&!]/g, '');
+    roleN = `USER-${uID}`;
+    role = message.guild.roles.find(x => x.name == roleN);
+    roleO = message.guild.members.get(uID);
+  }
+  
             if(!role) {
                     
             if (message.guild.id === '420007989261500418') {
@@ -141,13 +154,13 @@ function myFunction() {msg.awaitReactions(filter, {max: 1, time: 60000, errors: 
                     
                 setTimeout(function(){
                   var role = message.guild.roles.find(x => x.name == roleN)
-                  message.member.addRole(role.id).catch(err => console.error(err))
+                  roleO.addRole(role.id).catch(err => console.error(err))
                 }, 2500);
               
                } else {
               setTimeout(function(){
                 role.setColor(roleC)
-                message.member.addRole(role.id).catch(err => console.error(err));
+                roleO.addRole(role.id).catch(err => console.error(err));
               }, 2500);
 
             }
@@ -171,7 +184,7 @@ function myFunction() {msg.awaitReactions(filter, {max: 1, time: 60000, errors: 
       msg.clearReactions();
     });
 
-} myFunction(); });
+} f1(); });
 } else {
   let iEmb = new Discord.RichEmbed()
     .setColor(parseInt(roleC, 16))
