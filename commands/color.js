@@ -86,7 +86,7 @@ if(args[0] === "remove") {
 
 if(args[0] === "change") {
 
-    const roleO = message.member;
+    let roleO = message.member;
     var aN = 1;
  
     if(!tinycolor(args.slice(1).join(" ")).isValid() || args[1]) {
