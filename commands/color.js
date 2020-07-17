@@ -87,15 +87,14 @@ if(args[0] === "remove") {
 if(args[0] === "change")    
 
     var roleO = message.member;
-    var aN = 1; 
-
+    var aN = '1';
 message.channel.send("b");
  
-    /*if(!tinycolor(args.slice(1).join(" ")).isValid() || args[1]) return aN = 2;*/
+    if(!tinycolor(args.slice(1).join(" ")).isValid() || args[1]) return aN = '2';
     
    message.channel.send("a");
 
-   if(tinycolor(args.slice(aN).join(" ")).isValid() || args[aN]) {
+   if(tinycolor(args.slice(1).join(" ")).isValid() || args[1]) {
     	
   let uEmb = new Discord.RichEmbed()
   .setColor(parseInt(roleC, 16))
@@ -110,7 +109,7 @@ const filter = (reaction, user) => {
 
 function f1() {
       
-    if(args[aN]) {
+    if(args[1]) {
     if (!message.member.hasPermission("MANAGE_ROLES")) return errors.noPerms(message, "Gerenciar Cargos");
     let uID = args[aN].replace(/[\\<>@#&!]/g, '');
     roleN = `USER-${uID}`;
