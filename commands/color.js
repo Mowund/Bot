@@ -88,13 +88,10 @@ if(args[0] === "change") {
 
     var roleO = message.member;
     var aN = '1';
-message.channel.send("b");
  
-    if(!tinycolor(args.slice(1).join(" ")).isValid() || args[1]) { aN = '2'; }
-    
-   message.channel.send("a");
+    if(!tinycolor(args.slice(1).join(" ")).isValid() || args[1]) return aN = '2'; 
 
-   if(tinycolor(args.slice(1).join(" ")).isValid() || args[1]) {
+   if(tinycolor(args.slice(aN).join(" ")).isValid() || args[aN]) {
     	
   let uEmb = new Discord.RichEmbed()
   .setColor(parseInt(roleC, 16))
@@ -109,7 +106,7 @@ const filter = (reaction, user) => {
 
 function f1() {
       
-    if(args[1]) {
+    if(args[aN]) {
     if (!message.member.hasPermission("MANAGE_ROLES")) return errors.noPerms(message, "Gerenciar Cargos");
     let uID = args[aN].replace(/[\\<>@#&!]/g, '');
     roleN = `USER-${uID}`;
@@ -199,7 +196,7 @@ msg.awaitReactions(filter, {max: 1, time: 60000, errors: ['time']})
     .setTitle('Cor inválida')
     .setImage(`https://dummyimage.com/300x100/000000/ffffff&text=+Inválido`);
     message.channel.send(iEmb);
-}}
+}
 
 }
 
