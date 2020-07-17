@@ -93,6 +93,14 @@ if(args[0] === "change") {
        aN = 2;
     }
 
+    if(args[1]) {
+    if (!message.member.hasPermission("MANAGE_ROLES")) return errors.noPerms(message, "Gerenciar Cargos");
+    let uID = args[aN].replace(/[\\<>@#&!]/g, '');
+    roleN = `USER-${uID}`;
+    role = message.guild.roles.find(x => x.name == roleN);
+    roleO = message.guild.members.get(uID);
+  }
+
    if(tinycolor(args.slice(1).join(" ")).isValid() || args[1]) {
     	
   let uEmb = new Discord.RichEmbed()
@@ -107,14 +115,6 @@ const filter = (reaction, user) => {
 };
 
 function f1() {
-      
-    if(args[1]) {
-    if (!message.member.hasPermission("MANAGE_ROLES")) return errors.noPerms(message, "Gerenciar Cargos");
-    let uID = args[aN].replace(/[\\<>@#&!]/g, '');
-    roleN = `USER-${uID}`;
-    role = message.guild.roles.find(x => x.name == roleN);
-    roleO = message.guild.members.get(uID);
-  }
 	
 msg.awaitReactions(filter, {max: 1, time: 60000, errors: ['time']})
     .then(collected => {
