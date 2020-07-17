@@ -86,14 +86,15 @@ if(args[0] === "remove") {
 
 if(args[0] === "change")    
 
+message.channel.send("b")
     var roleO = message.member;
-    var aN = 1
+    var aN = 1;
  
-    if(!tinycolor(args.slice(1).join(" ")).isValid() || args[aN]) {
-    	aN = 2
+    if(!tinycolor(args.slice(1).join(" ")).isValid() || args[1]) {
+    	aN = 2;
     } else {
     
-   message.channel.send("a")
+   message.channel.send("a");
 
    if(!tinycolor(args.slice(aN).join(" ")).isValid() || args[aN]) {
     	
