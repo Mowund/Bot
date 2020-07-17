@@ -87,9 +87,9 @@ if(args[0] === "remove") {
 if(args[0] === "change") {
 
     var roleO = message.member;
-    var aN = '1';
+    var aN = 1;
  
-    if(!tinycolor(args.slice(1).join(" ")).isValid() || args[1]) return aN = '2'; 
+    if(!tinycolor(args.slice(1).join(" ")).isValid() || args[1]) {aN = 2}
 
    if(tinycolor(args.slice(aN).join(" ")).isValid() || args[aN]) {
     	
@@ -196,7 +196,7 @@ msg.awaitReactions(filter, {max: 1, time: 60000, errors: ['time']})
     .setTitle('Cor inválida')
     .setImage(`https://dummyimage.com/300x100/000000/ffffff&text=+Inválido`);
     message.channel.send(iEmb);
-}
+}}
 
 }
 
