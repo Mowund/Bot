@@ -90,16 +90,13 @@ if(args[0] === "change") {
     var aN = 1;
  
     if(!tinycolor(args.slice(1).join(" ")).isValid() || args[1]) {
-       aN = 2;
-    }
-
-    /*if(args[1]) {
+      aN = 2;
       if (!message.member.hasPermission("MANAGE_ROLES")) return errors.noPerms(message, "Gerenciar Cargos");
       let uID = args[1].replace(/[\\<>@#&!]/g, '');
       roleN = `USER-${uID}`;
       role = message.guild.roles.find(x => x.name == roleN);
       roleO = message.guild.members.get(uID);
-    }*/
+    }
 
    if(tinycolor(args.slice(1).join(" ")).isValid() || args[1]) {
     	
@@ -113,8 +110,6 @@ if(args[0] === "change") {
 const filter = (reaction, user) => {
     return ['⛔', '🔁', '✅'].includes(reaction.emoji.name) && user.id === message.author.id;
 };
-
-message.channel.send(`${roleO}`);
 
 function f1() {
 	
