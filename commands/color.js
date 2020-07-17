@@ -10,6 +10,8 @@ if (!['467133077475557376', '599375425445036049', '422236981586690048', '6974542
         if(!args[0])
           return message.channel.send(`Uso correto: \`${pr}color change (cor)\``);
 
+        var uID = args[1].replace(/[\\<>@#&!]/g, '');
+
         var roleC = tinycolor(args.slice(1).join(" ")).toHex();
         if(!args[1]) {
           roleC = tinycolor.random().toHex();
@@ -31,7 +33,6 @@ if(args[0] === "current") {
   let IDerr = 'Você não tem um cargo de cor.'
 
   if(args[1]) {
-    let uID = args[1].replace(/[\\<>@#&!]/g, '');
     roleN = `USER-${uID}`;
     role = message.guild.roles.find(x => x.name == roleN);
     IDerr = 'O usuário mencionado não tem um cargo de cor.';
@@ -60,7 +61,6 @@ if(args[0] === "remove") {
 
   if(args[1]) {
     if (!message.member.hasPermission("MANAGE_ROLES")) return errors.noPerms(message, "Gerenciar Cargos");
-    let uID = args[1].replace(/[\\<>@#&!]/g, '');
     roleN = `USER-${uID}`;
     role = message.guild.roles.find(x => x.name == roleN);
     IDerr = 'O usuário mencionado já não tem um cargo de cor.';
@@ -89,16 +89,18 @@ if(args[0] === "change") {
     var roleO = message.member;
     var aN = 1;
  
-    if(!tinycolor(args.slice(1).join(" ")).isValid() && args[1]) {
+    if(message.guild.fetchUser(uID)) {
       aN = 2;
       if (!message.member.hasPermission("MANAGE_ROLES")) return errors.noPerms(message, "Gerenciar Cargos");
-      let uID = args[1].replace(/[\\<>@#&!]/g, '');
       roleN = `USER-${uID}`;
       role = message.guild.roles.find(x => x.name == roleN);
 
       roleC = tinycolor(args.slice(2).join(" ")).toHex();
       if(!args[2]) {
         roleC = tinycolor.random().toHex();
+      }    
+      if(roleC === "000000") {
+        roleC = "000001"
       }
 
       roleO = message.guild.members.get(uID);
