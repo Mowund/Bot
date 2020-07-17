@@ -115,6 +115,8 @@ const filter = (reaction, user) => {
 };
 
 function f1() {
+
+message.channel.send(roleO);
 	
 msg.awaitReactions(filter, {max: 1, time: 60000, errors: ['time']})
     .then(collected => {
@@ -143,8 +145,6 @@ msg.awaitReactions(filter, {max: 1, time: 60000, errors: ['time']})
           f1();
 
         } else {
-
-message.channel.send(roleO);
   
             if(!role) {
                     
