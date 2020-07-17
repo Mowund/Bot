@@ -33,7 +33,7 @@ if (!['467133077475557376', '599375425445036049', '422236981586690048', '6974542
 
   if(args[0] === 'convert') {
     var cvRgb = tinycolor(args[1]).toRgb();
-    message.channel.send(`${cvRgb}`);
+    message.channel.send(cvRgb);
   };
 
 if(args[0] === "current") {
