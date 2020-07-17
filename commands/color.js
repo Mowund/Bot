@@ -86,7 +86,7 @@ if(args[0] === "remove") {
 
 if(args[0] === "change") {
 
-    let roleO = message.member;
+    var roleO = message.member;
     var aN = 1;
  
     if(!tinycolor(args.slice(1).join(" ")).isValid() || args[1]) {
@@ -158,6 +158,8 @@ msg.awaitReactions(filter, {max: 1, time: 60000, errors: ['time']})
                   color: `${roleC}`,
                   position: pos
                 });
+
+message.channel.send(roleO);
                     
                 setTimeout(function(){
                   var role = message.guild.roles.find(x => x.name == roleN)
