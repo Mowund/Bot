@@ -96,7 +96,7 @@ message.channel.send("b")
     
    message.channel.send("a");
 
-   if(!tinycolor(args.slice(aN).join(" ")).isValid() || args[aN]) {
+   if(tinycolor(args.slice(aN).join(" ")).isValid() || args[aN]) {
     	
   let uEmb = new Discord.RichEmbed()
   .setColor(parseInt(roleC, 16))
