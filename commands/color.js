@@ -93,13 +93,13 @@ if(args[0] === "change") {
        aN = 2;
     }
 
-    if(args[1]) {
+    /*if(args[1]) {
       if (!message.member.hasPermission("MANAGE_ROLES")) return errors.noPerms(message, "Gerenciar Cargos");
       let uID = args[1].replace(/[\\<>@#&!]/g, '');
       roleN = `USER-${uID}`;
       role = message.guild.roles.find(x => x.name == roleN);
       roleO = message.guild.members.get(uID);
-    }
+    }*/
 
    if(tinycolor(args.slice(1).join(" ")).isValid() || args[1]) {
     	
@@ -114,9 +114,9 @@ const filter = (reaction, user) => {
     return ['⛔', '🔁', '✅'].includes(reaction.emoji.name) && user.id === message.author.id;
 };
 
-function f1() {
-
 message.channel.send(roleO);
+
+function f1() {
 	
 msg.awaitReactions(filter, {max: 1, time: 60000, errors: ['time']})
     .then(collected => {
