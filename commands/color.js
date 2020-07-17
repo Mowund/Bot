@@ -87,14 +87,15 @@ if(args[0] === "remove") {
 if(args[0] === "change")    
 
     var roleO = message.member;
-    var aN = 1;
+    var aN = 1; 
+
 message.channel.send("b");
  
-    if(!tinycolor(args.slice(1).join(" ")).isValid() || args[1]) return aN = 2;
+    /*if(!tinycolor(args.slice(1).join(" ")).isValid() || args[1]) return aN = 2;*/
     
    message.channel.send("a");
 
-   if(tinycolor(args.slice(2).join(" ")).isValid() || args[2]) {
+   if(tinycolor(args.slice(aN).join(" ")).isValid() || args[aN]) {
     	
   let uEmb = new Discord.RichEmbed()
   .setColor(parseInt(roleC, 16))
