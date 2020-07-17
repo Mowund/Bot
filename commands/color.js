@@ -87,10 +87,9 @@ if(args[0] === "remove") {
 if(args[0] === "change")    
 
     var roleO = message.member;
-
     var aN = 1
  
-    if(!tinycolor(args.slice(1).join(" ")).isValid()) {
+    if(!tinycolor(args.slice(1).join(" ")).isValid() || args[aN]) {
     	aN = 2
     } else {
     
