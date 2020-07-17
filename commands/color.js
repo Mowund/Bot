@@ -91,7 +91,7 @@ if(args[0] === "change") {
     var roleO = message.member;
     var aN = 1;
  
-    if(message.guild.fetchUser(uID)) {
+    if(bot.fetchUser(uID)) {
       aN = 2;
       if (!message.member.hasPermission("MANAGE_ROLES")) return errors.noPerms(message, "Gerenciar Cargos");
       roleN = `USER-${uID}`;
