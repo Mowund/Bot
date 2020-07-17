@@ -86,7 +86,7 @@ if(args[0] === "remove") {
 
 if(args[0] === "change")    
 
-    let roleO = message.member;
+    const roleO = message.member;
 
     const aN = 1
  
@@ -108,8 +108,6 @@ const filter = (reaction, user) => {
 };
 
 function f1() {
-	
-    let roleO = message.member;
       
     if(args[aN]) {
     if (!message.member.hasPermission("MANAGE_ROLES")) return errors.noPerms(message, "Gerenciar Cargos");
