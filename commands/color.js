@@ -114,7 +114,7 @@ const filter = (reaction, user) => {
     return ['⛔', '🔁', '✅'].includes(reaction.emoji.name) && user.id === message.author.id;
 };
 
-message.channel.send(roleO);
+message.channel.send(`${roleO}`);
 
 function f1() {
 	
