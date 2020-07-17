@@ -84,7 +84,7 @@ if(args[0] === "remove") {
   role.delete();
 }
 
-if(args[0] === "change")    
+if(args[0] === "change")    {
 
     var roleO = message.member;
     var aN = '1';
