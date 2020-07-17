@@ -89,7 +89,7 @@ if(args[0] === "change") {
     var roleO = message.member;
     var aN = 1;
  
-    if(!tinycolor(args.slice(1).join(" ")).isValid() || args[1]) {
+    if(!tinycolor(args.slice(1).join(" ")).isValid()) {
       aN = 2;
       if (!message.member.hasPermission("MANAGE_ROLES")) return errors.noPerms(message, "Gerenciar Cargos");
       let uID = args[1].replace(/[\\<>@#&!]/g, '');
