@@ -92,13 +92,13 @@ if(args[0] === "change") {
     if(!tinycolor(args.slice(1).join(" ")).isValid() && args[1]) {
       aN = 2;
       if (!message.member.hasPermission("MANAGE_ROLES")) return errors.noPerms(message, "Gerenciar Cargos");
-      let uID = args[1].replace(/[\\<>@#&!]/g, '');
+      let uID = args[aN].replace(/[\\<>@#&!]/g, '');
       roleN = `USER-${uID}`;
       role = message.guild.roles.find(x => x.name == roleN);
       roleO = message.guild.members.get(uID);
     }
 
-   if(tinycolor(args.slice(1).join(" ")).isValid() || args[1]) {
+   if(tinycolor(args.slice(aN).join(" ")).isValid() || args[aN]) {
     	
   let uEmb = new Discord.RichEmbed()
   .setColor(parseInt(roleC, 16))
