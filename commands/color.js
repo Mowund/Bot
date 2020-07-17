@@ -1,4 +1,5 @@
 const botconfig = require("../botconfig.json");
+const errors = require("../utils/errors.js");
 const Discord = require("discord.js");
 var tinycolor = require("tinycolor2");
 let pr = (botconfig.prefix);
