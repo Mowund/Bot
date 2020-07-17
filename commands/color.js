@@ -95,7 +95,7 @@ if(args[0] === "change") {
 
     if(args[1]) {
     if (!message.member.hasPermission("MANAGE_ROLES")) return errors.noPerms(message, "Gerenciar Cargos");
-    let uID = args[aN].replace(/[\\<>@#&!]/g, '');
+    let uID = args[1].replace(/[\\<>@#&!]/g, '');
     roleN = `USER-${uID}`;
     role = message.guild.roles.find(x => x.name == roleN);
     roleO = message.guild.members.get(uID);
