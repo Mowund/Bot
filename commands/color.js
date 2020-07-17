@@ -44,7 +44,8 @@ if (!['467133077475557376', '599375425445036049', '422236981586690048', '6974542
     let rEmb = new Discord.RichEmbed()
     .setColor(parseInt(tcvColor, 16))
     .setTitle('Convertido em RGB')
-    .setImage(`https://dummyimage.com/300x100/${tcvColor}/${cColorL}&text=+${RgbLk}`);
+    .setImage(`https://dummyimage.com/300x100/${tcvColor}/${cColorL}&text=+${RgbLk}`)
+    .setFooter(`${cvRgb}`);
   
     message.channel.send(rEmb);
   };
