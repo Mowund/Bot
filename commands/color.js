@@ -59,7 +59,7 @@ if (!['467133077475557376', '599375425445036049', '422236981586690048', '6974542
     message.channel.send(rEmb);
   } else {
     message.channel.send(iEmb);
-  };
+  }};
 
 if(args[0] === "current") {
 
