@@ -199,7 +199,7 @@ msg.awaitReactions(filter, {max: 1, time: 60000, errors: ['time']})
     .setTitle('Cor inválida')
     .setImage(`https://dummyimage.com/300x100/000000/ffffff&text=+Inválido`);
     message.channel.send(iEmb);
-}
+}}
 
 }
 
