@@ -108,12 +108,12 @@ if(args[0] === "change") {
       var roleL = "000000"
         if(tinycolor(roleC).isDark()) {
       roleL = "ffffff"
-      }.catch(collected => {
-        err => console.error(err)
-      });
+      }
 
       roleO = message.guild.members.get(uID);
-    }
+    }.catch(collected => {
+      err => console.error(err)
+    });
 
    if(tinycolor(args.slice(aN).join(" ")).isValid() || args[aN]) {
     	
