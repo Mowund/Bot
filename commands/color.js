@@ -35,6 +35,7 @@ if (!['467133077475557376', '599375425445036049', '422236981586690048', '6974542
 
     var tcvColor = tinycolor(args[1]).toHex();
     var cvRgb = tinycolor(tcvColor).toRgbString();
+    var RgbLk = encodeURI(cvRgb);
     var cColorL = "000000"
     if(tinycolor(tcvColor).isDark()) {
       cColorL = "ffffff"
@@ -43,7 +44,7 @@ if (!['467133077475557376', '599375425445036049', '422236981586690048', '6974542
     let rEmb = new Discord.RichEmbed()
     .setColor(parseInt(tcvColor, 16))
     .setTitle('Convertido em RGB')
-    .setImage(`https://dummyimage.com/300x100/${tcvColor}/${cColorL}&text=+${cvRgb}`);
+    .setImage(`https://dummyimage.com/300x100/${tcvColor}/${cColorL}&text=+${RgbLk}`);
   
     message.channel.send(rEmb);
   };
