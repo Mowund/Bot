@@ -28,12 +28,21 @@ if (!['467133077475557376', '599375425445036049', '422236981586690048', '6974542
           roleL = "ffffff"
         }
       
-        let roleN = `USER-${message.author.id}`;
+        var roleN = `USER-${message.author.id}`;
         var role = message.guild.roles.find(x => x.name == roleN);
+
+
+        var iEmb = new Discord.RichEmbed()
+         .setColor(parseInt('000000', 16))
+         .setTitle('Cor inválida')
+         .setImage(`https://dummyimage.com/300x100/000000/ffffff&text=+Inválido`);
+
 
   if(args[0] === 'convert') {
 
     var tcvColor = tinycolor(args[1]).toHex();
+    if(!tinycolor(tcvColor).isValid()) return message.channel.send(iEmb);
+
     var cvRgb = tinycolor(tcvColor).toRgbString();
     var RgbLk = encodeURI(cvRgb);
     var cColorL = "000000"
@@ -225,10 +234,6 @@ msg.awaitReactions(filter, {max: 1, time: 60000, errors: ['time']})
 
 } f1(); });
 } else {
-  let iEmb = new Discord.RichEmbed()
-    .setColor(parseInt(roleC, 16))
-    .setTitle('Cor inválida')
-    .setImage(`https://dummyimage.com/300x100/000000/ffffff&text=+Inválido`);
     message.channel.send(iEmb);
 }}
 
