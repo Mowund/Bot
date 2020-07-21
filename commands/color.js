@@ -40,9 +40,21 @@ if (!['467133077475557376', '599375425445036049', '422236981586690048', '6974542
 
   if(args[0] === 'convert') {
 
-    if(!tinycolor(args[1]).isValid()) return message.channel.send(iEmb);
-
     var tcvColor = tinycolor(args[1]).toHex();
+
+    if(!tinycolor(args[1]).isValid()) {
+
+  let IDerr = 'Você não tem um cargo de cor.'
+
+    roleN = `USER-${uID}`;
+    role = message.guild.roles.find(x => x.name == roleN);
+    IDerr = 'O usuário mencionado não tem um cargo de cor.';
+
+  if(!role) return message.channel.send(`${IDerr}`);
+
+  var tcvColor = tinycolor(role.color).toHex();
+     };
+
     var cvRgb = tinycolor(tcvColor).toRgbString();
     var RgbLk = encodeURI(cvRgb);
     var cColorL = "000000"
