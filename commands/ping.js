@@ -2,13 +2,36 @@ const Discord = require("discord.js")
 
 module.exports.run = async (bot, message, args) => {
     
-    message.channel.send("Pingando...").then(m => {
-        let ping = m.createdTimestamp = message.createdTimestamp
-        let choices = ["Esse é realmente meu ping?", "Está tudo bem? Eu não posso ver.", "Eu espero que isso não seja ruim. Aqui está meu ping:"]
-        let response = choices[Math.floor(Math.random() * choices.length)]
-
-        m.edit(`${response}\n**${Math.round(bot.ping)}ms**`)
-    })
+        let botMsg = await message.channel.send("〽️ Pingando...")
+      
+        botMsg.edit({ embed: {
+          title: "📶 Ping",
+          description: [
+            "**Servidor**: `" + (botMsg.createdAt - message.createdAt) + "ms`",
+            "**API**: `" + Math.round(bot.ping) + "ms`",
+            "**Uptime**: `" + msToTime(bot.uptime) + "`"
+          ].join("\n"),
+          color: 16711680,
+          timestamp: new Date()
+        }}).catch(() => botMsg.edit("🆘 Erro desconhecido."));
+      }
+      
+      function msToTime(ms){
+        days = Math.floor(ms / 86400000); // 24*60*60*1000
+        daysms = ms % 86400000; // 24*60*60*1000
+        hours = Math.floor(daysms / 3600000); // 60*60*1000
+        hoursms = ms % 3600000; // 60*60*1000
+        minutes = Math.floor(hoursms / 60000); // 60*1000
+        minutesms = ms % 60000; // 60*1000
+        sec = Math.floor(minutesms / 1000);
+      
+        let str = "";
+        if (days) str = str + days + "d";
+        if (hours) str = str + hours + "h";
+        if (minutes) str = str + minutes + "m";
+        if (sec) str = str + sec + "s";
+      
+        return str;
 
 }
 
