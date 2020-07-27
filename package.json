@@ -1,6 +1,6 @@
 {
   "name": "mowund",
-  "version": "1.1.0",
+  "version": "1.0.0-snapshot",
   "main": "index.js",
   "dependencies": {
     "discord.io": "^2.5.3",
