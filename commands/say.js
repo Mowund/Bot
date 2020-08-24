@@ -20,7 +20,7 @@ module.exports.run = async (bot, message, args) => {
     };
   } else {
     tts = ("false");
-    bmsg = args.join('💋');
+    bmsg = args.join(' ');
   };
   
   if (channel) {
