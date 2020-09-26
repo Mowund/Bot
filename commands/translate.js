@@ -4,7 +4,8 @@ const errors = require("../utils/errors.js");
 module.exports.run = async (bot, message, args) => {
 
     var tmsg = args.join(' ');
-    var tmsg = tmsg.replace('@',''a);
+    var tmsg = tmsg.replace('@','a').replace('a','@')
+                   .replace(';','b');
 
     channel.send(tmsg);
 
