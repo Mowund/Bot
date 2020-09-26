@@ -42,7 +42,11 @@ message.channel.send(`2 + ${tmsg}`)
                    .replace(/[y6]/g, function($1) {return $1 === 'y' ? '6' : 'y'})
                    .replace(/[z\*]/g, function($1) {return $1 === 'z' ? '*' : 'z'});
 
-    if (tmsg.startsWith('§')) return tmsg = tmsg.toUpperCase();
+message.channel.send(`3 + ${tmsg}`)
+
+    if (tmsg.startsWith('§')) {
+       tmsg = tmsg.toUpperCase();
+    }
                   
     message.channel.send(tmsg);
 
