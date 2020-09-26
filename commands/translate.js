@@ -4,9 +4,8 @@ const errors = require("../utils/errors.js");
 module.exports.run = async (bot, message, args) => {
 
     var tmsg = args.join(' ');
-    var tmsg = tmsg.replaceEach(tmsg, {"a", "@"},
-                                      {"@", "a"}
-               );
+    var tmsg = tmsg.replace(/[ab]/g, function($1) {return $1 === 'a' ? '@' : 'a'});
+                      
 
     message.channel.send(tmsg);
 
