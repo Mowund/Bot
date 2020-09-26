@@ -8,10 +8,12 @@ String.prototype.isUpperCase = function() {
 };
 
     var tmsg = args.join(' ');
+    var pcpt = '0';
 
     if (/^[A-Z]*$/.test(tmsg)) {
-       tmsg = '§ ' + tmsg
-       message.channel.send(`1 + ${tmsg}`)
+       tmsg = '§ ' + tmsg;
+       message.channel.send(`1 + ${tmsg}`);
+       pcpt = '1';
     }
 message.channel.send(`2 + ${tmsg}`)
 
@@ -44,9 +46,11 @@ message.channel.send(`2 + ${tmsg}`)
 
 message.channel.send(`3 + ${tmsg}`)
 
-    if (tmsg.startsWith('§')) {
-       tmsg = tmsg.toUpperCase().slice(2);
-    }
+    if !(pcpt === '1') {
+      if (tmsg.startsWith('§')) {
+         tmsg = tmsg.toUpperCase().slice(2);
+      }
+    };
                   
     message.channel.send(tmsg);
 
