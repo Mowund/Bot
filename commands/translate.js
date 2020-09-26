@@ -3,10 +3,11 @@ const errors = require("../utils/errors.js");
 
 module.exports.run = async (bot, message, args) => {
 
-    var tmsg = args.replace('@','a')
+    var tmsg = args.replace('@','a');
 
-    channel.send(tmsg)
+    channel.send(tmsg);
 
+}
 
 module.exports.help = {
   name: "translate"
