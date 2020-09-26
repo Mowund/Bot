@@ -9,7 +9,7 @@ String.prototype.isUpperCase = function() {
 
     var tmsg = args.join(' ');
 
-    if (tmsg.isUpperCase()) return var tmsg = '§ ' + tmsg;
+    if (tmsg.isUpperCase()) return tmsg = '§ ' + tmsg;
 
     var tmsg = tmsg.toLowerCase.replace(/[a@]/g, function($1) {return $1 === 'a' ? '@' : 'a'})                                  
                    .replace(/[b;]/g, function($1) {return $1 === 'b' ? ';' : 'b'})
@@ -38,7 +38,7 @@ String.prototype.isUpperCase = function() {
                    .replace(/[y6]/g, function($1) {return $1 === 'y' ? '6' : 'y'})
                    .replace(/[z\*]/g, function($1) {return $1 === 'z' ? '*' : 'z'});
 
-    if (tmsg.startsWith('§')) return var tmsg = tmsg.toUpperCase;
+    if (tmsg.startsWith('§')) return tmsg = tmsg.toUpperCase;
                   
     message.channel.send(tmsg);
 
