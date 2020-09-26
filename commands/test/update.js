@@ -5,19 +5,17 @@ const client = new Discord.Client();
 
 module.exports.run = async (bot, message, args) => {
 
-    const channel = message.guild.channels.find(c => c.id === '420352343402348544' && c.type === 'news')
+    const channel = message.guild.channels.find(c => c.id === '420352343402348544')
 
     var e1 = new Discord.RichEmbed()
-    /*.setThumbnail('')*/
-    .setTitle('**Snapshot 20w22a**')
-    .addField('**__Bots__**', '∗ O bot <@618587791546384385> agora suporta novos emojis e imagens, disponíveis em servidores de arquivo.\n\n- Os bots NSFW foram removidos, sendo eles **@BoobBot™#5382** e **@Nadeko#6685**.')
-    .addField('**__Cargos__**', '+ Novo cargo: <@&698226508837421147>.\n\nㅤ• Usado no <#462669344841924618>.\n\n- Os cargos **@Notebook**, **@Tablet**, **@NSFW** e todos os de sexualidade foram deletados.')
-    .addField('**__Categorias__**', '- A categoria **\\🔞 NSFW \\🔞** foi deletada.')
-    .addField('**__Chats__**', '∗ O chat <#462669344841924618> foi atualizado:\n\nㅤ• Agora as mensagens são em embed.\n\nㅤ• Os emojis foram atualizados.\n\nㅤ• As etapas foram atualizadas:\n\nㅤㅤ• A etapa **1** (Gênero) agora tem mais uma opção: <@&698226508837421147>.\n\nㅤㅤ• As etapas **3** (PC ou Notebook) e **4** (Celular ou Tablet) foram mescladas e agora pergunta qual seu principal dispositivo (PC ou Celular).\n\nㅤㅤ• As etapas **2** (Sexualidade) e **7** (NSFW) foram removidas.\n\n- Os chats **#\\🔥nsfw-1\\🔥** e **#\\🔥nsfw-2\\🔥** foram deletados.')
-    .setFooter('Esta é a 1ª snapshot da 1.18.', 'https://cdn.discordapp.com/icons/420007989261500418/7307c28f2b48677cb35619def07d6e00.png')
+    .setTitle('**Snapshot 20w37a**')
+    .addField('**__Cargos__**', '+ Novo cargo: <@&751632658517459086>.\n\nㅤ• Cargo ganho ao dar boost no servidor.\n\nㅤ• Fica acima dos Mowundenses, mudando a cor e separando dos mowundenses. Também tem acesso à call e chat **\\💎 EXCLUSIVO \\💎**. Não tem nenhuma outra função exclusiva no momento.')
+    .addField('**__Chats__**', '+ Novos chats: <#752543560066400317>, <#752541321864020009>.\n\nㅤ• <#752543560066400317>:\n\nㅤㅤ• Similar ao chat <#510203957939798018>, é usado para listar ideias futuras para o servidor, porém, não confirmadas que ainda virão.\n\nㅤㅤ• O chat está abaixo do <#510203957939798018> e, por enquanto, ninguém consegue ver o chat.\n\nㅤ• <#752541321864020009>:\n\nㅤㅤ• Chat usado para a moderação receber notícias do próprio Discord\n\nㅤㅤ• O chat é oculto (ninguém consegue ver e está na categoria **\\❌ OCULTO \\❌**).\n\n∗ Os anúncios disponíveis de cada bot de jogo agora serão seguidos em seus respectivos chats.')
+    .addField('**__Geral__**', '+ Novo plano de fundo de teste para convites do servidor (temporário por conta do nível 1 do server boost).\n\n+ O modo comunidade do servidor foi ativado.\n\n∗ O nível de verificação do servidor foi aumentado para de *Médio* para *Alto*.\n\n∗ O filtro de conteúdo de mídia explícita foi ativado para anilisar a mídia de todos os membros.\n\n∗ O V2E do servidor foi ativado.\n\n∗ Canais de voz agora serão chamados como *calls* no changelog e, também, serão mencionados pelo ID em negrito (\\*\\*\\<#462396024133124096>\\*\\* >> **<#462396024133124096>**).')
+    .setFooter('Essa é a 3ª snapshot da 1.18.', message.guild.iconURL)
     .setColor(16711680);
 
-    var role = "531267169464483860"
+    var role = '531267169464483860'
 
     if(args[0] === 'release') {
             utils.mentionRole(message, role, message.channel);
