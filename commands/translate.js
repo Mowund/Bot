@@ -7,7 +7,7 @@ module.exports.run = async (bot, message, args) => {
     var tmsg = tmsg.replace('@','a').replace('a','@')
                    .replace(';','b');
 
-    channel.send(tmsg);
+    message.channel.send(tmsg);
 
 }
 
