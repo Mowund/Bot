@@ -9,7 +9,11 @@ String.prototype.isUpperCase = function() {
 
     var tmsg = args.join(' ');
 
-    if (tmsg.isUpperCase()) {tmsg = '§ ' + tmsg};
+    if (tmsg.isUpperCase()) {
+       tmsg = '§ ' + tmsg
+       message.channel.send(`1 + ${tmsg}`)
+    }
+message.channel.send(`2 + ${tmsg}`)
 
     var tmsg = tmsg.toLowerCase().replace(/[a@]/g, function($1) {return $1 === 'a' ? '@' : 'a'})                                  
                    .replace(/[b;]/g, function($1) {return $1 === 'b' ? ';' : 'b'})
