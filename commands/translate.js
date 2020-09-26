@@ -3,8 +3,15 @@ const errors = require("../utils/errors.js");
 
 module.exports.run = async (bot, message, args) => {
 
+String.prototype.isUpperCase = function() {
+    return this.valueOf().toUpperCase() === this.valueOf();
+};
+
     var tmsg = args.join(' ');
-    var tmsg = tmsg.toLowerCase().replace(/[a@]/g, function($1) {return $1 === 'a' ? '@' : 'a'})                                  
+
+    if (tmsg.isUpperCase()) return var tmsg = '§ ' + tmsg;
+
+    var tmsg = tmsg.toLowerCase.replace(/[a@]/g, function($1) {return $1 === 'a' ? '@' : 'a'})                                  
                    .replace(/[b;]/g, function($1) {return $1 === 'b' ? ';' : 'b'})
                    .replace(/[c']/g, function($1) {return $1 === 'c' ? '\'' : 'c'})
                    .replace(/[d\$]/g, function($1) {return $1 === 'd' ? '$' : 'd'})
@@ -30,7 +37,8 @@ module.exports.run = async (bot, message, args) => {
                    .replace(/[x"]/g, function($1) {return $1 === 'x' ? '\"' : 'x'})
                    .replace(/[y6]/g, function($1) {return $1 === 'y' ? '6' : 'y'})
                    .replace(/[z\*]/g, function($1) {return $1 === 'z' ? '*' : 'z'});
-                   
+
+    if (tmsg.startsWith('§')) return var tmsg = tmsg.toUpperCase;
                   
     message.channel.send(tmsg);
 
