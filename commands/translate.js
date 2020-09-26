@@ -46,7 +46,7 @@ message.channel.send(`2 + ${tmsg}`)
 
 message.channel.send(`3 + ${tmsg}`)
 
-    if !(pcpt === '1') {
+    if (pcpt === '0') {
       if (tmsg.startsWith('§')) {
          tmsg = tmsg.toUpperCase().slice(2);
       }
