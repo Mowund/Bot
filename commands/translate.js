@@ -10,7 +10,7 @@ String.prototype.isUpperCase = function() {
     var tmsg = args.join(' ');
     var pcpt = '0';
 
-    if (/^[^a-z]*$/.test(tmsg)) {
+    if (/^[^a-z]*[A-Z]+$/.test(tmsg)) {
        tmsg = '§ ' + tmsg;
        pcpt = '1';
     }
