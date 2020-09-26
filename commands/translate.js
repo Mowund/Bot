@@ -12,10 +12,8 @@ String.prototype.isUpperCase = function() {
 
     if (/^[A-Z]*$/.test(tmsg)) {
        tmsg = '§ ' + tmsg;
-       message.channel.send(`1 + ${tmsg}`);
        pcpt = '1';
     }
-message.channel.send(`2 + ${tmsg}`)
 
     var tmsg = tmsg.toLowerCase().replace(/[a@]/g, function($1) {return $1 === 'a' ? '@' : 'a'})                                  
                    .replace(/[b;]/g, function($1) {return $1 === 'b' ? ';' : 'b'})
@@ -43,8 +41,6 @@ message.channel.send(`2 + ${tmsg}`)
                    .replace(/[x"]/g, function($1) {return $1 === 'x' ? '\"' : 'x'})
                    .replace(/[y6]/g, function($1) {return $1 === 'y' ? '6' : 'y'})
                    .replace(/[z\*]/g, function($1) {return $1 === 'z' ? '*' : 'z'});
-
-message.channel.send(`3 + ${tmsg}`)
 
     if (pcpt === '0') {
       if (tmsg.startsWith('§')) {
