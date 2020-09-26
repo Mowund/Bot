@@ -6,7 +6,7 @@ module.exports.run = async (bot, message, args) => {
     var tmsg = args.join(' ');
     var tmsg = tmsg.replaceEach(tmsg, new String[]{"a", "@},
                                       new String[]{"@", "a"}
-               )
+               );
 
     message.channel.send(tmsg);
 
