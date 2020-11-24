@@ -9,6 +9,7 @@ module.exports.run = async (bot, message, args) => {
     .setThumbnail(bot.user.displayAvatarURL)
     .addField("Nome do Bot", bot.user.username, true)
     .addField("Versão do Bot", pack.version, true)
+    .addDescription('[Servidor de Comunidade](https://discord.gg/f85rEGJ)');
 
     message.channel.send(botembed);
 }
