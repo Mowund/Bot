@@ -6,7 +6,7 @@ let pr = (botconfig.prefix);
 
 module.exports.run = async (bot, message, args) => {
 
-if (!['467133077475557376', '599375425445036049', '422236981586690048', '697454249067413519', '719962756421255269', '780208029999431701'].includes(message.channel.id)) return;
+if (!['467133077475557376', '599375425445036049', '422236981586690048', '697454249067413519', '780208029999431701'].includes(message.channel.id)) return;
 
         if(!args[0])
           return message.channel.send(`Uso correto: \`${pr}color change (cor)\``);
@@ -219,7 +219,7 @@ msg.awaitReactions(filter, {max: 1, time: 60000, errors: ['time']})
               var pos = '75'
             } else if (message.guild.id === '589597300033323040') {
               var pos = '28'
-            } else if (message.guild.id === '719260113411768331') {
+            } else if (message.guild.id === '780203566891139072) {
               var pos = '1'
             }; 
                 message.guild.createRole({
