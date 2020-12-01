@@ -159,6 +159,12 @@ if(args[0] === "change") {
       }    
       if(roleC === "000000") {
         roleC = "000001"
+
+      var roleCE = roleC
+      if(roleCE === "ffffff") {
+        roleCE = "fffffe"
+      }
+
       }
 
       var roleL = "000000"
@@ -201,6 +207,16 @@ msg.awaitReactions(filter, {max: 1, time: 60000, errors: ['time']})
         } else if (reaction.emoji.name === '🔁') {
 
           roleC = tinycolor.random().toHex();
+
+        if(roleC === "000000") {
+          roleC = "000001"
+
+        var roleCE = roleC
+        if(roleCE === "ffffff") {
+          roleCE = "fffffe"
+        }
+
+        }
 
           let aEmb = new Discord.RichEmbed()
           .setColor(parseInt(roleCE, 16))
