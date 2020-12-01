@@ -219,7 +219,7 @@ msg.awaitReactions(filter, {max: 1, time: 60000, errors: ['time']})
               var pos = '75'
             } else if (message.guild.id === '589597300033323040') {
               var pos = '28'
-            } else if (message.guild.id === '780203566891139072) {
+            } else if (message.guild.id === '780203566891139072') {
               var pos = '1'
             }; 
                 message.guild.createRole({
