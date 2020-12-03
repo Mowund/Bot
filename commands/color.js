@@ -176,16 +176,18 @@ if(args[0] === "change") {
     };
 
    if(tinycolor(args.slice(aN).join(" ")).isValid() || !args[aN]) {
-    	
+    
+  const reactions = ['⛔', '🔁', '✅']
+	
   let uEmb = new Discord.RichEmbed()
   .setColor(parseInt(roleCE, 16))
   .setTitle('Você gostaria dessa cor?')
   .setImage(`https://dummyimage.com/300x100/${roleC}/${roleL}&text=+${roleC}`);
   message.channel.send(uEmb).then((msg) => {
-  msg.react('⛔').then(() => msg.react('🔁')).then(() => msg.react('✅'));
+  reactions.forEach(r => msg.react(r));
 
 const filter = (reaction, user) => {
-    return ['⛔', '🔁', '✅'].includes(reaction.emoji.name) && user.id === message.author.id;
+    return reactions.includes(reaction.emoji.name) && user.id === message.author.id;
 };
 
 function f1() {
