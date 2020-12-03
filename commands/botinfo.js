@@ -9,7 +9,7 @@ module.exports.run = async (bot, message, args) => {
     .setThumbnail(bot.user.displayAvatarURL)
     .addField('Nome do Bot', bot.user.username)
     .addField('Versão do Bot', pack.version, true)
-    .addField('Entrou em', bot.user.joinedTimestamp)
+    .addField('Entrou em', bot.member.joinedAt)
     .addField('Convites', '[Servidor de Comunidade](https://discord.gg/f85rEGJ)\nBot privado, não é possível convidá-lo.');
   
     message.channel.send(botembed);
