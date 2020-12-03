@@ -7,8 +7,13 @@ module.exports.run = async (bot, message, args) => {
 
   if(!message.member.hasPermission("MANAGE_MESSAGES")) return errors.noPerms(message, "Gerenciar Mensagens");
 
-  if (message.guild.channels.get(args[0])) {
-    var channel = message.guild.channels.find(c => c.id === args[0] && c.type === 'text')
+  let guild = client.guilds.get(args[0])
+
+  if (guild) {
+  channel = guild.channels.get(args[1]);
+  } 
+  else if (message.guild.channels.get(args[0])) {
+    var channel = message.guild.channels.find(c => c.id === args[0])
     var bmsg = args.slice(1).join(" ");
   }
 
