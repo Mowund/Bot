@@ -9,6 +9,7 @@ module.exports.run = async (bot, message, args) => {
 
   if (message.guild.channels.get(args[0])) {
     var channel = message.guild.channels.find(c => c.id === args[0] && c.type === 'text')
+    var bmsg = args.slice(1).join(" ");
   }
 
   if(args[0] === "/tts") {
