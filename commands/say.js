@@ -11,6 +11,7 @@ module.exports.run = async (bot, message, args) => {
 
   if (guild) {
   channel = guild.channels.get(args[1]);
+  var bmsg = args.slice(2).join(" ");
   } 
   else if (message.guild.channels.get(args[0])) {
     var channel = message.guild.channels.find(c => c.id === args[0])
