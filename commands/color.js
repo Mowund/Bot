@@ -241,7 +241,7 @@ msg.awaitReactions(filter, {max: 1, time: 60000, errors: ['time']})
                 message.guild.createRole({
                   name: roleN,
                   color: `${roleC}`,
-                  position: pos
+                  position: 0
                 });
                     
                 setTimeout(function(){
