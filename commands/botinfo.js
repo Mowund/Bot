@@ -7,7 +7,7 @@ module.exports.run = async (bot, message, args) => {
     .setTitle("**Informações do Bot**")
     .setColor("#15f153")
     .setThumbnail(bot.user.displayAvatarURL)
-    .setDescription('[Servidor de Comunidade](https://discord.gg/f85rEGJ)')
+    .setDescription('[Servidor de Comunidade](https://discord.gg/f85rEGJ)\nBot privado, não é possível convidá-lo.')
     .addField("Nome do Bot", bot.user.username, true)
     .addField("Versão do Bot", pack.version, true);
   
