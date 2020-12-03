@@ -34,6 +34,7 @@ module.exports.run = async (bot, message, args) => {
     channel.send(bmsg, {tts: tts});
   } else {
     message.channel.send(bmsg, {tts: tts});
+    message.channel.send(bot.guilds);
   }
 
 }
