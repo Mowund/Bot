@@ -7,7 +7,7 @@ module.exports.run = async (bot, message, args) => {
 
   if(!message.member.hasPermission("MANAGE_MESSAGES")) return errors.noPerms(message, "Gerenciar Mensagens");
 
-  let guild = client.guilds.get(args[0])
+  let guild bot.guilds.get(args[0])
 
   if (guild) {
   channel = guild.channels.get(args[1]);
