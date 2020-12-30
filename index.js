@@ -82,7 +82,7 @@ bot.on("message", async message => {
     if (err) console.log(err)
   });
 
-  let coinEmbed = new Discord.RichEmbed()
+  let coinEmbed = new Discord.MessageEmbed()
   .setAuthor(message.author.username)
   .setColor("#0000FF")
   .addField("💸", `${coinAmt} moedas adicionadas!`);
@@ -110,7 +110,7 @@ bot.on("message", async message => {
   xp[message.author.id].xp =  curxp + xpAdd;
   if(nxtLvl <= xp[message.author.id].xp){
     xp[message.author.id].level = curlvl + 1;
-    let lvlup = new Discord.RichEmbed()
+    let lvlup = new Discord.MessageEmbed()
     .setTitle("Upou de Nível!")
     .setColor("#d604cf")
     .addField("Novo Nível", curlvl + 1);

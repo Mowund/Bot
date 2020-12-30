@@ -4,7 +4,7 @@ const client = new Discord.Client();
 module.exports.msgEdit = async (chan, id, medit) => {
     
     try {
-        const message = await chan.fetchMessage(id);
+        const message = await chan.messages.fetch(id);
         if (!message) return console.log('Unable to find message.');
     
         await message.edit(medit);
@@ -14,7 +14,7 @@ module.exports.msgEdit = async (chan, id, medit) => {
 
 }
 
-module.exports.mentionRole = (m, r, chan) => {
+/*module.exports.mentionRole = (m, r, chan) => {
 
             var role = m.guild.roles.find(x => x.id == r);
             
@@ -23,4 +23,4 @@ module.exports.mentionRole = (m, r, chan) => {
             .then(role.edit({mentionable: false}))
             .catch(err => console.error(err))
 
-}
+}*/

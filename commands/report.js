@@ -13,7 +13,7 @@ module.exports.run = async (bot, message, args) => {
     let rreason = args.join(" ").slice(22);
     if(!rreason) return errors.noReason(message.channel);
 
-    let reportEmbed = new Discord.RichEmbed()
+    let reportEmbed = new Discord.MessageEmbed()
     .setColor("#ff6a00")
     .addField("Usuário Reportado", `${rUser} com o ID: ${rUser.id}`)
     .addField("Reportado Por", `${message.author} com o ID: ${message.author.id}`)
@@ -21,7 +21,7 @@ module.exports.run = async (bot, message, args) => {
     .addField("Tempo", message.createdAt)
     .addField("Motivo", rreason);
 
-    let reportschannel = message.guild.channels.find(`name`, "reportes");
+    let reportschannel = message.guild.channels.cache.find(`name`, "reportes");
     if(!reportschannel) return message.channel.send("Não foi possível encontrar um canal de reporte.");
     reportschannel.send(reportEmbed);
 

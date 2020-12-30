@@ -3,14 +3,16 @@
   "version": "1.0.0-snapshot",
   "main": "index.js",
   "dependencies": {
+    "chalk": "^4.1.0",
+    "color-thief-node": "^1.0.3",
     "discord.io": "^2.5.3",
-    "discord.js": "^11.6.4",
+    "discord.js": "^12.5.1",
     "git": "^0.1.5",
     "log-timestamp": "^0.3.0",
-    "mongoose": "^5.9.7",
-    "tinycolor2": "^1.4.1",
-    "typescript": "^3.8.3",
-    "winston": "^3.2.1"
+    "mongoose": "^5.11.8",
+    "tinycolor2": "^1.4.2",
+    "typescript": "^3.9.7",
+    "winston": "^3.3.3"
   },
   "devDependencies": {},
   "scripts": {

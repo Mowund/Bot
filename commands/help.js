@@ -4,7 +4,7 @@ let pr = (botconfig.prefix);
 
 module.exports.run = async (bot, message, args) => {
 
-let hEmbed = new Discord.RichEmbed()
+let hEmbed = new Discord.MessageEmbed()
     .setColor("#0000ff")
     .setTitle("**Comandos**")
     .addField("Padrões", `${pr}botinfo\n${pr}help\n${pr}ping\n${pr}report\n${pr}serverinfo\n${pr}uptime`)

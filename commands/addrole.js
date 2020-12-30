@@ -17,7 +17,7 @@ module.exports.run = async (bot, message, args) => {
   if (!gRole) return message.reply("Não foi possível encontrar este cargo.");
 
   if (rMember.roles.has(gRole.id)) return message.reply(`${rMember} já tem este cargo.`);
-  await (rMember.addRole(gRole.id));
+  await (rMember.roles.add(gRole.id));
 
   try {
     await rMember.send(`Você ganhou o cargo ${gRole.name}`)

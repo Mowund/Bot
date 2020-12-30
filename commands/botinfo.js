@@ -3,7 +3,7 @@ let pack = require('../package.json');
 
 module.exports.run = async (bot, message, args) => {
     
-    let botembed = new Discord.RichEmbed()
+    let botembed = new Discord.MessageEmbed()
     .setTitle('**Informações do Bot**')
     .setColor('#00ff55')
     .setThumbnail(bot.user.displayAvatarURL)

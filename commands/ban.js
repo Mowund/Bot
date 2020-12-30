@@ -15,7 +15,7 @@ module.exports.run = async (bot, message, args) => {
     if(!bReason) return errors.noReason(message.channel);
     if(bUser.hasPermission("MANAGE_MESSAGES")) return errors.equalPerms(message, bUser, "Gerenciar Mensagens");
 
-    let banEmbed = new Discord.RichEmbed()
+    let banEmbed = new Discord.MessageEmbed()
     .setColor("#bc0000")
     .addField("Usuário Banido", `${bUser} com o ID ${bUser.id}`)
     .addField("Banido por", `<@${message.author.id}> com o ID ${message.author.id}`)
@@ -23,7 +23,7 @@ module.exports.run = async (bot, message, args) => {
     .addField("Hora", message.createdAt)
     .addField("Motivo", bReason);
 
-    let incidentchannel = message.guild.channels.find(`name`, "incidentes");
+    let incidentchannel = message.guild.channels.cache.find(`name`, "incidentes");
     if(!incidentchannel) return message.channel.send("Não foi possível encontrar um canal de incidentes.");
 
     message.guild.member(bUser).ban(bReason);

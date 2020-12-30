@@ -16,7 +16,7 @@ module.exports.run = async (bot, message, args) => {
   if(!gRole) return message.reply("Não foi possível encontrar este.");
 
   if(!rMember.roles.has(gRole.id)) return message.reply(`${rMember} já tem este cargo.`);
-  await(rMember.removeRole(gRole.id));
+  await(rMember.roles.remove(gRole.id));
 
   try{
     await rMember.send(`Você perdeu o cargo ${gRole.name}.`)
