@@ -6,9 +6,6 @@ const { getColorFromURL } = require('color-thief-node');
 const chalk = require('chalk');
 let pr = (botconfig.prefix);
 
-var mix = tinycolor.mix('ff0000', '0000ff', amount = 50);
-console.log(mix.toHex());
-
 module.exports.run = async (bot, message, args) => {
 
 if (!['467133077475557376', '599375425445036049', '422236981586690048', '697454249067413519', '780208029999431701'].includes(message.channel.id)) return;
@@ -260,10 +257,10 @@ msg.awaitReactions(filter, {max: 1, time: 60000, errors: ['time']})
           if(tinycolor(roleC).isDark()) {
             roleL = "ffffff"
           }
+
+          var pos = message.guild.me.roles.highest.position;
   
             if(!role) {
-                    
-            var pos = message.guild.me.roles.highest.position;
  
                 message.guild.roles.create({
                   data: {
@@ -281,7 +278,7 @@ msg.awaitReactions(filter, {max: 1, time: 60000, errors: ['time']})
                } else {
               setTimeout(function(){
                 role.setColor(roleC);
-                role.setPosition(pos);
+                role.setPosition(pos - 1);
                 roleO.roles.add(role.id).catch(err => console.error(err));
               }, 2500);
 
