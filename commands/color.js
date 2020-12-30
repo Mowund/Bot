@@ -18,12 +18,21 @@ if (!['467133077475557376', '599375425445036049', '422236981586690048', '6974542
         }
 
         var roleC = tinycolor(args.slice(1).join(" ")).toHex();
-        if(!args[1]) {
+
+        if(message.guild.members.cache.get(uID)) {
+
+          var uIDF = await bot.users.fetch(uID)
+          var prC = await getColorFromURL(uIDF.avatarURL({format:'png'}));
+          var [r, g, b] = prC
+          roleC = tinycolor(chalk.rgb(r, g, b)(`rgb(${r}, ${g}, ${b})`)).toHex(); 
+
+        } else if(!args[1]) {
 
           var prC = await getColorFromURL(message.author.avatarURL({format:'png'}));
           var [r, g, b] = prC
           roleC = tinycolor(chalk.rgb(r, g, b)(`rgb(${r}, ${g}, ${b})`)).toHex();
-        }
+        };
+
         if(roleC === "000000") {
           roleC = "000001"
         }
@@ -158,9 +167,8 @@ if(args[0] === "change") {
       roleN = `USER-${uID}`;
       role = message.guild.roles.cache.find(x => x.name == roleN);
 
-      roleC = tinycolor(args.slice(2).join(" ")).toHex();
-      if(!args[2]) {
-        roleC = tinycolor.random().toHex();
+      if(args[2]) {
+        roleC = tinycolor(args.slice(2).join(" ")).toHex();
       }    
       if(roleC === "000000") {
         roleC = "000001"
