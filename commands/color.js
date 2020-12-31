@@ -267,11 +267,35 @@ msg.awaitReactions(filter, {max: 1, time: 60000, errors: ['time']})
                 }, 2500);
               
                } else {
-              setTimeout(function(){
-                role.setColor(roleC);
-                role.setPosition(pos - 1);
+
+                pos = pos - 1
+                
+                function reSR() {
+                  role.setColor(roleC)
+                  console.log('color set')
+
+                  setTimeout(function(){
+                    if (!role.color === roleC) {
+                      reSR()
+                      console.log('resetting color')
+                    } else {
+                      function reSP() {
+                        role.setPosition(pos)
+                        console.log('position set')
+
+                        setTimeout(function(){
+                          if (!role.position === pos) {
+                            reSP();
+                            console.log('resetting position')
+                          }
+                        }, 1500)
+                      }
+                    }
+                  }, 1500)
+                }
+
+                reSR();
                 roleO.roles.add(role.id).catch(err => console.error(err));
-              }, 2500);
 
             }
             utils.diEmb(msg, message, roleCE, 'Cor alterada', `${roleC}`, `${roleL}`, `${roleC}`);
