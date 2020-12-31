@@ -117,7 +117,7 @@ if(args[0] === "remove") {
   if(args[1]) {
     if (!message.member.hasPermission("MANAGE_ROLES")) return errors.noPerms(message, "Gerenciar Cargos");
     roleN = `USER-${uID}`;
-    role = message.guild.roles.cache.find(x => x.name == roleN);
+    role = message.guild.roles.cache.find(x => x.name == roleN)
     IDerr = 'O usuário mencionado já não tem um cargo de cor.';
   }
 
@@ -135,8 +135,19 @@ if(args[0] === "remove") {
     roleL = "ffffff"
   }
 
+  function reRC() {
+    role = message.guild.roles.cache.find(x => x.name == roleN)
+    role.delete();
+
+    setTimeout(function(){
+      if (message.guild.roles.cache.find(x => x.name == roleN)) {
+        reRC()
+      }
+    }, 1500)
+  }
+
+  reRC();
   utils.diEmb(0, message, roleCE, 'Cor deletada', `${roleC}`, `${roleL}`, `${roleC}`);
-  role.delete();
 }
 
 if(args[0] === "change") {
@@ -253,52 +264,71 @@ msg.awaitReactions(filter, {max: 1, time: 60000, errors: ['time']})
   
             if(!role) {
  
-                message.guild.roles.create({
-                  data: {
-                    name: roleN,
-                    color: roleC,
-                    position: pos
-                  }
-                });
-                    
-                setTimeout(function(){
-                  var role = message.guild.roles.cache.find(x => x.name == roleN)
-                  roleO.roles.add(role.id).catch(err => console.error(err))
-                }, 2500);
+                function reRC() {
+                  message.guild.roles.create({
+                    data: {
+                      name: roleN,
+                      color: roleC,
+                      position: pos
+                    }
+                  });
+
+                  setTimeout(function(){
+                    var role = message.guild.roles.cache.find(x => x.name == roleN)
+                    if (!role) {
+                      reRC()
+                    } else {
+                      function reRA() {
+                        roleO.roles.add(role.id)
+
+                        setTimeout(function(){
+                          if (!message.member.roles.cache.some(r => r.id === role.id)) {
+                            reRA();
+                          }
+                        }, 1500)
+                      }
+                      reRA();
+                    }
+                  }, 1500)
+                }
+
+                reRC();
+                utils.diEmb(msg, message, roleCE, 'Cor criada e atribuída', `${roleC}`, `${roleL}`, `${roleC}`);
               
                } else {
 
-                pos = pos - 1
+                pos = pos - 1;
                 
                 function reSR() {
                   role.setColor(roleC)
-                  console.log('color set')
 
                   setTimeout(function(){
                     if (!role.color === roleC) {
                       reSR()
-                      console.log('resetting color')
                     } else {
                       function reSP() {
                         role.setPosition(pos)
-                        console.log('position set')
 
                         setTimeout(function(){
                           if (!role.position === pos) {
                             reSP();
-                            console.log('resetting position')
                           }
                         }, 1500)
                       }
+                      reSP();
                     }
                   }, 1500)
                 }
 
                 reSR();
-                roleO.roles.add(role.id).catch(err => console.error(err));
+                if (message.member.roles.cache.some(r => r.id === role.id)) {
+                  utils.diEmb(msg, message, roleCE, 'Cor alterada', `${roleC}`, `${roleL}`, `${roleC}`);
+                } else {
+                  roleO.roles.add(role.id).catch(err => console.error(err));
+                  utils.diEmb(msg, message, roleCE, 'Cor alterada e atribuída', `${roleC}`, `${roleL}`, `${roleC}`);
+                };
 
             }
-            utils.diEmb(msg, message, roleCE, 'Cor alterada', `${roleC}`, `${roleL}`, `${roleC}`);
             msg.reactions.removeAll()
 
           } else if (reaction.emoji.name === '⚪') {
@@ -505,7 +535,8 @@ msg.awaitReactions(filter, {max: 1, time: 60000, errors: ['time']})
             } fe1()
           } 
     })
-    .catch(() => {
+    .catch((err) => {
+      console.error(err)
       var roleCE = roleC
       if(roleCE === "ffffff") {
         roleCE = "fffffe"
