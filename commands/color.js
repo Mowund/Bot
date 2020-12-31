@@ -9,7 +9,7 @@ let pr = (botconfig.prefix);
 
 module.exports.run = async (bot, message, args) => {
 
-if (!['467133077475557376', '599375425445036049', '422236981586690048', '697454249067413519', '780208029999431701', '697878736657186936'].includes(message.channel.id)) return;
+if(!['467133077475557376', '599375425445036049', '422236981586690048', '697454249067413519', '780208029999431701', '697878736657186936'].includes(message.channel.id)) return;
 
         if(!args[0])
           return message.channel.send(`Uso correto: \`${pr}color change (cor)\``);
@@ -20,7 +20,7 @@ if (!['467133077475557376', '599375425445036049', '422236981586690048', '6974542
         if(args[1]) {
           var uID = args[1].replace(/[\\<>@#&!]/g, '');
           roleO = message.guild.members.cache.get(uID);
-          eTiI = 'Cor especificada';
+          eTiI = 'Cor especificada'
         }
 
         var roleC = tinycolor(args.slice(1).join(" ")).toHex();
@@ -32,6 +32,10 @@ if (!['467133077475557376', '599375425445036049', '422236981586690048', '6974542
           var [r, g, b] = prC
           roleC = tinycolor(chalk.rgb(r, g, b)(`rgb(${r}, ${g}, ${b})`)).toHex(); 
           eTiI = 'Cor predominante no avatar mencionado'
+
+          if(tinycolor(args[2]).isValid()) {
+            eTiI = 'Cor especificada'
+          }
 
         } else if(!args[1]) {
 
@@ -68,7 +72,7 @@ if (!['467133077475557376', '599375425445036049', '422236981586690048', '6974542
 
     roleN = `USER-${uID}`;
     role = message.guild.roles.cache.find(x => x.name == roleN);
-    IDerr = 'O usuário mencionado não tem um cargo de cor.';
+    IDerr = 'O usuário mencionado não tem um cargo de cor.'
 
   if(!role) return message.channel.send(`${IDerr}`);
 
@@ -92,7 +96,7 @@ if(args[0] === "current") {
   if(args[1]) {
     roleN = `USER-${uID}`;
     role = message.guild.roles.cache.find(x => x.name == roleN);
-    IDerr = 'O usuário mencionado não tem um cargo de cor.';
+    IDerr = 'O usuário mencionado não tem um cargo de cor.'
   }
 
   if(!role) return message.channel.send(`${IDerr}`);
@@ -109,7 +113,7 @@ if(args[0] === "current") {
     roleL = "ffffff"
   };
 
-  if (roleO.id === message.author.id) {
+  if(roleO.id === message.author.id) {
     eTiI = 'Cor atual'
   } else {
     eTiI = 'Cor atual do usuário mencionado'
@@ -122,10 +126,10 @@ if(args[0] === "remove") {
   let IDerr = 'Você já não tem um cargo de cor.'
 
   if(args[1]) {
-    if (!message.member.hasPermission("MANAGE_ROLES")) return errors.noPerms(message, "Gerenciar Cargos");
+    if(!message.member.hasPermission("MANAGE_ROLES")) return errors.noPerms(message, "Gerenciar Cargos");
     roleN = `USER-${uID}`;
     role = message.guild.roles.cache.find(x => x.name == roleN)
-    IDerr = 'O usuário mencionado já não tem um cargo de cor.';
+    IDerr = 'O usuário mencionado já não tem um cargo de cor.'
   }
 
   if(!role) return message.channel.send(`${IDerr}`);
@@ -147,14 +151,14 @@ if(args[0] === "remove") {
     role.delete();
 
     setTimeout(function(){
-      if (message.guild.roles.cache.find(x => x.name == roleN)) {
+      if(message.guild.roles.cache.find(x => x.name == roleN)) {
         reRC()
       }
     }, 1500)
   }
 
   reRC();
-  if (roleO.id === message.author.id) {
+  if(roleO.id === message.author.id) {
     eTiI = 'Cor deletada'
   } else {
     eTiI = 'Cor do usuário mencionado deletada'
@@ -168,7 +172,7 @@ if(args[0] === "change") {
  
     if(message.guild.members.cache.get(uID)) {
       aN = 2;
-      if (!message.member.hasPermission("MANAGE_ROLES")) return errors.noPerms(message, "Gerenciar Cargos");
+      if(!message.member.hasPermission("MANAGE_ROLES")) return errors.noPerms(message, "Gerenciar Cargos");
       roleN = `USER-${uID}`;
       role = message.guild.roles.cache.find(x => x.name == roleN);
 
@@ -211,7 +215,7 @@ msg.awaitReactions(filter, {max: 1, time: 60000, errors: ['time']})
     .then(collected => {
         const reaction = collected.first();
 
-        if (reaction.emoji.name === '⛔') {
+        if(reaction.emoji.name === '⛔') {
 
           if(roleC === "000000") {
             roleC = "000001"
@@ -230,7 +234,7 @@ msg.awaitReactions(filter, {max: 1, time: 60000, errors: ['time']})
           utils.diEmb(msg, message, roleCE, 'Cancelado', `${roleC}`, `${roleL}`, 'Cancelado');
           msg.reactions.removeAll();
         
-        } else if (reaction.emoji.name === '🔁') {
+        } else if(reaction.emoji.name === '🔁') {
 
           roleC = tinycolor.random().toHex();
           
@@ -253,7 +257,7 @@ msg.awaitReactions(filter, {max: 1, time: 60000, errors: ['time']})
 
           f1();
 
-        } else if (reaction.emoji.name === '✅') {
+        } else if(reaction.emoji.name === '✅') {
           
           if(roleC === "000000") {
             roleC = "000001"
@@ -284,14 +288,14 @@ msg.awaitReactions(filter, {max: 1, time: 60000, errors: ['time']})
 
                   setTimeout(function(){
                     var role = message.guild.roles.cache.find(x => x.name == roleN)
-                    if (!role) {
+                    if(!role) {
                       reRC()
                     } else {
                       function reRA() {
                         roleO.roles.add(role.id)
 
                         setTimeout(function(){
-                          if (!message.member.roles.cache.some(r => r.id === role.id)) {
+                          if(!message.member.roles.cache.some(r => r.id === role.id)) {
                             reRA();
                           }
                         }, 1500)
@@ -302,7 +306,7 @@ msg.awaitReactions(filter, {max: 1, time: 60000, errors: ['time']})
                 }
 
                 reRC();
-                if (roleO.id === message.author.id) {
+                if(roleO.id === message.author.id) {
                   eTiI = 'Cor criada e atribuída'
                 } else {
                   eTiI = 'Cor criada e atribuída ao usuário mencionado'
@@ -317,14 +321,14 @@ msg.awaitReactions(filter, {max: 1, time: 60000, errors: ['time']})
                   role.setColor(roleC)
 
                   setTimeout(function(){
-                    if (!role.color === roleC) {
+                    if(!role.color === roleC) {
                       reSR()
                     } else {
                       function reSP() {
                         role.setPosition(pos)
 
                         setTimeout(function(){
-                          if (!role.position === pos) {
+                          if(!role.position === pos) {
                             reSP();
                           }
                         }, 1500)
@@ -335,15 +339,15 @@ msg.awaitReactions(filter, {max: 1, time: 60000, errors: ['time']})
                 }
 
                 reSR();
-                if (roleO.roles.cache.some(r => r.id === role.id)) {
-                  if (roleO.id === message.author.id) {
+                if(roleO.roles.cache.some(r => r.id === role.id)) {
+                  if(roleO.id === message.author.id) {
                     eTiI = 'Cor alterada'
                   } else {
                     eTiI = 'Cor do usuário mencionado alterada'
                   }
                 } else {
                   roleO.roles.add(role.id)
-                  if (roleO.id === message.author.id) {
+                  if(roleO.id === message.author.id) {
                     eTiI = 'Cor alterada e atribuída'
                   } else {
                     eTiI = 'Cor do usuário mencionado alterada e atribuída'
@@ -355,7 +359,7 @@ msg.awaitReactions(filter, {max: 1, time: 60000, errors: ['time']})
             }
             msg.reactions.removeAll()
 
-          } else if (reaction.emoji.name === '⚪') {
+          } else if(reaction.emoji.name === '⚪') {
 
             roleC = tinycolor(roleC).brighten(10).toHex();
 
@@ -378,7 +382,7 @@ msg.awaitReactions(filter, {max: 1, time: 60000, errors: ['time']})
   
             f1();
   
-          } else if (reaction.emoji.name === '⚫') {
+          } else if(reaction.emoji.name === '⚫') {
 
             roleC = tinycolor(roleC).darken(10).toHex();
 
@@ -401,7 +405,7 @@ msg.awaitReactions(filter, {max: 1, time: 60000, errors: ['time']})
   
             f1();
 
-          } else if (reaction.emoji.name === '🎨') {
+          } else if(reaction.emoji.name === '🎨') {
 
             if(roleC === "000000") {
               roleC = "000001"
@@ -431,7 +435,7 @@ msg.awaitReactions(filter, {max: 1, time: 60000, errors: ['time']})
               })
               .then(message => {
                 message = message.first()
-                if (tinycolor(message.content).isValid()) {
+                if(tinycolor(message.content).isValid()) {
 
                   roleC = tinycolor.mix(roleC, message.content, amount = 50).toHex();
 
@@ -510,7 +514,7 @@ msg.awaitReactions(filter, {max: 1, time: 60000, errors: ['time']})
               .then(message => {
                 message = message.first()
                 
-                if (tinycolor(message.content).isValid()) {
+                if(tinycolor(message.content).isValid()) {
 
                   roleC = tinycolor(message.content).toHex();
 
