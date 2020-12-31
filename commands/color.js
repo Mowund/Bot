@@ -14,10 +14,12 @@ if (!['467133077475557376', '599375425445036049', '422236981586690048', '6974542
         if(!args[0])
           return message.channel.send(`Uso correto: \`${pr}color change (cor)\``);
 
+        roleO = message.member;
         var eTiI = 'Você gostaria dessa cor?'
 
         if(args[1]) {
           var uID = args[1].replace(/[\\<>@#&!]/g, '');
+          roleO = message.guild.members.cache.get(uID);
           eTiI = 'Cor especificada';
         }
 
@@ -107,7 +109,12 @@ if(args[0] === "current") {
     roleL = "ffffff"
   };
 
-  utils.diEmb(0, message, roleCE, 'Cor atual', `${roleC}`, `${roleL}`, `${roleC}`);
+  if (roleO.id === message.author.id) {
+    eTiI = 'Cor atual'
+  } else {
+    eTiI = 'Cor atual do usuário mencionado'
+  }
+  utils.diEmb(0, message, roleCE, eTiI, `${roleC}`, `${roleL}`, `${roleC}`);
 }
 
 if(args[0] === "remove") {
@@ -147,12 +154,16 @@ if(args[0] === "remove") {
   }
 
   reRC();
-  utils.diEmb(0, message, roleCE, 'Cor deletada', `${roleC}`, `${roleL}`, `${roleC}`);
+  if (roleO.id === message.author.id) {
+    eTiI = 'Cor deletada'
+  } else {
+    eTiI = 'Cor do usuário mencionado deletada'
+  }
+  utils.diEmb(0, message, roleCE, eTiI, `${roleC}`, `${roleL}`, `${roleC}`);
 }
 
 if(args[0] === "change") {
 
-    var roleO = message.member;
     var aN = 1;
  
     if(message.guild.members.cache.get(uID)) {
@@ -178,8 +189,6 @@ if(args[0] === "change") {
         if(tinycolor(roleC).isDark()) {
       roleL = "ffffff"
       }
-
-      roleO = message.guild.members.cache.get(uID);
     };
 
    if(tinycolor(args.slice(aN).join(" ")).isValid() || !args[aN]) {
@@ -293,7 +302,12 @@ msg.awaitReactions(filter, {max: 1, time: 60000, errors: ['time']})
                 }
 
                 reRC();
-                utils.diEmb(msg, message, roleCE, 'Cor criada e atribuída', `${roleC}`, `${roleL}`, `${roleC}`);
+                if (roleO.id === message.author.id) {
+                  eTiI = 'Cor criada e atribuída'
+                } else {
+                  eTiI = 'Cor criada e atribuída ao usuário mencionado'
+                }
+                utils.diEmb(msg, message, roleCE, eTiI, `${roleC}`, `${roleL}`, `${roleC}`);
               
                } else {
 
@@ -321,12 +335,22 @@ msg.awaitReactions(filter, {max: 1, time: 60000, errors: ['time']})
                 }
 
                 reSR();
-                if (message.member.roles.cache.some(r => r.id === role.id)) {
-                  utils.diEmb(msg, message, roleCE, 'Cor alterada', `${roleC}`, `${roleL}`, `${roleC}`);
+                if (roleO.roles.cache.some(r => r.id === role.id)) {
+                  if (roleO.id === message.author.id) {
+                    eTiI = 'Cor alterada'
+                  } else {
+                    eTiI = 'Cor do usuário mencionado alterada'
+                  }
                 } else {
-                  roleO.roles.add(role.id).catch(err => console.error(err));
-                  utils.diEmb(msg, message, roleCE, 'Cor alterada e atribuída', `${roleC}`, `${roleL}`, `${roleC}`);
+                  roleO.roles.add(role.id)
+                  if (roleO.id === message.author.id) {
+                    eTiI = 'Cor alterada e atribuída'
+                  } else {
+                    eTiI = 'Cor do usuário mencionado alterada e atribuída'
+                  }
                 };
+
+                utils.diEmb(msg, message, roleCE, eTiI, `${roleC}`, `${roleL}`, `${roleC}`);
 
             }
             msg.reactions.removeAll()
