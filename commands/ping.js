@@ -4,7 +4,7 @@ module.exports.run = async (bot, message, args) => {
     
         let botMsg = await message.channel.send("〽️ Pingando...")
       
-        botMsg.edit({ embed: {
+        botMsg.edit('', { embed: {
           title: "📶 Ping",
           description: [
             "**Servidor**: `" + (botMsg.createdAt - message.createdAt) + "ms`",
