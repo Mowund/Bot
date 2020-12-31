@@ -7,9 +7,9 @@ module.exports.run = async (bot, message, args) => {
         botMsg.edit('', { embed: {
           title: "📶 Ping",
           description: [
-            "**Servidor**: `" + (botMsg.createdAt - message.createdAt) + "ms`",
-            "**Bot**: `" + Math.round(bot.ws.ping) + "ms`",
-            "**Uptime**: `" + msToTime(bot.uptime) + "`"
+            "**Tempo de Resposta:** `" + (botMsg.createdAt - message.createdAt) + "ms`",
+            "**Bot:** `" + Math.round(bot.ws.ping) + "ms`",
+            "**Uptime:** `" + msToTime(bot.uptime) + "`"
           ].join("\n"),
           color: 16711680,
           timestamp: new Date()
