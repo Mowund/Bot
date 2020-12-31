@@ -8,7 +8,7 @@ module.exports.run = async (bot, message, args) => {
           title: "📶 Ping",
           description: [
             "**Servidor**: `" + (botMsg.createdAt - message.createdAt) + "ms`",
-            "**API**: `" + Math.round(bot.ping) + "ms`",
+            "**Bot**: `" + Math.round(bot.ws.ping) + "ms`",
             "**Uptime**: `" + msToTime(bot.uptime) + "`"
           ].join("\n"),
           color: 16711680,
