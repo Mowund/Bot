@@ -1,5 +1,6 @@
 const botconfig = require("../botconfig.json");
 const errors = require("../utils/errors.js");
+const utils = require("../utils/utils.js")
 const Discord = require("discord.js");
 var tinycolor = require("tinycolor2");
 const { getColorFromURL } = require('color-thief-node');
@@ -13,8 +14,11 @@ if (!['467133077475557376', '599375425445036049', '422236981586690048', '6974542
         if(!args[0])
           return message.channel.send(`Uso correto: \`${pr}color change (cor)\``);
 
+        var eTiI = 'Você gostaria dessa cor?'
+
         if(args[1]) {
           var uID = args[1].replace(/[\\<>@#&!]/g, '');
+          eTiI = 'Cor especificada';
         }
 
         var roleC = tinycolor(args.slice(1).join(" ")).toHex();
@@ -25,12 +29,14 @@ if (!['467133077475557376', '599375425445036049', '422236981586690048', '6974542
           var prC = await getColorFromURL(uIDF.avatarURL({format:'png'}));
           var [r, g, b] = prC
           roleC = tinycolor(chalk.rgb(r, g, b)(`rgb(${r}, ${g}, ${b})`)).toHex(); 
+          eTiI = 'Cor predominante no avatar mencionado'
 
         } else if(!args[1]) {
 
           var prC = await getColorFromURL(message.author.avatarURL({format:'png'}));
           var [r, g, b] = prC
           roleC = tinycolor(chalk.rgb(r, g, b)(`rgb(${r}, ${g}, ${b})`)).toHex();
+          eTiI = 'Cor predominante no seu avatar'
         };
 
         if(roleC === "000000") {
@@ -49,13 +55,6 @@ if (!['467133077475557376', '599375425445036049', '422236981586690048', '6974542
       
         var roleN = `USER-${message.author.id}`;
         var role = message.guild.roles.cache.find(x => x.name == roleN);
-
-
-        var iEmb = new Discord.MessageEmbed()
-         .setColor(parseInt('000000', 16))
-         .setTitle('Cor inválida')
-         .setImage(`https://dummyimage.com/300x100/000000/ffffff&text=+Inválido`);
-
 
   if(args[0] === 'convert') {
 
@@ -80,14 +79,8 @@ if (!['467133077475557376', '599375425445036049', '422236981586690048', '6974542
     if(tinycolor(tcvColor).isDark()) {
       cColorL = "ffffff"
     };
-    
-    let rEmb = new Discord.MessageEmbed()
-    .setColor(parseInt(tcvColor, 16))
-    .setTitle('Convertido em RGB')
-    .setImage(`https://dummyimage.com/300x100/${tcvColor}/${cColorL}&text=+${RgbLk}`)
-    .setFooter(`${cvRgb}`);
-  
-    message.channel.send(rEmb);
+
+    utils.diEmb(0, message, roleCE, 'Convertido para RGB', `${tcvColor}`, `${cColorL}`, `${RgbLk}`, `${cvRgb}`);
   };
 
 if(args[0] === "current") {
@@ -114,12 +107,7 @@ if(args[0] === "current") {
     roleL = "ffffff"
   };
 
-  let rEmb = new Discord.MessageEmbed()
-  .setColor(parseInt(roleCE, 16))
-  .setTitle('Cor atual')
-  .setImage(`https://dummyimage.com/300x100/${roleC}/${roleL}&text=+${roleC}`);
-
-  message.channel.send(rEmb);
+  utils.diEmb(0, message, roleCE, 'Cor atual', `${roleC}`, `${roleL}`, `${roleC}`);
 }
 
 if(args[0] === "remove") {
@@ -147,12 +135,7 @@ if(args[0] === "remove") {
     roleL = "ffffff"
   }
 
-  let rEmb = new Discord.MessageEmbed()
-  .setColor(parseInt(roleCE, 16))
-  .setTitle('Cor removida')
-  .setImage(`https://dummyimage.com/300x100/${roleC}/${roleL}&text=+${roleC}`);
-
-  message.channel.send(rEmb);
+  utils.diEmb(0, message, roleCE, 'Cor deletada', `${roleC}`, `${roleL}`, `${roleC}`);
   role.delete();
 }
 
@@ -191,10 +174,10 @@ if(args[0] === "change") {
    if(tinycolor(args.slice(aN).join(" ")).isValid() || !args[aN]) {
     
   const reactions = ['⛔', '🔁', '✅', '⚪', '⚫', '🎨', '📝']
-    	
+  
   let uEmb = new Discord.MessageEmbed()
   .setColor(parseInt(roleCE, 16))
-  .setTitle('Você gostaria dessa cor?')
+  .setTitle(eTiI)
   .setImage(`https://dummyimage.com/300x100/${roleC}/${roleL}&text=+${roleC}`);
   message.channel.send(uEmb).then((msg) => {
     reactions.forEach(r => msg.react(r));
@@ -210,17 +193,21 @@ msg.awaitReactions(filter, {max: 1, time: 60000, errors: ['time']})
 
         if (reaction.emoji.name === '⛔') {
 
+          if(roleC === "000000") {
+            roleC = "000001"
+          }
+  
+          var roleCE = roleC
+          if(roleCE === "ffffff") {
+            roleCE = "fffffe"
+          }
+
           var roleL = "000000"
           if(tinycolor(roleC).isDark()) {
             roleL = "ffffff"
           }
 
-          let nEmb = new Discord.MessageEmbed()
-          .setColor(parseInt(roleC, 16))
-          .setTitle('Cancelado')
-          .setImage(`https://dummyimage.com/300x100/${roleC}/${roleL}&text=+Cancelado`);
-          
-          msg.edit(nEmb);
+          utils.diEmb(msg, message, roleCE, 'Cancelado', `${roleC}`, `${roleL}`, 'Cancelado');
           msg.reactions.removeAll();
         
         } else if (reaction.emoji.name === '🔁') {
@@ -241,11 +228,7 @@ msg.awaitReactions(filter, {max: 1, time: 60000, errors: ['time']})
             roleL = "ffffff"
           }
 
-          let aEmb = new Discord.MessageEmbed()
-          .setColor(parseInt(roleCE, 16))
-          .setTitle('Você gostaria dessa cor?')
-          .setImage(`https://dummyimage.com/300x100/${roleC}/${roleL}&text=+${roleC}`);
-          msg.edit(aEmb);
+          utils.diEmb(msg, message, roleCE, 'Você gostaria dessa cor?', `${roleC}`, `${roleL}`, `${roleC}`);
           reaction.users.remove(message.author.id);
 
           f1();
@@ -291,12 +274,7 @@ msg.awaitReactions(filter, {max: 1, time: 60000, errors: ['time']})
               }, 2500);
 
             }
-            let cEmb = new Discord.MessageEmbed()
-            .setColor(parseInt(roleCE, 16))
-            .setTitle('Cor alterada')
-            .setImage(`https://dummyimage.com/300x100/${roleC}/${roleL}&text=+${roleC}`);
-
-            msg.edit(cEmb);
+            utils.diEmb(msg, message, roleCE, 'Cor alterada', `${roleC}`, `${roleL}`, `${roleC}`);
             msg.reactions.removeAll()
 
           } else if (reaction.emoji.name === '⚪') {
@@ -317,11 +295,7 @@ msg.awaitReactions(filter, {max: 1, time: 60000, errors: ['time']})
               roleL = "ffffff"
             }
   
-            let aEmb = new Discord.MessageEmbed()
-            .setColor(parseInt(roleCE, 16))
-            .setTitle('Você gostaria dessa cor?')
-            .setImage(`https://dummyimage.com/300x100/${roleC}/${roleL}&text=+${roleC}`);
-            msg.edit(aEmb);
+            utils.diEmb(msg, message, roleCE, 'Você gostaria dessa cor?', `${roleC}`, `${roleL}`, `${roleC}`);
             reaction.users.remove(message.author.id);
   
             f1();
@@ -344,11 +318,7 @@ msg.awaitReactions(filter, {max: 1, time: 60000, errors: ['time']})
               roleL = "ffffff"
             }
   
-            let aEmb = new Discord.MessageEmbed()
-            .setColor(parseInt(roleCE, 16))
-            .setTitle('Você gostaria dessa cor?')
-            .setImage(`https://dummyimage.com/300x100/${roleC}/${roleL}&text=+${roleC}`);
-            msg.edit(aEmb);
+            utils.diEmb(msg, message, roleCE, 'Você gostaria dessa cor?', `${roleC}`, `${roleL}`, `${roleC}`);
             reaction.users.remove(message.author.id);
   
             f1();
@@ -369,15 +339,13 @@ msg.awaitReactions(filter, {max: 1, time: 60000, errors: ['time']})
               roleL = "ffffff"
             }
 
-            let aEmb = new Discord.MessageEmbed()
-            .setColor(parseInt(roleCE, 16))
-            .setTitle('Digite uma cor para misturar')
-            .setImage(`https://dummyimage.com/300x100/${roleC}/${roleL}&text=+${roleC}+＋`);
-            msg.edit(aEmb);
+            utils.diEmb(msg, message, roleCE, 'Digite uma cor para misturar', `${roleC}`, `${roleL}`, `${roleC}+＋`);
+            
             msg.reactions.removeAll();
 
             let filter = m => m.author.id === message.author.id;
 
+            function fm1 () {
             message.channel.awaitMessages(filter, {
                 max: 1,
                 time: 60000,
@@ -403,19 +371,19 @@ msg.awaitReactions(filter, {max: 1, time: 60000, errors: ['time']})
                     roleL = "ffffff"
                   }
 
-                  let aEmb = new Discord.MessageEmbed()
-                  .setColor(parseInt(roleCE, 16))
-                  .setTitle('Cor misturada.')
-                  .setImage(`https://dummyimage.com/300x100/${roleC}/${roleL}&text=+${roleC}`);
-                  msg.edit(aEmb);
-                  reactions.forEach(r => msg.react(r));
+                  utils.diEmb(msg, message, roleCE, 'Cor misturada', `${roleC}`, `${roleL}`, `${roleC}`);
 
+                  reactions.forEach(r => msg.react(r));
                   message.delete();
 
                   f1();
                 } else {
-                  msg.edit(iEmb)
+                  utils.diEmb(msg, message, '000000', 'Cor inválida, digite uma cor válida para misturar', '000000', 'ffffff', `${roleC}+＋`);
+
                   msg.reactions.removeAll();
+                  message.delete();
+
+                  fm1();
                 }
               })
               .catch(() => {
@@ -429,13 +397,9 @@ msg.awaitReactions(filter, {max: 1, time: 60000, errors: ['time']})
                   roleL = "ffffff"
                 }
 
-                let tEmb = new Discord.MessageEmbed()
-                .setColor(parseInt(roleCE, 16))
-                .setTitle('Tempo esgotado')
-                .setImage(`https://dummyimage.com/300x100/${roleC}/${roleL}&text=+Tempo%20esgotado`);
-
-                msg.edit(tEmb);
+                utils.diEmb(msg, message, roleCE, 'Tempo esgotado', roleC, roleL, 'Tempo%20esgotado');
               });
+            } fm1();
 
           } else {
 
@@ -453,15 +417,13 @@ msg.awaitReactions(filter, {max: 1, time: 60000, errors: ['time']})
               roleL = "ffffff"
             }
 
-            let aEmb = new Discord.MessageEmbed()
-            .setColor(parseInt(roleCE, 16))
-            .setTitle('Digite uma nova cor')
-            .setImage(`https://dummyimage.com/300x100/${roleC}/${roleL}&text=+${roleC}+->`);
-            msg.edit(aEmb);
+            utils.diEmb(msg, message, roleCE, 'Digite uma nova cor', `${roleC}`, `${roleL}`, `${roleC}+->`);
+
             msg.reactions.removeAll();
 
             let filter = m => m.author.id === message.author.id;
 
+            function fe1 () {
             message.channel.awaitMessages(filter, {
                 max: 1,
                 time: 60000,
@@ -469,6 +431,7 @@ msg.awaitReactions(filter, {max: 1, time: 60000, errors: ['time']})
               })
               .then(message => {
                 message = message.first()
+                
                 if (tinycolor(message.content).isValid()) {
 
                   roleC = tinycolor(message.content).toHex();
@@ -487,19 +450,19 @@ msg.awaitReactions(filter, {max: 1, time: 60000, errors: ['time']})
                     roleL = "ffffff"
                   }
 
-                  let aEmb = new Discord.MessageEmbed()
-                  .setColor(parseInt(roleCE, 16))
-                  .setTitle('Você gostaria dessa cor?')
-                  .setImage(`https://dummyimage.com/300x100/${roleC}/${roleL}&text=+${roleC}`);
-                  msg.edit(aEmb);
-                  reactions.forEach(r => msg.react(r));
+                  utils.diEmb(msg, message, roleCE, 'Cor editada', `${roleC}`, `${roleL}`, `${roleC}`);
 
+                  reactions.forEach(r => msg.react(r));
                   message.delete();
-                  
+
                   f1();
                 } else {
-                  msg.edit(iEmb)
+                  utils.diEmb(msg, message, '000000', 'Cor inválida, digite uma nova cor válida', '000000', 'ffffff', `${roleC}+->`);
+
                   msg.reactions.removeAll();
+                  message.delete();
+
+                  fe1();
                 }
               })
               .catch(() => {
@@ -513,14 +476,10 @@ msg.awaitReactions(filter, {max: 1, time: 60000, errors: ['time']})
                   roleL = "ffffff"
                 }
 
-                let tEmb = new Discord.MessageEmbed()
-                .setColor(parseInt(roleCE, 16))
-                .setTitle('Tempo esgotado')
-                .setImage(`https://dummyimage.com/300x100/${roleC}/${roleL}&text=+Tempo%20esgotado`);
-
-                msg.edit(tEmb);
+                utils.diEmb(msg, message, roleCE, 'Tempo esgotado', roleC, roleL, 'Tempo%20esgotado');
               });
-          };
+            } fe1()
+          } 
     })
     .catch(() => {
       var roleCE = roleC
@@ -533,18 +492,13 @@ msg.awaitReactions(filter, {max: 1, time: 60000, errors: ['time']})
         roleL = "ffffff"
       }
 
-      let tEmb = new Discord.MessageEmbed()
-      .setColor(parseInt(roleCE, 16))
-      .setTitle('Tempo esgotado')
-      .setImage(`https://dummyimage.com/300x100/${roleC}/${roleL}&text=+Tempo%20esgotado`);
-      
-      msg.edit(tEmb);
+      utils.diEmb(msg, message, roleCE, 'Tempo esgotado', roleC, roleL, 'Tempo%20esgotado');
       msg.reactions.removeAll();
     });
 
 } f1(); });
 } else {
-    message.channel.send(iEmb);
+  utils.diEmb(0, message, '000000', 'Cor inválida', '000000', 'ffffff', 'Inválido');
 }}
 }
 
