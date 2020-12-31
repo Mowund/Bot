@@ -410,6 +410,8 @@ msg.awaitReactions(filter, {max: 1, time: 60000, errors: ['time']})
                   msg.edit(aEmb);
                   reactions.forEach(r => msg.react(r));
 
+                  message.delete();
+
                   f1();
                 } else {
                   msg.edit(iEmb)
@@ -492,6 +494,8 @@ msg.awaitReactions(filter, {max: 1, time: 60000, errors: ['time']})
                   msg.edit(aEmb);
                   reactions.forEach(r => msg.react(r));
 
+                  message.delete();
+                  
                   f1();
                 } else {
                   msg.edit(iEmb)
