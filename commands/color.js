@@ -207,7 +207,7 @@ if(args[0] === "change") {
     reactions.forEach(r => msg.react(r));
 
 const filter = (reaction, user) => {
-    return reactions.includes(reaction.emoji.name) && user.id === message.author.id;
+    return reactions.includes(reaction.emoji.name) && (user.id === message.author.id || user.id === roleO.id);
 };
 
 function f1() {
@@ -254,6 +254,7 @@ msg.awaitReactions(filter, {max: 1, time: 60000, errors: ['time']})
 
           utils.diEmb(msg, message, roleCE, 'Você gostaria dessa cor?', `${roleC}`, `${roleL}`, `${roleC}`);
           reaction.users.remove(message.author.id);
+          reaction.users.remove(roleO.id);
 
           f1();
 
@@ -379,6 +380,7 @@ msg.awaitReactions(filter, {max: 1, time: 60000, errors: ['time']})
   
             utils.diEmb(msg, message, roleCE, 'Você gostaria dessa cor?', `${roleC}`, `${roleL}`, `${roleC}`);
             reaction.users.remove(message.author.id);
+            reaction.users.remove(roleO.id);
   
             f1();
   
@@ -402,6 +404,7 @@ msg.awaitReactions(filter, {max: 1, time: 60000, errors: ['time']})
   
             utils.diEmb(msg, message, roleCE, 'Você gostaria dessa cor?', `${roleC}`, `${roleL}`, `${roleC}`);
             reaction.users.remove(message.author.id);
+            reaction.users.remove(roleO.id);
   
             f1();
 
