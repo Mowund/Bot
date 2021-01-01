@@ -79,7 +79,7 @@ bot.on("message", async message => {
       coins: coins[message.author.id].coins + coinAmt
     };
   fs.writeFile("./coins.json", JSON.stringify(coins), (err) => {
-    if (err) console.log(err)
+    if(err) console.log(err)
   });
 
   let coinEmbed = new Discord.MessageEmbed()

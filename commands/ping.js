@@ -26,10 +26,10 @@ module.exports.run = async (bot, message, args) => {
         sec = Math.floor(minutesms / 1000);
       
         let str = "";
-        if (days) str = str + days + "d ";
-        if (hours) str = str + hours + "h ";
-        if (minutes) str = str + minutes + "m ";
-        if (sec) str = str + sec + "s";
+        if(days) str = str + days + "d ";
+        if(hours) str = str + hours + "h ";
+        if(minutes) str = str + minutes + "m ";
+        if(sec) str = str + sec + "s";
       
         return str;
 

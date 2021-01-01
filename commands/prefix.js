@@ -14,7 +14,7 @@ module.exports.run = async (bot, message, args) => {
   };
 
   fs.writeFile("./prefixes.json", JSON.stringify(prefixes), (err) => {
-    if (err) console.log(err)
+    if(err) console.log(err)
   });
 
   let sEmbed = new Discord.MessageEmbed()

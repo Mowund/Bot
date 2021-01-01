@@ -14,13 +14,15 @@ if(!['467133077475557376', '599375425445036049', '422236981586690048', '69745424
         if(!args[0])
           return message.channel.send(`Uso correto: \`${pr}color change (cor)\``);
 
-        roleO = message.member;
+        let roleO = message.author;
         var eTiI = 'Você gostaria dessa cor?'
 
         if(args[1]) {
-          var uID = args[1].replace(/[\\<>@#&!]/g, '');
-          roleO = message.guild.members.cache.get(uID);
           eTiI = 'Cor especificada'
+          if(!tinycolor(args[1]).isValid()) {
+            var uID = args[1].replace(/[\\<>@#&!]/g, '');
+            roleO = message.guild.members.cache.get(uID);
+          }
         }
 
         var roleC = tinycolor(args.slice(1).join(" ")).toHex();

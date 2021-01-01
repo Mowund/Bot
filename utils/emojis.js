@@ -22,7 +22,7 @@ module.exports.name = (emj) => {
     a14 = '<:update:593220375320723466>',
     a15 = '<:windows:696483467893932152>'
 
-    if (emj.startsWith('.')) {
+    if(emj.startsWith('.')) {
         var a0 = a0.replace(/<:|>/g,''),
         a1 = a1.replace(/<:|>/g,''),
         a2 = a2.replace(/<:|>/g,''),

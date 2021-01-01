@@ -11,7 +11,7 @@ String.prototype.isUpperCase = function() {
     var tmsg = args.join(' ');
     var pcpt = '0';
 
-    if (/(?=.*[A-Z])^[^a-z]*$/.test(tmsg)) {
+    if(/(?=.*[A-Z])^[^a-z]*$/.test(tmsg)) {
        tmsg = '§ ' + tmsg;
        pcpt = '1';
     }
@@ -70,10 +70,10 @@ String.prototype.isUpperCase = function() {
                    .replace(/(z|\*(?!·))/g, function($1) {return $1 === 'z' ? '*' : 'z'});
 
     
-    if (tmsg.startsWith('§ ')) {
+    if(tmsg.startsWith('§ ')) {
       tmsg = tmsg.replace(/[·]/g, '')
 
-      if (pcpt === '0') {
+      if(pcpt === '0') {
         tmsg = tmsg.toUpperCase().slice(2);
       }
     };

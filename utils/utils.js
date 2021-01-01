@@ -5,7 +5,7 @@ module.exports.msgEdit = async (chan, id, medit) => {
     
     try {
         const message = await chan.messages.fetch(id);
-        if (!message) return console.log('Unable to find message.');
+        if(!message) return console.log('Unable to find message.');
     
         await message.edit(medit);
     } catch(err) {
@@ -21,7 +21,7 @@ module.exports.diEmb = (eMsg, message, color, title, diB, diL, diT, footer) => {
     .setTitle(title)
     .setImage(`https://dummyimage.com/300x100/${diB}/${diL}&text=+${diT}`);
 
-    if (footer) {
+    if(footer) {
         pEmb = new Discord.MessageEmbed()
         .setColor(parseInt(color, 16))
         .setTitle(title)
@@ -29,7 +29,7 @@ module.exports.diEmb = (eMsg, message, color, title, diB, diL, diT, footer) => {
         .setFooter(footer);
     };
 
-    if (eMsg === 0) {
+    if(eMsg === 0) {
         message.channel.send(pEmb)
     } else {
         eMsg.edit(pEmb)

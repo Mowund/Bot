@@ -10,11 +10,11 @@ module.exports.run = async (bot, message, args) => {
   let guild = bot.guilds.get(args[0])
   var bmsg = args.join(' ');
 
-  if (guild) {
+  if(guild) {
   channel = guild.channels.get(args[1]);
   bmsg = args.slice(2).join(" ");
   } 
-  else if (message.guild.channels.get(args[0])) {
+  else if(message.guild.channels.get(args[0])) {
     var channel = message.guild.channels.find(c => c.id === args[0])
     bmsg = args.slice(1).join(" ");
   }
@@ -30,7 +30,7 @@ module.exports.run = async (bot, message, args) => {
     tts = ("false");
   };
   
-  if (channel) {
+  if(channel) {
     channel.send(bmsg, {tts: tts});
   } else {
     message.channel.send(bmsg, {tts: tts});

@@ -11,7 +11,7 @@ module.exports.run = async (bot, message, args) => {
 
     var chan = message.guild.channels.cache.find(c => c.id === channel);
 
-    if (!chan) {
+    if(!chan) {
         channel = message.channel.id;
         id = args[0];
         reaction = args[1];
@@ -40,7 +40,7 @@ module.exports.run = async (bot, message, args) => {
     try {
         const msg = await fM;
         
-        if (argsWith) {
+        if(argsWith) {
 
             var emj = emojis.name(emoji);
             await msg.react(emj);
