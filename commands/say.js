@@ -5,16 +5,18 @@ module.exports.run = async (bot, message, args) => {
 
   message.delete();
 
-  if(!message.member.hasPermission('MANAGE_MESSAGES')) return errors.noPerms(message, 'Gerenciar Mensagens');
-
   let guild = bot.guilds.cache.get(args[0]);
   var bmsg = args.join(' ');
   var cPos = 0;
 
   if(guild) {
     var channel = guild.channels.cache.get(args[1]);
+    var member = guild.members.cache.get(message.author.id)
     bmsg = args.slice(2).join(' ');
     cPos = 2;
+
+    if(!member.hasPermission('MANAGE_MESSAGES'))
+    return errors.noPerms(message, 'Gerenciar mensagens no servidor especificado')
 
   } else if(message.guild.channels.cache.get(args[0])) {
     var channel = message.guild.channels.cache.find(c => c.id === args[0])
@@ -22,13 +24,20 @@ module.exports.run = async (bot, message, args) => {
     cPos = 1;
   }
 
+  if(!message.member.hasPermission('MANAGE_MESSAGES')) 
+  return errors.noPerms(message, 'Gerenciar mensagens neste servidor');
+
   if(args[cPos] === '/tts') {
-    if(message.member.hasPermission('SEND_TTS_MESSAGES')) { 
-      var tts = true;
-      bmsg = args.slice(cPos + 1).join(' ');
-    } else {
-      errors.noPerms(message, 'Enviar Mensagens em TTS')
-    };
+    var tts = true;
+    bmsg = args.slice(cPos + 1).join(' ');
+
+    if(guild) {
+      if(!member.hasPermission('SEND_TTS_MESSAGES'))
+      return errors.noPerms(message, 'Enviar mensagens em TTS no servidor especificado')
+    }
+
+    if(!message.member.hasPermission('SEND_TTS_MESSAGES'))
+    return errors.noPerms(message, 'Enviar mensagens em TTS neste servidor')
 
   } else {
     tts = false;
