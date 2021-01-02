@@ -5,7 +5,7 @@ const Discord = require('discord.js');
 var tinycolor = require('tinycolor2');
 const { getColorFromURL } = require('color-thief-node');
 const chalk = require('chalk');
-let pr = (botconfig.prefix);
+var pr = (botconfig.prefix);
 
 module.exports.run = async (bot, message, args) => {
 
@@ -16,6 +16,7 @@ if(!['467133077475557376', '599375425445036049', '422236981586690048', '69745424
 
         var roleO = message.guild.members.cache.get(message.author.id);
         var eTiI = 'Você gostaria dessa cor?'
+        var cMen = [];
 
         if(args[1]) {
           eTiI = 'Cor especificada'
@@ -29,11 +30,12 @@ if(!['467133077475557376', '599375425445036049', '422236981586690048', '69745424
 
         if(message.guild.members.cache.get(uID)) {
 
-          var uIDF = await bot.users.fetch(uID)
+          var uIDF = await bot.users.fetch(roleO.id)
           var prC = await getColorFromURL(uIDF.avatarURL({format:'png'}));
           var [r, g, b] = prC
           roleC = tinycolor(chalk.rgb(r, g, b)(`rgb(${r}, ${g}, ${b})`)).toHex(); 
-          eTiI = 'Cor predominante no avatar mencionado'
+          eTiI = `Cor predominante no avatar de ${uIDF.username}`;
+          cMen = `${uIDF} também pode interagir com o sistema.`
 
           if(tinycolor(args[2]).isValid()) {
             eTiI = 'Cor especificada'
@@ -67,38 +69,42 @@ if(!['467133077475557376', '599375425445036049', '422236981586690048', '69745424
   if(args[0] === 'convert') {
 
     var tcvColor = tinycolor(args[1]).toHex();
+    var IDerr = 'Você não tem um cargo de cor.'
 
     if(!tinycolor(args[1]).isValid()) {
 
-  let IDerr = 'Você não tem um cargo de cor.'
+      roleN = `USER-${roleO.id}`;
+      role = message.guild.roles.cache.find(x => x.name == roleN);
+      IDerr = `O usuário mencionado não tem um cargo de cor.`
+      tcvColor = tinycolor(role.hexColor).toHex();
+      roleCE = role.hexColor.replace('#','')
 
-    roleN = `USER-${uID}`;
-    role = message.guild.roles.cache.find(x => x.name == roleN);
-    IDerr = 'O usuário mencionado não tem um cargo de cor.'
-
-  if(!role) return message.channel.send(`${IDerr}`);
-
-  var tcvColor = tinycolor(role.color).toHex();
+      if(!role) return message.channel.send(`${IDerr}`);
      };
 
     var cvRgb = tinycolor(tcvColor).toRgbString();
     var RgbLk = encodeURI(cvRgb);
+
+    roleCE = tcvColor
+    if(roleCE === 'ffffff') {
+      roleCE = 'fffffe'
+    }
     var cColorL = '000000'
     if(tinycolor(tcvColor).isDark()) {
       cColorL = 'ffffff'
     };
 
-    utils.diEmb(1, message, roleCE, 'Convertido para RGB', `${tcvColor}`, `${cColorL}`, `${RgbLk}`, `${cvRgb}`);
+    utils.diEmb(1, message, roleCE, 'Convertido para RGB', `${tcvColor}`, `${cColorL}`, `${RgbLk}`, `${cvRgb}`, cvRgb);
   };
 
 if(args[0] === 'current') {
 
-  let IDerr = 'Você não tem um cargo de cor.'
+  var IDerr = 'Você não tem um cargo de cor.'
 
   if(args[1]) {
-    roleN = `USER-${uID}`;
+    roleN = `USER-${roleO.id}`;
     role = message.guild.roles.cache.find(x => x.name == roleN);
-    IDerr = 'O usuário mencionado não tem um cargo de cor.'
+    IDerr = `O usuário mencionado não tem um cargo de cor.`
   }
 
   if(!role) return message.channel.send(`${IDerr}`);
@@ -118,18 +124,18 @@ if(args[0] === 'current') {
   if(roleO.id === message.author.id) {
     eTiI = 'Cor atual'
   } else {
-    eTiI = 'Cor atual do usuário mencionado'
+    eTiI = `Cor atual de ${uIDF.username}`
   }
   utils.diEmb(1, message, roleCE, eTiI, `${roleC}`, `${roleL}`, `${roleC}`);
 }
 
 if(args[0] === 'remove') {
 
-  let IDerr = 'Você já não tem um cargo de cor.'
+  var IDerr = 'Você já não tem um cargo de cor.'
 
   if(args[1]) {
     if(!message.member.hasPermission('MANAGE_ROLES')) return errors.noPerms(message, 'Gerenciar Cargos');
-    roleN = `USER-${uID}`;
+    roleN = `USER-${roleO.id}`;
     role = message.guild.roles.cache.find(x => x.name == roleN)
     IDerr = 'O usuário mencionado já não tem um cargo de cor.'
   }
@@ -163,7 +169,7 @@ if(args[0] === 'remove') {
   if(roleO.id === message.author.id) {
     eTiI = 'Cor deletada'
   } else {
-    eTiI = 'Cor do usuário mencionado deletada'
+    eTiI = `Cor de ${uIDF.username} deletada`
   }
   utils.diEmb(1, message, roleCE, eTiI, `${roleC}`, `${roleL}`, `${roleC}`);
 }
@@ -175,7 +181,7 @@ if(args[0] === 'change') {
     if(message.guild.members.cache.get(uID)) {
       aN = 2;
       if(!message.member.hasPermission('MANAGE_ROLES')) return errors.noPerms(message, 'Gerenciar Cargos');
-      roleN = `USER-${uID}`;
+      roleN = `USER-${roleO.id}`;
       role = message.guild.roles.cache.find(x => x.name == roleN);
 
       if(args[2]) {
@@ -201,7 +207,7 @@ if(args[0] === 'change') {
     
   const reactions = ['⛔', '🔁', '✅', '⚪', '⚫', '🎨', '📝']
   
-  message.channel.send(utils.diEmb(0, message, roleCE, eTiI, `${roleC}`, `${roleL}`, `${roleC}`)).then((msg) => {
+  message.channel.send(utils.diEmb(0, message, roleCE, eTiI, `${roleC}`, `${roleL}`, `${roleC}`, cMen)).then((msg) => {
     reactions.forEach(r => msg.react(r));
 
 const filter = (reaction, user) => {
@@ -250,7 +256,7 @@ msg.awaitReactions(filter, {max: 1, time: 60000, errors: ['time']})
             roleL = 'ffffff'
           }
 
-          utils.diEmb(msg, message, roleCE, 'Você gostaria dessa cor?', `${roleC}`, `${roleL}`, `${roleC}`);
+          utils.diEmb(msg, message, roleCE, 'Você gostaria dessa cor?', `${roleC}`, `${roleL}`, `${roleC}`, cMen);
           reaction.users.remove(message.author.id);
           reaction.users.remove(roleO.id);
 
@@ -308,7 +314,7 @@ msg.awaitReactions(filter, {max: 1, time: 60000, errors: ['time']})
                 if(roleO.id === message.author.id) {
                   eTiI = 'Cor criada e atribuída'
                 } else {
-                  eTiI = 'Cor criada e atribuída ao usuário mencionado'
+                  eTiI = `Cor criada e atribuída à ${uIDF.username}`
                 }
                 utils.diEmb(msg, message, roleCE, eTiI, `${roleC}`, `${roleL}`, `${roleC}`);
               
@@ -320,14 +326,14 @@ msg.awaitReactions(filter, {max: 1, time: 60000, errors: ['time']})
                   role.setColor(roleC)
 
                   setTimeout(function(){
-                    if(!role.color === roleC) {
+                    if(role.hexColor !== '#'+roleC) {
                       reSR()
                     } else {
                       function reSP() {
                         role.setPosition(pos)
 
                         setTimeout(function(){
-                          if(!role.position === pos) {
+                          if(role.position !== pos) {
                             reSP();
                           }
                         }, 1500)
@@ -342,14 +348,14 @@ msg.awaitReactions(filter, {max: 1, time: 60000, errors: ['time']})
                   if(roleO.id === message.author.id) {
                     eTiI = 'Cor alterada'
                   } else {
-                    eTiI = 'Cor do usuário mencionado alterada'
+                    eTiI = `Cor de ${uIDF.username} alterada`
                   }
                 } else {
                   roleO.roles.add(role.id)
                   if(roleO.id === message.author.id) {
                     eTiI = 'Cor alterada e atribuída'
                   } else {
-                    eTiI = 'Cor do usuário mencionado alterada e atribuída'
+                    eTiI = `Cor de ${uIDF.username} alterada e atribuída`
                   }
                 };
 
@@ -376,7 +382,7 @@ msg.awaitReactions(filter, {max: 1, time: 60000, errors: ['time']})
               roleL = 'ffffff'
             }
   
-            utils.diEmb(msg, message, roleCE, 'Você gostaria dessa cor?', `${roleC}`, `${roleL}`, `${roleC}`);
+            utils.diEmb(msg, message, roleCE, 'Você gostaria dessa cor?', `${roleC}`, `${roleL}`, `${roleC}`, cMen);
             reaction.users.remove(message.author.id);
             reaction.users.remove(roleO.id);
   
@@ -400,7 +406,7 @@ msg.awaitReactions(filter, {max: 1, time: 60000, errors: ['time']})
               roleL = 'ffffff'
             }
   
-            utils.diEmb(msg, message, roleCE, 'Você gostaria dessa cor?', `${roleC}`, `${roleL}`, `${roleC}`);
+            utils.diEmb(msg, message, roleCE, 'Você gostaria dessa cor?', `${roleC}`, `${roleL}`, `${roleC}`, cMen);
             reaction.users.remove(message.author.id);
             reaction.users.remove(roleO.id);
   
@@ -422,11 +428,11 @@ msg.awaitReactions(filter, {max: 1, time: 60000, errors: ['time']})
               roleL = 'ffffff'
             }
 
-            utils.diEmb(msg, message, roleCE, 'Digite uma cor para misturar', `${roleC}`, `${roleL}`, `${roleC}+＋`);
+            utils.diEmb(msg, message, roleCE, 'Digite uma cor para misturar', `${roleC}`, `${roleL}`, `${roleC}+＋`, cMen);
             
             msg.reactions.removeAll();
 
-            let filter = m => m.author.id === message.author.id;
+            var filter = m => m.author.id === message.author.id;
 
             function fm1 () {
             message.channel.awaitMessages(filter, {
@@ -454,14 +460,14 @@ msg.awaitReactions(filter, {max: 1, time: 60000, errors: ['time']})
                     roleL = 'ffffff'
                   }
 
-                  utils.diEmb(msg, message, roleCE, 'Cor misturada', `${roleC}`, `${roleL}`, `${roleC}`);
+                  utils.diEmb(msg, message, roleCE, 'Cor misturada', `${roleC}`, `${roleL}`, `${roleC}`, cMen);
 
                   reactions.forEach(r => msg.react(r));
                   message.delete();
 
                   f1();
                 } else {
-                  utils.diEmb(msg, message, '000000', 'Cor inválida, digite uma cor válida para misturar', '000000', 'ffffff', `${roleC}+＋`);
+                  utils.diEmb(msg, message, '000000', 'Cor inválida, digite uma cor válida para misturar', '000000', 'ffffff', `${roleC}+＋`, cMen);
 
                   msg.reactions.removeAll();
                   message.delete();
@@ -500,11 +506,11 @@ msg.awaitReactions(filter, {max: 1, time: 60000, errors: ['time']})
               roleL = 'ffffff'
             }
 
-            utils.diEmb(msg, message, roleCE, 'Digite uma nova cor', `${roleC}`, `${roleL}`, `${roleC}+->`);
+            utils.diEmb(msg, message, roleCE, 'Digite uma nova cor', `${roleC}`, `${roleL}`, `${roleC}+->`, cMen);
 
             msg.reactions.removeAll();
 
-            let filter = m => m.author.id === message.author.id;
+            var filter = m => m.author.id === message.author.id;
 
             function fe1 () {
             message.channel.awaitMessages(filter, {
@@ -533,14 +539,14 @@ msg.awaitReactions(filter, {max: 1, time: 60000, errors: ['time']})
                     roleL = 'ffffff'
                   }
 
-                  utils.diEmb(msg, message, roleCE, 'Cor editada', `${roleC}`, `${roleL}`, `${roleC}`);
+                  utils.diEmb(msg, message, roleCE, 'Cor editada', `${roleC}`, `${roleL}`, `${roleC}`, cMen);
 
                   reactions.forEach(r => msg.react(r));
                   message.delete();
 
                   f1();
                 } else {
-                  utils.diEmb(msg, message, '000000', 'Cor inválida, digite uma nova cor válida', '000000', 'ffffff', `${roleC}+->`);
+                  utils.diEmb(msg, message, '000000', 'Cor inválida, digite uma nova cor válida', '000000', 'ffffff', `${roleC}+->`, cMen);
 
                   msg.reactions.removeAll();
                   message.delete();
