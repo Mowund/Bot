@@ -1,8 +1,8 @@
-const botconfig = require("../botconfig.json");
-const errors = require("../utils/errors.js");
-const utils = require("../utils/utils.js")
-const Discord = require("discord.js");
-var tinycolor = require("tinycolor2");
+const botconfig = require('../botconfig.json');
+const errors = require('../utils/errors.js');
+const utils = require('../utils/utils.js')
+const Discord = require('discord.js');
+var tinycolor = require('tinycolor2');
 const { getColorFromURL } = require('color-thief-node');
 const chalk = require('chalk');
 let pr = (botconfig.prefix);
@@ -25,7 +25,7 @@ if(!['467133077475557376', '599375425445036049', '422236981586690048', '69745424
           }
         }
 
-        var roleC = tinycolor(args.slice(1).join(" ")).toHex();
+        var roleC = tinycolor(args.slice(1).join(' ')).toHex();
 
         if(message.guild.members.cache.get(uID)) {
 
@@ -47,18 +47,18 @@ if(!['467133077475557376', '599375425445036049', '422236981586690048', '69745424
           eTiI = 'Cor predominante no seu avatar'
         };
 
-        if(roleC === "000000") {
-          roleC = "000001"
+        if(roleC === '000000') {
+          roleC = '000001'
         }
 
         var roleCE = roleC
-        if(roleCE === "ffffff") {
-          roleCE = "fffffe"
+        if(roleCE === 'ffffff') {
+          roleCE = 'fffffe'
         }
       
-        var roleL = "000000"
+        var roleL = '000000'
         if(tinycolor(roleC).isDark()) {
-          roleL = "ffffff"
+          roleL = 'ffffff'
         }
       
         var roleN = `USER-${message.author.id}`;
@@ -83,15 +83,15 @@ if(!['467133077475557376', '599375425445036049', '422236981586690048', '69745424
 
     var cvRgb = tinycolor(tcvColor).toRgbString();
     var RgbLk = encodeURI(cvRgb);
-    var cColorL = "000000"
+    var cColorL = '000000'
     if(tinycolor(tcvColor).isDark()) {
-      cColorL = "ffffff"
+      cColorL = 'ffffff'
     };
 
-    utils.diEmb(0, message, roleCE, 'Convertido para RGB', `${tcvColor}`, `${cColorL}`, `${RgbLk}`, `${cvRgb}`);
+    utils.diEmb(1, message, roleCE, 'Convertido para RGB', `${tcvColor}`, `${cColorL}`, `${RgbLk}`, `${cvRgb}`);
   };
 
-if(args[0] === "current") {
+if(args[0] === 'current') {
 
   let IDerr = 'Você não tem um cargo de cor.'
 
@@ -106,13 +106,13 @@ if(args[0] === "current") {
   roleC = role.hexColor.replace('#', '');
 
   roleCE = roleC
-  if(roleCE === "ffffff") {
-    roleCE = "fffffe"
+  if(roleCE === 'ffffff') {
+    roleCE = 'fffffe'
   } 
 
-  roleL = "000000"
+  roleL = '000000'
   if(tinycolor(roleC).isDark()) {
-    roleL = "ffffff"
+    roleL = 'ffffff'
   };
 
   if(roleO.id === message.author.id) {
@@ -120,15 +120,15 @@ if(args[0] === "current") {
   } else {
     eTiI = 'Cor atual do usuário mencionado'
   }
-  utils.diEmb(0, message, roleCE, eTiI, `${roleC}`, `${roleL}`, `${roleC}`);
+  utils.diEmb(1, message, roleCE, eTiI, `${roleC}`, `${roleL}`, `${roleC}`);
 }
 
-if(args[0] === "remove") {
+if(args[0] === 'remove') {
 
   let IDerr = 'Você já não tem um cargo de cor.'
 
   if(args[1]) {
-    if(!message.member.hasPermission("MANAGE_ROLES")) return errors.noPerms(message, "Gerenciar Cargos");
+    if(!message.member.hasPermission('MANAGE_ROLES')) return errors.noPerms(message, 'Gerenciar Cargos');
     roleN = `USER-${uID}`;
     role = message.guild.roles.cache.find(x => x.name == roleN)
     IDerr = 'O usuário mencionado já não tem um cargo de cor.'
@@ -139,13 +139,13 @@ if(args[0] === "remove") {
   roleC = role.hexColor.replace('#', '');
 
   roleCE = roleC
-  if(roleCE === "ffffff") {
-    roleCE = "fffffe"
+  if(roleCE === 'ffffff') {
+    roleCE = 'fffffe'
   } 
 
-  roleL = "000000"
+  roleL = '000000'
   if(tinycolor(roleC).isDark()) {
-    roleL = "ffffff"
+    roleL = 'ffffff'
   }
 
   function reRC() {
@@ -165,47 +165,43 @@ if(args[0] === "remove") {
   } else {
     eTiI = 'Cor do usuário mencionado deletada'
   }
-  utils.diEmb(0, message, roleCE, eTiI, `${roleC}`, `${roleL}`, `${roleC}`);
+  utils.diEmb(1, message, roleCE, eTiI, `${roleC}`, `${roleL}`, `${roleC}`);
 }
 
-if(args[0] === "change") {
+if(args[0] === 'change') {
 
     var aN = 1;
  
     if(message.guild.members.cache.get(uID)) {
       aN = 2;
-      if(!message.member.hasPermission("MANAGE_ROLES")) return errors.noPerms(message, "Gerenciar Cargos");
+      if(!message.member.hasPermission('MANAGE_ROLES')) return errors.noPerms(message, 'Gerenciar Cargos');
       roleN = `USER-${uID}`;
       role = message.guild.roles.cache.find(x => x.name == roleN);
 
       if(args[2]) {
-        roleC = tinycolor(args.slice(2).join(" ")).toHex();
+        roleC = tinycolor(args.slice(2).join(' ')).toHex();
       }    
-      if(roleC === "000000") {
-        roleC = "000001"
+      if(roleC === '000000') {
+        roleC = '000001'
 
       var roleCE = roleC
-      if(roleCE === "ffffff") {
-        roleCE = "fffffe"
+      if(roleCE === 'ffffff') {
+        roleCE = 'fffffe'
       }
 
       }
 
-      var roleL = "000000"
+      var roleL = '000000'
         if(tinycolor(roleC).isDark()) {
-      roleL = "ffffff"
+      roleL = 'ffffff'
       }
     };
 
-   if(tinycolor(args.slice(aN).join(" ")).isValid() || !args[aN]) {
+   if(tinycolor(args.slice(aN).join(' ')).isValid() || !args[aN]) {
     
   const reactions = ['⛔', '🔁', '✅', '⚪', '⚫', '🎨', '📝']
   
-  let uEmb = new Discord.MessageEmbed()
-  .setColor(parseInt(roleCE, 16))
-  .setTitle(eTiI)
-  .setImage(`https://dummyimage.com/300x100/${roleC}/${roleL}&text=+${roleC}`);
-  message.channel.send(uEmb).then((msg) => {
+  message.channel.send(utils.diEmb(0, message, roleCE, eTiI, `${roleC}`, `${roleL}`, `${roleC}`)).then((msg) => {
     reactions.forEach(r => msg.react(r));
 
 const filter = (reaction, user) => {
@@ -219,18 +215,18 @@ msg.awaitReactions(filter, {max: 1, time: 60000, errors: ['time']})
 
         if(reaction.emoji.name === '⛔') {
 
-          if(roleC === "000000") {
-            roleC = "000001"
+          if(roleC === '000000') {
+            roleC = '000001'
           }
   
           var roleCE = roleC
-          if(roleCE === "ffffff") {
-            roleCE = "fffffe"
+          if(roleCE === 'ffffff') {
+            roleCE = 'fffffe'
           }
 
-          var roleL = "000000"
+          var roleL = '000000'
           if(tinycolor(roleC).isDark()) {
-            roleL = "ffffff"
+            roleL = 'ffffff'
           }
 
           utils.diEmb(msg, message, roleCE, 'Cancelado', `${roleC}`, `${roleL}`, 'Cancelado');
@@ -240,18 +236,18 @@ msg.awaitReactions(filter, {max: 1, time: 60000, errors: ['time']})
 
           roleC = tinycolor.random().toHex();
           
-          if(roleC === "000000") {
-            roleC = "000001"
+          if(roleC === '000000') {
+            roleC = '000001'
           }
   
           var roleCE = roleC
-          if(roleCE === "ffffff") {
-            roleCE = "fffffe"
+          if(roleCE === 'ffffff') {
+            roleCE = 'fffffe'
           }
 
-          var roleL = "000000"
+          var roleL = '000000'
           if(tinycolor(roleC).isDark()) {
-            roleL = "ffffff"
+            roleL = 'ffffff'
           }
 
           utils.diEmb(msg, message, roleCE, 'Você gostaria dessa cor?', `${roleC}`, `${roleL}`, `${roleC}`);
@@ -262,18 +258,18 @@ msg.awaitReactions(filter, {max: 1, time: 60000, errors: ['time']})
 
         } else if(reaction.emoji.name === '✅') {
           
-          if(roleC === "000000") {
-            roleC = "000001"
+          if(roleC === '000000') {
+            roleC = '000001'
           }
   
           var roleCE = roleC
-          if(roleCE === "ffffff") {
-            roleCE = "fffffe"
+          if(roleCE === 'ffffff') {
+            roleCE = 'fffffe'
           }
 
-          var roleL = "000000"
+          var roleL = '000000'
           if(tinycolor(roleC).isDark()) {
-            roleL = "ffffff"
+            roleL = 'ffffff'
           }
 
           var pos = message.guild.me.roles.highest.position;
@@ -366,18 +362,18 @@ msg.awaitReactions(filter, {max: 1, time: 60000, errors: ['time']})
 
             roleC = tinycolor(roleC).brighten(10).toHex();
 
-            if(roleC === "000000") {
-              roleC = "000001"
+            if(roleC === '000000') {
+              roleC = '000001'
             }
     
             var roleCE = roleC
-            if(roleCE === "ffffff") {
-              roleCE = "fffffe"
+            if(roleCE === 'ffffff') {
+              roleCE = 'fffffe'
             }
   
-            var roleL = "000000"
+            var roleL = '000000'
             if(tinycolor(roleC).isDark()) {
-              roleL = "ffffff"
+              roleL = 'ffffff'
             }
   
             utils.diEmb(msg, message, roleCE, 'Você gostaria dessa cor?', `${roleC}`, `${roleL}`, `${roleC}`);
@@ -390,18 +386,18 @@ msg.awaitReactions(filter, {max: 1, time: 60000, errors: ['time']})
 
             roleC = tinycolor(roleC).darken(10).toHex();
 
-            if(roleC === "000000") {
-              roleC = "000001"
+            if(roleC === '000000') {
+              roleC = '000001'
             }
     
             var roleCE = roleC
-            if(roleCE === "ffffff") {
-              roleCE = "fffffe"
+            if(roleCE === 'ffffff') {
+              roleCE = 'fffffe'
             }
   
-            var roleL = "000000"
+            var roleL = '000000'
             if(tinycolor(roleC).isDark()) {
-              roleL = "ffffff"
+              roleL = 'ffffff'
             }
   
             utils.diEmb(msg, message, roleCE, 'Você gostaria dessa cor?', `${roleC}`, `${roleL}`, `${roleC}`);
@@ -412,18 +408,18 @@ msg.awaitReactions(filter, {max: 1, time: 60000, errors: ['time']})
 
           } else if(reaction.emoji.name === '🎨') {
 
-            if(roleC === "000000") {
-              roleC = "000001"
+            if(roleC === '000000') {
+              roleC = '000001'
             }
     
             var roleCE = roleC
-            if(roleCE === "ffffff") {
-              roleCE = "fffffe"
+            if(roleCE === 'ffffff') {
+              roleCE = 'fffffe'
             }
   
-            var roleL = "000000"
+            var roleL = '000000'
             if(tinycolor(roleC).isDark()) {
-              roleL = "ffffff"
+              roleL = 'ffffff'
             }
 
             utils.diEmb(msg, message, roleCE, 'Digite uma cor para misturar', `${roleC}`, `${roleL}`, `${roleC}+＋`);
@@ -444,18 +440,18 @@ msg.awaitReactions(filter, {max: 1, time: 60000, errors: ['time']})
 
                   roleC = tinycolor.mix(roleC, message.content, amount = 50).toHex();
 
-                  if(roleC === "000000") {
-                    roleC = "000001"
+                  if(roleC === '000000') {
+                    roleC = '000001'
                   }
           
                   var roleCE = roleC
-                  if(roleCE === "ffffff") {
-                    roleCE = "fffffe"
+                  if(roleCE === 'ffffff') {
+                    roleCE = 'fffffe'
                   }
         
-                  var roleL = "000000"
+                  var roleL = '000000'
                   if(tinycolor(roleC).isDark()) {
-                    roleL = "ffffff"
+                    roleL = 'ffffff'
                   }
 
                   utils.diEmb(msg, message, roleCE, 'Cor misturada', `${roleC}`, `${roleL}`, `${roleC}`);
@@ -475,13 +471,13 @@ msg.awaitReactions(filter, {max: 1, time: 60000, errors: ['time']})
               })
               .catch(() => {
                 var roleCE = roleC
-                if(roleCE === "ffffff") {
-                  roleCE = "fffffe"
+                if(roleCE === 'ffffff') {
+                  roleCE = 'fffffe'
                 }
           
-                var roleL = "000000"
+                var roleL = '000000'
                 if(tinycolor(roleC).isDark()) {
-                  roleL = "ffffff"
+                  roleL = 'ffffff'
                 }
 
                 utils.diEmb(msg, message, roleCE, 'Tempo esgotado', roleC, roleL, 'Tempo%20esgotado');
@@ -490,18 +486,18 @@ msg.awaitReactions(filter, {max: 1, time: 60000, errors: ['time']})
 
           } else {
 
-            if(roleC === "000000") {
-              roleC = "000001"
+            if(roleC === '000000') {
+              roleC = '000001'
             }
     
             var roleCE = roleC
-            if(roleCE === "ffffff") {
-              roleCE = "fffffe"
+            if(roleCE === 'ffffff') {
+              roleCE = 'fffffe'
             }
   
-            var roleL = "000000"
+            var roleL = '000000'
             if(tinycolor(roleC).isDark()) {
-              roleL = "ffffff"
+              roleL = 'ffffff'
             }
 
             utils.diEmb(msg, message, roleCE, 'Digite uma nova cor', `${roleC}`, `${roleL}`, `${roleC}+->`);
@@ -523,18 +519,18 @@ msg.awaitReactions(filter, {max: 1, time: 60000, errors: ['time']})
 
                   roleC = tinycolor(message.content).toHex();
 
-                  if(roleC === "000000") {
-                    roleC = "000001"
+                  if(roleC === '000000') {
+                    roleC = '000001'
                   }
           
                   var roleCE = roleC
-                  if(roleCE === "ffffff") {
-                    roleCE = "fffffe"
+                  if(roleCE === 'ffffff') {
+                    roleCE = 'fffffe'
                   }
         
-                  var roleL = "000000"
+                  var roleL = '000000'
                   if(tinycolor(roleC).isDark()) {
-                    roleL = "ffffff"
+                    roleL = 'ffffff'
                   }
 
                   utils.diEmb(msg, message, roleCE, 'Cor editada', `${roleC}`, `${roleL}`, `${roleC}`);
@@ -554,13 +550,13 @@ msg.awaitReactions(filter, {max: 1, time: 60000, errors: ['time']})
               })
               .catch(() => {
                 var roleCE = roleC
-                if(roleCE === "ffffff") {
-                  roleCE = "fffffe"
+                if(roleCE === 'ffffff') {
+                  roleCE = 'fffffe'
                 }
           
-                var roleL = "000000"
+                var roleL = '000000'
                 if(tinycolor(roleC).isDark()) {
-                  roleL = "ffffff"
+                  roleL = 'ffffff'
                 }
 
                 utils.diEmb(msg, message, roleCE, 'Tempo esgotado', roleC, roleL, 'Tempo%20esgotado');
@@ -571,13 +567,13 @@ msg.awaitReactions(filter, {max: 1, time: 60000, errors: ['time']})
     .catch((err) => {
       console.error(err)
       var roleCE = roleC
-      if(roleCE === "ffffff") {
-        roleCE = "fffffe"
+      if(roleCE === 'ffffff') {
+        roleCE = 'fffffe'
       }
 
-      var roleL = "000000"
+      var roleL = '000000'
       if(tinycolor(roleC).isDark()) {
-        roleL = "ffffff"
+        roleL = 'ffffff'
       }
 
       utils.diEmb(msg, message, roleCE, 'Tempo esgotado', roleC, roleL, 'Tempo%20esgotado');
@@ -586,10 +582,10 @@ msg.awaitReactions(filter, {max: 1, time: 60000, errors: ['time']})
 
 } f1(); });
 } else {
-  utils.diEmb(0, message, '000000', 'Cor inválida', '000000', 'ffffff', 'Inválido');
+  utils.diEmb(1, message, '000000', 'Cor inválida', '000000', 'ffffff', 'Inválido');
 }}
 }
 
 module.exports.help = {
-  name:"color"
+  name:'color'
 }
