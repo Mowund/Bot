@@ -94,7 +94,7 @@ if(!['467133077475557376', '599375425445036049', '422236981586690048', '69745424
       cColorL = 'ffffff'
     };
 
-    utils.diEmb(1, message, roleCE, 'Convertido para RGB', `${tcvColor}`, `${cColorL}`, `${RgbLk}`, `${cvRgb}`, cvRgb);
+    utils.diEmb(1, message, message.author, roleCE, 'Convertido para RGB', `${tcvColor}`, `${cColorL}`, `${RgbLk}`, 0, `${cvRgb}`);
   };
 
 if(args[0] === 'current') {
@@ -126,7 +126,7 @@ if(args[0] === 'current') {
   } else {
     eTiI = `Cor atual de ${uIDF.username}`
   }
-  utils.diEmb(1, message, roleCE, eTiI, `${roleC}`, `${roleL}`, `${roleC}`);
+  utils.diEmb(1, message, message.author, roleCE, eTiI, `${roleC}`, `${roleL}`, `${roleC}`);
 }
 
 if(args[0] === 'remove') {
@@ -171,7 +171,7 @@ if(args[0] === 'remove') {
   } else {
     eTiI = `Cor de ${uIDF.username} deletada`
   }
-  utils.diEmb(1, message, roleCE, eTiI, `${roleC}`, `${roleL}`, `${roleC}`);
+  utils.diEmb(1, message, message.author, roleCE, eTiI, `${roleC}`, `${roleL}`, `${roleC}`);
 }
 
 if(args[0] === 'change') {
@@ -207,7 +207,7 @@ if(args[0] === 'change') {
     
   const reactions = ['⛔', '🔁', '✅', '⚪', '⚫', '🎨', '📝']
   
-  message.channel.send(utils.diEmb(0, message, roleCE, eTiI, `${roleC}`, `${roleL}`, `${roleC}`, cMen)).then((msg) => {
+  message.channel.send(utils.diEmb(0, message, message.author, roleCE, eTiI, `${roleC}`, `${roleL}`, `${roleC}`, 0, cMen)).then((msg) => {
     reactions.forEach(r => msg.react(r));
 
 const filter = (reaction, user) => {
@@ -218,6 +218,12 @@ function f1() {
 msg.awaitReactions(filter, {max: 1, time: 60000, errors: ['time']})
     .then(collected => {
         const reaction = collected.first();
+
+        var rU = reaction.users.cache.get(roleO.id)
+        if (!rU) {
+          rU = reaction.users.cache.get(message.author.id)
+        }
+        var fRU = message.guild.members.cache.get(rU.id)
 
         if(reaction.emoji.name === '⛔') {
 
@@ -235,8 +241,8 @@ msg.awaitReactions(filter, {max: 1, time: 60000, errors: ['time']})
             roleL = 'ffffff'
           }
 
-          utils.diEmb(msg, message, roleCE, 'Cancelado', `${roleC}`, `${roleL}`, 'Cancelado');
           msg.reactions.removeAll();
+          utils.diEmb(msg, message, fRU.user, roleCE, 'Cancelado', `${roleC}`, `${roleL}`, 'Cancelado', 1);
         
         } else if(reaction.emoji.name === '🔁') {
 
@@ -256,9 +262,8 @@ msg.awaitReactions(filter, {max: 1, time: 60000, errors: ['time']})
             roleL = 'ffffff'
           }
 
-          utils.diEmb(msg, message, roleCE, 'Você gostaria dessa cor?', `${roleC}`, `${roleL}`, `${roleC}`, cMen);
-          reaction.users.remove(message.author.id);
-          reaction.users.remove(roleO.id);
+          reaction.users.remove(rU.id);
+          utils.diEmb(msg, message, fRU.user, roleCE, 'Você gostaria dessa cor?', `${roleC}`, `${roleL}`, `${roleC}`, 1, cMen);
 
           f1();
 
@@ -316,7 +321,8 @@ msg.awaitReactions(filter, {max: 1, time: 60000, errors: ['time']})
                 } else {
                   eTiI = `Cor criada e atribuída à ${uIDF.username}`
                 }
-                utils.diEmb(msg, message, roleCE, eTiI, `${roleC}`, `${roleL}`, `${roleC}`);
+
+                utils.diEmb(msg, message, fRU.user, roleCE, eTiI, `${roleC}`, `${roleL}`, `${roleC}`, 1);
               
                } else {
 
@@ -359,7 +365,7 @@ msg.awaitReactions(filter, {max: 1, time: 60000, errors: ['time']})
                   }
                 };
 
-                utils.diEmb(msg, message, roleCE, eTiI, `${roleC}`, `${roleL}`, `${roleC}`);
+                utils.diEmb(msg, message, fRU.user, roleCE, eTiI, `${roleC}`, `${roleL}`, `${roleC}`, 1);
 
             }
             msg.reactions.removeAll()
@@ -382,7 +388,7 @@ msg.awaitReactions(filter, {max: 1, time: 60000, errors: ['time']})
               roleL = 'ffffff'
             }
   
-            utils.diEmb(msg, message, roleCE, 'Você gostaria dessa cor?', `${roleC}`, `${roleL}`, `${roleC}`, cMen);
+            utils.diEmb(msg, message, fRU.user, roleCE, 'Você gostaria dessa cor?', `${roleC}`, `${roleL}`, `${roleC}`, 1, cMen);
             reaction.users.remove(message.author.id);
             reaction.users.remove(roleO.id);
   
@@ -406,7 +412,7 @@ msg.awaitReactions(filter, {max: 1, time: 60000, errors: ['time']})
               roleL = 'ffffff'
             }
   
-            utils.diEmb(msg, message, roleCE, 'Você gostaria dessa cor?', `${roleC}`, `${roleL}`, `${roleC}`, cMen);
+            utils.diEmb(msg, message, fRU.user, roleCE, 'Você gostaria dessa cor?', `${roleC}`, `${roleL}`, `${roleC}`, 1, cMen);
             reaction.users.remove(message.author.id);
             reaction.users.remove(roleO.id);
   
@@ -418,21 +424,21 @@ msg.awaitReactions(filter, {max: 1, time: 60000, errors: ['time']})
               roleC = '000001'
             }
     
-            var roleCE = roleC
+            let roleCE = roleC
             if(roleCE === 'ffffff') {
               roleCE = 'fffffe'
             }
   
-            var roleL = '000000'
+            let roleL = '000000'
             if(tinycolor(roleC).isDark()) {
               roleL = 'ffffff'
             }
 
-            utils.diEmb(msg, message, roleCE, 'Digite uma cor para misturar', `${roleC}`, `${roleL}`, `${roleC}+＋`, cMen);
+            utils.diEmb(msg, message, fRU.user, roleCE, 'Digite uma cor para misturar', `${roleC}`, `${roleL}`, `${roleC}+＋`, 1, cMen);
             
             msg.reactions.removeAll();
 
-            var filter = m => m.author.id === message.author.id;
+            var filter = m => m.author.id === rU.id;
 
             function fm1 () {
             message.channel.awaitMessages(filter, {
@@ -450,24 +456,24 @@ msg.awaitReactions(filter, {max: 1, time: 60000, errors: ['time']})
                     roleC = '000001'
                   }
           
-                  var roleCE = roleC
+                  roleCE = roleC
                   if(roleCE === 'ffffff') {
                     roleCE = 'fffffe'
                   }
         
-                  var roleL = '000000'
+                  roleL = '000000'
                   if(tinycolor(roleC).isDark()) {
                     roleL = 'ffffff'
                   }
 
-                  utils.diEmb(msg, message, roleCE, 'Cor misturada', `${roleC}`, `${roleL}`, `${roleC}`, cMen);
+                  utils.diEmb(msg, message, fRU.user, roleCE, 'Cor misturada', `${roleC}`, `${roleL}`, `${roleC}`, 1, cMen);
 
                   reactions.forEach(r => msg.react(r));
                   message.delete();
 
                   f1();
                 } else {
-                  utils.diEmb(msg, message, '000000', 'Cor inválida, digite uma cor válida para misturar', '000000', 'ffffff', `${roleC}+＋`, cMen);
+                  utils.diEmb(msg, message, fRU.user, roleCE, 'Cor inválida, digite uma cor válida para misturar', `${roleC}`, `${roleL}`, `${roleC}+＋`, 1, cMen);
 
                   msg.reactions.removeAll();
                   message.delete();
@@ -476,17 +482,8 @@ msg.awaitReactions(filter, {max: 1, time: 60000, errors: ['time']})
                 }
               })
               .catch(() => {
-                var roleCE = roleC
-                if(roleCE === 'ffffff') {
-                  roleCE = 'fffffe'
-                }
-          
-                var roleL = '000000'
-                if(tinycolor(roleC).isDark()) {
-                  roleL = 'ffffff'
-                }
 
-                utils.diEmb(msg, message, roleCE, 'Tempo esgotado', roleC, roleL, 'Tempo%20esgotado');
+                utils.diEmb(msg, message, message.author, roleCE, 'Tempo esgotado', roleC, roleL, 'Tempo%20esgotado');
               });
             } fm1();
 
@@ -496,21 +493,21 @@ msg.awaitReactions(filter, {max: 1, time: 60000, errors: ['time']})
               roleC = '000001'
             }
     
-            var roleCE = roleC
+            let roleCE = roleC
             if(roleCE === 'ffffff') {
               roleCE = 'fffffe'
             }
   
-            var roleL = '000000'
+            let roleL = '000000'
             if(tinycolor(roleC).isDark()) {
               roleL = 'ffffff'
             }
 
-            utils.diEmb(msg, message, roleCE, 'Digite uma nova cor', `${roleC}`, `${roleL}`, `${roleC}+->`, cMen);
+            utils.diEmb(msg, message, fRU.user, roleCE, 'Digite uma nova cor', `${roleC}`, `${roleL}`, `${roleC}+->`, 1, cMen);
 
             msg.reactions.removeAll();
 
-            var filter = m => m.author.id === message.author.id;
+            var filter = m => m.author.id === rU.id;
 
             function fe1 () {
             message.channel.awaitMessages(filter, {
@@ -529,24 +526,24 @@ msg.awaitReactions(filter, {max: 1, time: 60000, errors: ['time']})
                     roleC = '000001'
                   }
           
-                  var roleCE = roleC
+                  roleCE = roleC
                   if(roleCE === 'ffffff') {
                     roleCE = 'fffffe'
                   }
         
-                  var roleL = '000000'
+                  roleL = '000000'
                   if(tinycolor(roleC).isDark()) {
                     roleL = 'ffffff'
                   }
 
-                  utils.diEmb(msg, message, roleCE, 'Cor editada', `${roleC}`, `${roleL}`, `${roleC}`, cMen);
+                  utils.diEmb(msg, message, fRU.user, roleCE, 'Cor editada', `${roleC}`, `${roleL}`, `${roleC}`, 1, cMen);
 
                   reactions.forEach(r => msg.react(r));
                   message.delete();
 
                   f1();
                 } else {
-                  utils.diEmb(msg, message, '000000', 'Cor inválida, digite uma nova cor válida', '000000', 'ffffff', `${roleC}+->`, cMen);
+                  utils.diEmb(msg, message, fRU.user, roleCE, 'Cor inválida, digite uma nova cor válida', `${roleC}`, `${roleL}`, `${roleC}+->`, 1, cMen);
 
                   msg.reactions.removeAll();
                   message.delete();
@@ -555,17 +552,8 @@ msg.awaitReactions(filter, {max: 1, time: 60000, errors: ['time']})
                 }
               })
               .catch(() => {
-                var roleCE = roleC
-                if(roleCE === 'ffffff') {
-                  roleCE = 'fffffe'
-                }
-          
-                var roleL = '000000'
-                if(tinycolor(roleC).isDark()) {
-                  roleL = 'ffffff'
-                }
 
-                utils.diEmb(msg, message, roleCE, 'Tempo esgotado', roleC, roleL, 'Tempo%20esgotado');
+                utils.diEmb(msg, message, message.author, roleCE, 'Tempo esgotado', roleC, roleL, 'Tempo%20esgotado');
               });
             } fe1()
           } 
@@ -582,13 +570,13 @@ msg.awaitReactions(filter, {max: 1, time: 60000, errors: ['time']})
         roleL = 'ffffff'
       }
 
-      utils.diEmb(msg, message, roleCE, 'Tempo esgotado', roleC, roleL, 'Tempo%20esgotado');
+      utils.diEmb(msg, message, message.author, roleCE, 'Tempo esgotado', roleC, roleL, 'Tempo%20esgotado');
       msg.reactions.removeAll();
     });
 
 } f1(); });
 } else {
-  utils.diEmb(1, message, '000000', 'Cor inválida', '000000', 'ffffff', 'Inválido');
+  utils.diEmb(1, message, message.author, '000000', 'Cor inválida', '000000', 'ffffff', 'Inválido');
 }}
 }
 

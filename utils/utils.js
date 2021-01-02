@@ -14,16 +14,22 @@ module.exports.msgEdit = async (chan, id, medit) => {
 
 }
 
-module.exports.diEmb = (eMsg, msg, color, title, diB, diL, diT, desc) => {
+module.exports.diEmb = (eMsg, msg, eU, color, title, diB, diL, diT, footer, desc) => {
+
+    if(!footer || footer === 0) {
+        footer = `Solicitado por ${eU.username}`
+    } else if(footer === 1) {
+        footer = `Interagido por ${eU.username}`
+    }
 
     var emb = new Discord.MessageEmbed()
     .setColor(parseInt(color, 16))
     .setTitle(title)
     .setImage(`https://dummyimage.com/300x100/${diB}/${diL}&text=+${diT}`)
-    .setFooter(`Solicitado por ${msg.author.username}`, msg.author.avatarURL())
+    .setFooter(footer, eU.avatarURL())
     .setTimestamp(Date.now());
 
-    if(desc) {
+    if(desc && desc !== 0) {
         emb = emb.setDescription(desc)
     };
 
