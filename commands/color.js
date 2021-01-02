@@ -14,7 +14,7 @@ if(!['467133077475557376', '599375425445036049', '422236981586690048', '69745424
         if(!args[0])
           return message.channel.send(`Uso correto: \`${pr}color change (cor)\``);
 
-        let roleO = message.author;
+        var roleO = message.guild.members.cache.get(message.author.id);
         var eTiI = 'Você gostaria dessa cor?'
 
         if(args[1]) {
