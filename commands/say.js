@@ -10,7 +10,7 @@ module.exports.run = async (bot, message, args) => {
   var cPos = 0;
 
   if(guild) {
-    var channel = guild.channels.cache.get(args[1]);
+    var channel = guild.channels.cache.get(args[1].replace(/[\\<>@#&!]/g, ''));
     var member = guild.members.cache.get(message.author.id)
     bmsg = args.slice(2).join(' ');
     cPos = 2;
@@ -18,8 +18,8 @@ module.exports.run = async (bot, message, args) => {
     if(!member.hasPermission('MANAGE_MESSAGES'))
     return errors.noPerms(message, 'Gerenciar mensagens no servidor especificado')
 
-  } else if(message.guild.channels.cache.get(args[0])) {
-    var channel = message.guild.channels.cache.find(c => c.id === args[0])
+  } else if(message.guild.channels.cache.get(args[0].replace(/[\\<>@#&!]/g, ''))) {
+    var channel = message.guild.channels.cache.find(c => c.id === args[0].replace(/[\\<>@#&!]/g, ''))
     bmsg = args.slice(1).join(' ');
     cPos = 1;
   }
