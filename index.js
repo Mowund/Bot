@@ -1,68 +1,91 @@
-const botconfig = require("./botconfig.json");
-const Discord = require("discord.js");
+const botconfig = require('./botconfig.json');
+const Discord = require('discord.js');
 const token = process.env.token;
-const fs = require("fs");
+const fs = require('fs');
 const bot = new Discord.Client();
 bot.commands = new Discord.Collection();
-let coins = require("./coins.json");
-let xp = require("./xp.json");
+let coins = require('./coins.json');
+let xp = require('./xp.json');
 let cooldown = new Set();
 let cdseconds = 2.5;
 var colors = require('colors');
 
-fs.readdir("./commands/", (err, files) => {
+const mongo = require('./mongo');
+const colorSchema = require('./schemas/color-schema');
 
-  if(err) console.log(err);
-  let jsfile = files.filter(f => f.split(".").pop() === "js");
-  if(jsfile.length <= 0){
-    console.log("Não foi possível encontrar comandos.");
+const connectToMongoDB = async () => {
+  await mongo().then(async (mongoose) => {
+    try {
+      console.log('Conectado ao MongoDB!'.green);
+
+      // await colorSchema.update({
+      //   cI: [
+      //     '467133077475557376',
+      //     '599375425445036049',
+      //     '422236981586690048',
+      //     '697454249067413519',
+      //     '780208029999431701',
+      //     '697878736657186936',
+      //   ],
+      // }).save();
+
+      const cS = await colorSchema.findOne();
+      module.exports.cS = cS;
+    } finally {
+      mongoose.connection.close();
+    }
+  });
+};
+
+connectToMongoDB();
+
+fs.readdir('./commands/', (err, files) => {
+  if (err) console.log(err);
+  let jsfile = files.filter((f) => f.split('.').pop() === 'js');
+  if (jsfile.length <= 0) {
+    console.log('Não foi possível encontrar comandos.');
     return;
   }
 
   jsfile.forEach((f, i) => {
     let props = require(`./commands/${f}`);
-    console.log(`${f}` .yellow.underline,  `carregado!` .yellow);
+    console.log(`${f}`.yellow.underline, `carregado!`.yellow);
     bot.commands.set(props.help.name, props);
   });
 });
 
 fs.readdir('./commands/test/', (err, files) => {
-
-  if(err) console.log(err);
-  let jsfile = files.filter(f => f.split('.').pop() === 'js');
-  if(jsfile.length <= 0){
+  if (err) console.log(err);
+  let jsfile = files.filter((f) => f.split('.').pop() === 'js');
+  if (jsfile.length <= 0) {
     console.log('Não foi possível encontrar comandos.');
     return;
   }
 
   jsfile.forEach((f, i) => {
     let props = require(`./commands/test/${f}`);
-    console.log(`${f}` .yellow.underline,  `carregado!` .yellow);
+    console.log(`${f}`.yellow.underline, `carregado!`.yellow);
     bot.commands.set(props.help.name, props);
   });
 });
 
-bot.on("ready", async () => {
-
-  console.log(`${bot.user.username} foi ligado!` .red);
+bot.on('ready', async () => {
+  console.log(`${bot.user.username} foi ligado!`.red);
   bot.user.setStatus('online');
-    
 });
 
+bot.on('message', async (message) => {
+  if (message.author.bot) return;
+  if (message.channel.type === 'dm') return;
 
-bot.on("message", async message => {
-
-  if(message.author.bot) return;
-  if(message.channel.type === "dm") return;
-
-  let prefixes = JSON.parse(fs.readFileSync("./prefixes.json", "utf8"));
-  if(!prefixes[message.guild.id]){
+  let prefixes = JSON.parse(fs.readFileSync('./prefixes.json', 'utf8'));
+  if (!prefixes[message.guild.id]) {
     prefixes[message.guild.id] = {
-      prefixes: botconfig.prefix
+      prefixes: botconfig.prefix,
     };
   }
 
-/*  if(!message.member.roles.find(x => x.name === "Não Registrados")){
+  /*  if(!message.member.roles.find(x => x.name === "Não Registrados")){
   if(!coins[message.author.id]){
     coins[message.author.id] = {
       coins: 0
@@ -123,27 +146,27 @@ bot.on("message", async message => {
 };*/
 
   let prefix = prefixes[message.guild.id].prefixes;
-  if(!message.content.startsWith(prefix)) return;
-  if(cooldown.has(message.author.id)){
+  if (!message.content.startsWith(prefix)) return;
+  if (cooldown.has(message.author.id)) {
     message.delete();
-    return message.reply(`Você deve aguardar ${cdseconds} segundos para usar outro comando.`)
+    return message.reply(
+      `Você deve aguardar ${cdseconds} segundos para usar outro comando.`
+    );
   }
-  if(!message.member.hasPermission("ADMINISTRATOR")){
+  if (!message.member.hasPermission('ADMINISTRATOR')) {
     cooldown.add(message.author.id);
   }
 
-
-  let messageArray = message.content.split(" ");
+  let messageArray = message.content.split(' ');
   let cmd = messageArray[0];
   let args = messageArray.slice(1);
 
   let commandfile = bot.commands.get(cmd.slice(prefix.length));
-  if(commandfile) commandfile.run(bot,message,args);
+  if (commandfile) commandfile.run(bot, message, args);
 
   setTimeout(() => {
-    cooldown.delete(message.author.id)
-  }, cdseconds * 1000)
-
+    cooldown.delete(message.author.id);
+  }, cdseconds * 1000);
 });
 
-bot.login(token).catch(err => console.log(err));
+bot.login(token).catch((err) => console.log(err));

@@ -9,7 +9,7 @@
     "discord.js": "^12.5.1",
     "git": "^0.1.5",
     "log-timestamp": "^0.3.0",
-    "mongoose": "^5.11.8",
+    "mongoose": "^5.11.9",
     "tinycolor2": "^1.4.2",
     "typescript": "^3.9.7",
     "winston": "^3.3.3"
@@ -20,5 +20,14 @@
   },
   "author": "Smidul",
   "license": "ISC",
-  "description": ""
+  "description": "",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Smidul/Mowund-Bot.git"
+  },
+  "keywords": [],
+  "bugs": {
+    "url": "https://github.com/Smidul/Mowund-Bot/issues"
+  },
+  "homepage": "https://github.com/Smidul/Mowund-Bot#readme"
 }
