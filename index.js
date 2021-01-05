@@ -125,11 +125,6 @@ client.on('ready', () => {
 }}*/
 }
 
-client.on('ready', async () => {
-  console.log(`O modo de testes do ${client.user.username} foi ativado!`.red);
-  client.user.setStatus('online');
-});
-
 {
   /*  if(!message.member.roles.find(x => x.name === 'Não Registrados')){
     if(!coins[message.author.id]){
