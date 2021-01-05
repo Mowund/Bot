@@ -12,11 +12,12 @@
     "mongoose": "^5.11.9",
     "tinycolor2": "^1.4.2",
     "typescript": "^3.9.7",
-    "winston": "^3.3.3"
+    "winston": "^3.3.3",
+    "wokcommands": "^1.2.0"
   },
   "devDependencies": {},
   "scripts": {
-    "test": "node test.js"
+    "test": "node index.js"
   },
   "author": "Smidul",
   "license": "ISC",

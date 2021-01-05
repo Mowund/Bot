@@ -1,19 +1,22 @@
-const Discord = require("discord.js");
-const errors = require("../utils/errors.js");
+const Discord = require('discord.js');
+const errors = require('../utils/errors.js');
 require('colors');
 
-module.exports.run = async (bot, message, args) => {
-
-String.prototype.isUpperCase = function() {
-    return this.valueOf().toUpperCase() === this.valueOf();
-};
+module.exports = {
+  name: 'translate',
+  category: 'Utils',
+  description: 'Traduz uma mensagem para Fustoard (com maiúsculas).',
+  callback: async ({ message, args, client }) => {
+    String.prototype.isUpperCase = function () {
+      return this.valueOf().toUpperCase() === this.valueOf();
+    };
 
     var tmsg = args.join(' ');
     var pcpt = '0';
 
-    if(/(?=.*[A-Z])^[^a-z]*$/.test(tmsg)) {
-       tmsg = '§ ' + tmsg;
-       pcpt = '1';
+    if (/(?=.*[A-Z])^[^a-z]*$/.test(tmsg)) {
+      tmsg = '§ ' + tmsg;
+      pcpt = '1';
     }
 
     var tmsg = tmsg.replace(/(A|@·)/g, function($1) {return $1 === 'A' ? '@·' : 'A'})
@@ -42,7 +45,7 @@ String.prototype.isUpperCase = function() {
                    .replace(/(X|"·)/g, function($1) {return $1 === 'X' ? '\"·' : 'X'})
                    .replace(/(Y|6·)/g, function($1) {return $1 === 'Y' ? '6·' : 'Y'})
                    .replace(/(Z|\*·)/g, function($1) {return $1 === 'Z' ? '*·' : 'Z'})
-                   .replace(/(a|@(?!·))/g, function($1) {return $1 === 'a' ? '@' : 'a'})                                  
+                   .replace(/(a|@(?!·))/g, function($1) {return $1 === 'a' ? '@' : 'a'})
                    .replace(/(b|;(?!·))/g, function($1) {return $1 === 'b' ? ';' : 'b'})
                    .replace(/(c|'(?!·))/g, function($1) {return $1 === 'c' ? '\'' : 'c'})
                    .replace(/(d|\$(?!·))/g, function($1) {return $1 === 'd' ? '$' : 'd'})
@@ -69,19 +72,14 @@ String.prototype.isUpperCase = function() {
                    .replace(/(y|6(?!·))/g, function($1) {return $1 === 'y' ? '6' : 'y'})
                    .replace(/(z|\*(?!·))/g, function($1) {return $1 === 'z' ? '*' : 'z'});
 
-    
-    if(tmsg.startsWith('§ ')) {
-      tmsg = tmsg.replace(/[·]/g, '')
+    if (tmsg.startsWith('§ ')) {
+      tmsg = tmsg.replace(/[·]/g, '');
 
-      if(pcpt === '0') {
+      if (pcpt === '0') {
         tmsg = tmsg.toUpperCase().slice(2);
       }
-    };
+    }
 
     message.channel.send(tmsg);
-
-}
-
-module.exports.help = {
-  name: "translate"
-}
+  },
+};
