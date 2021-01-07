@@ -66,7 +66,7 @@ module.exports.diEmb = (
   var emb = new Discord.MessageEmbed()
     .setColor(ciCE)
     .setTitle(title)
-    .setImage(`https://dummyimage.com/300x100/${diB}/${diL}&text=+${diT}`)
+    .setImage(`https://dummyimage.com/6600x2424/${diB}/${diL}&text=+${diT}`)
     .setFooter(footer, eU.avatarURL())
     .setTimestamp(Date.now());
 
