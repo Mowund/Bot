@@ -31,7 +31,7 @@ module.exports.diEmb = (
   }
 
   var emb = new Discord.MessageEmbed()
-    .setColor(parseInt(color, 16))
+    .setColor(color)
     .setTitle(title)
     .setImage(`https://dummyimage.com/300x100/${diB}/${diL}&text=+${diT}`)
     .setFooter(footer, eU.avatarURL())

@@ -32,7 +32,7 @@ module.exports = {
     var roleC = tinycolor(args.slice(1).join(' ')).toHex();
 
     if (message.guild.members.cache.get(uID)) {
-      var uIDF = await bot.users.fetch(roleO.id);
+      var uIDF = await client.users.fetch(roleO.id);
       var prC = await getColorFromURL(uIDF.avatarURL({ format: 'png' }));
       var [r, g, b] = prC;
       roleC = tinycolor(chalk.rgb(r, g, b)(`rgb(${r}, ${g}, ${b})`)).toHex();
