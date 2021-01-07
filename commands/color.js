@@ -2,7 +2,7 @@ const botconfig = require('../botconfig.json');
 const errors = require('../utils/errors.js');
 const utils = require('../utils/utils.js');
 const Discord = require('discord.js');
-const tinycolor = require('tinycolor2');
+const tc = require('tinycolor2');
 const { getColorFromURL } = require('color-thief-node');
 const chalk = require('chalk');
 const colorSchema = require('../schemas/color-schema');
@@ -23,23 +23,23 @@ module.exports = {
 
     if (args[1]) {
       eTiI = 'Cor especificada';
-      if (!tinycolor(args[1]).isValid()) {
+      if (!tc(args[1]).isValid()) {
         var uID = args[1].replace(/[\\<>@#&!]/g, '');
         roleO = message.guild.members.cache.get(uID);
       }
     }
 
-    var roleC = tinycolor(args.slice(1).join(' ')).toHex();
+    var roleC = tc(args.slice(1).join(' ')).toHex();
 
     if (message.guild.members.cache.get(uID)) {
       var uIDF = await client.users.fetch(roleO.id);
       var prC = await getColorFromURL(uIDF.avatarURL({ format: 'png' }));
       var [r, g, b] = prC;
-      roleC = tinycolor(chalk.rgb(r, g, b)(`rgb(${r}, ${g}, ${b})`)).toHex();
+      roleC = tc(chalk.rgb(r, g, b)(`rgb(${r}, ${g}, ${b})`)).toHex();
       eTiI = `Cor predominante no avatar de ${uIDF.username}`;
       cMen = `${uIDF} também pode interagir com o sistema.`;
 
-      if (tinycolor(args[2]).isValid()) {
+      if (tc(args[2]).isValid()) {
         eTiI = 'Cor especificada';
       }
     } else if (!args[1]) {
@@ -47,64 +47,39 @@ module.exports = {
         message.author.avatarURL({ format: 'png' })
       );
       var [r, g, b] = prC;
-      roleC = tinycolor(chalk.rgb(r, g, b)(`rgb(${r}, ${g}, ${b})`)).toHex();
+      roleC = tc(chalk.rgb(r, g, b)(`rgb(${r}, ${g}, ${b})`)).toHex();
       eTiI = 'Cor predominante no seu avatar';
-    }
-
-    if (roleC === '000000') {
-      roleC = '000001';
-    }
-
-    var roleCE = roleC;
-    if (roleCE === 'ffffff') {
-      roleCE = 'fffffe';
-    }
-
-    var roleL = '000000';
-    if (tinycolor(roleC).isDark()) {
-      roleL = 'ffffff';
     }
 
     var roleN = `USER-${message.author.id}`;
     var role = message.guild.roles.cache.find((x) => x.name == roleN);
 
     if (args[0] === 'convert') {
-      var tcvColor = tinycolor(args[1]).toHex();
+      var roleC = tc(args[1]).toHex();
       var IDerr = 'Você não tem um cargo de cor.';
 
-      if (!tinycolor(args[1]).isValid()) {
+      if (!tc(args[1]).isValid()) {
         roleN = `USER-${roleO.id}`;
         role = message.guild.roles.cache.find((x) => x.name == roleN);
         IDerr = `O usuário mencionado não tem um cargo de cor.`;
-        tcvColor = tinycolor(role.hexColor).toHex();
-        roleCE = role.hexColor.replace('#', '');
+        roleC = tc(role.hexColor).toHex();
 
         if (!role) return message.channel.send(`${IDerr}`);
       }
 
-      var cvRgb = tinycolor(tcvColor).toRgbString();
+      var cvRgb = tc(roleC).toRgbString();
       var RgbLk = encodeURI(cvRgb);
-
-      roleCE = tcvColor;
-      if (roleCE === 'ffffff') {
-        roleCE = 'fffffe';
-      }
-      var cColorL = '000000';
-      if (tinycolor(tcvColor).isDark()) {
-        cColorL = 'ffffff';
-      }
 
       utils.diEmb(
         1,
         message,
         message.author,
-        roleCE,
+        roleC,
         'Convertido para RGB',
-        `${tcvColor}`,
-        `${cColorL}`,
-        `${RgbLk}`,
         0,
-        `${cvRgb}`
+        cvRgb,
+        RgbLk,
+        roleC
       );
     }
 
@@ -119,33 +94,14 @@ module.exports = {
 
       if (!role) return message.channel.send(`${IDerr}`);
 
-      roleC = role.hexColor.replace('#', '');
-
-      roleCE = roleC;
-      if (roleCE === 'ffffff') {
-        roleCE = 'fffffe';
-      }
-
-      roleL = '000000';
-      if (tinycolor(roleC).isDark()) {
-        roleL = 'ffffff';
-      }
+      roleC = tc(role.hexColor).toHex();
 
       if (roleO.id === message.author.id) {
         eTiI = 'Cor atual';
       } else {
         eTiI = `Cor atual de ${uIDF.username}`;
       }
-      utils.diEmb(
-        1,
-        message,
-        message.author,
-        roleCE,
-        eTiI,
-        `${roleC}`,
-        `${roleL}`,
-        `${roleC}`
-      );
+      utils.diEmb(1, message, message.author, roleC, eTiI);
     }
 
     if (args[0] === 'remove') {
@@ -161,17 +117,7 @@ module.exports = {
 
       if (!role) return message.channel.send(`${IDerr}`);
 
-      roleC = role.hexColor.replace('#', '');
-
-      roleCE = roleC;
-      if (roleCE === 'ffffff') {
-        roleCE = 'fffffe';
-      }
-
-      roleL = '000000';
-      if (tinycolor(roleC).isDark()) {
-        roleL = 'ffffff';
-      }
+      roleC = tc(role.hexColor).toHex();
 
       function reRC() {
         role = message.guild.roles.cache.find((x) => x.name == roleN);
@@ -190,16 +136,7 @@ module.exports = {
       } else {
         eTiI = `Cor de ${uIDF.username} deletada`;
       }
-      utils.diEmb(
-        1,
-        message,
-        message.author,
-        roleCE,
-        eTiI,
-        `${roleC}`,
-        `${roleL}`,
-        `${roleC}`
-      );
+      utils.diEmb(1, message, message.author, roleC, eTiI);
     }
 
     if (args[0] === 'change') {
@@ -213,41 +150,19 @@ module.exports = {
         role = message.guild.roles.cache.find((x) => x.name == roleN);
 
         if (args[2]) {
-          roleC = tinycolor(args.slice(2).join(' ')).toHex();
-        }
-        if (roleC === '000000') {
-          roleC = '000001';
-
-          var roleCE = roleC;
-          if (roleCE === 'ffffff') {
-            roleCE = 'fffffe';
-          }
-        }
-
-        var roleL = '000000';
-        if (tinycolor(roleC).isDark()) {
-          roleL = 'ffffff';
+          roleC = tc(args.slice(2).join(' ')).toHex();
         }
       }
 
-      if (tinycolor(args.slice(aN).join(' ')).isValid() || !args[aN]) {
+      if (roleC === '000000') {
+        roleC = '000001';
+      }
+
+      if (tc(args.slice(aN).join(' ')).isValid() || !args[aN]) {
         const reactions = ['⛔', '🔁', '✅', '⚪', '⚫', '🎨', '📝'];
 
         message.channel
-          .send(
-            utils.diEmb(
-              0,
-              message,
-              message.author,
-              roleCE,
-              eTiI,
-              `${roleC}`,
-              `${roleL}`,
-              `${roleC}`,
-              0,
-              cMen
-            )
-          )
+          .send(utils.diEmb(0, message, message.author, roleC, eTiI, 0, cMen))
           .then((msg) => {
             reactions.forEach((r) => msg.react(r));
 
@@ -275,79 +190,33 @@ module.exports = {
                   var fRU = message.guild.members.cache.get(rU.id);
 
                   if (reaction.emoji.name === '⛔') {
-                    if (roleC === '000000') {
-                      roleC = '000001';
-                    }
-
-                    var roleCE = roleC;
-                    if (roleCE === 'ffffff') {
-                      roleCE = 'fffffe';
-                    }
-
-                    var roleL = '000000';
-                    if (tinycolor(roleC).isDark()) {
-                      roleL = 'ffffff';
-                    }
-
                     msg.reactions.removeAll();
                     utils.diEmb(
                       msg,
                       message,
                       fRU.user,
-                      roleCE,
+                      roleC,
                       'Cancelado',
-                      `${roleC}`,
-                      `${roleL}`,
-                      'Cancelado',
-                      1
+                      1,
+                      0,
+                      'Cancelado'
                     );
                   } else if (reaction.emoji.name === '🔁') {
-                    roleC = tinycolor.random().toHex();
-
-                    if (roleC === '000000') {
-                      roleC = '000001';
-                    }
-
-                    var roleCE = roleC;
-                    if (roleCE === 'ffffff') {
-                      roleCE = 'fffffe';
-                    }
-
-                    var roleL = '000000';
-                    if (tinycolor(roleC).isDark()) {
-                      roleL = 'ffffff';
-                    }
+                    roleC = tc.random().toHex().replace('000000', '000001');
 
                     reaction.users.remove(rU.id);
                     utils.diEmb(
                       msg,
                       message,
                       fRU.user,
-                      roleCE,
+                      roleC,
                       'Você gostaria dessa cor?',
-                      `${roleC}`,
-                      `${roleL}`,
-                      `${roleC}`,
                       1,
                       cMen
                     );
 
                     f1();
                   } else if (reaction.emoji.name === '✅') {
-                    if (roleC === '000000') {
-                      roleC = '000001';
-                    }
-
-                    var roleCE = roleC;
-                    if (roleCE === 'ffffff') {
-                      roleCE = 'fffffe';
-                    }
-
-                    var roleL = '000000';
-                    if (tinycolor(roleC).isDark()) {
-                      roleL = 'ffffff';
-                    }
-
                     var pos = message.guild.me.roles.highest.position;
 
                     if (!role) {
@@ -392,17 +261,7 @@ module.exports = {
                         eTiI = `Cor criada e atribuída à ${uIDF.username}`;
                       }
 
-                      utils.diEmb(
-                        msg,
-                        message,
-                        fRU.user,
-                        roleCE,
-                        eTiI,
-                        `${roleC}`,
-                        `${roleL}`,
-                        `${roleC}`,
-                        1
-                      );
+                      utils.diEmb(msg, message, fRU.user, roleC, eTiI, 1);
                     } else {
                       pos = pos - 1;
 
@@ -443,45 +302,21 @@ module.exports = {
                         }
                       }
 
-                      utils.diEmb(
-                        msg,
-                        message,
-                        fRU.user,
-                        roleCE,
-                        eTiI,
-                        `${roleC}`,
-                        `${roleL}`,
-                        `${roleC}`,
-                        1
-                      );
+                      utils.diEmb(msg, message, fRU.user, roleC, eTiI, 1);
                     }
                     msg.reactions.removeAll();
                   } else if (reaction.emoji.name === '⚪') {
-                    roleC = tinycolor(roleC).brighten(10).toHex();
-
-                    if (roleC === '000000') {
-                      roleC = '000001';
-                    }
-
-                    var roleCE = roleC;
-                    if (roleCE === 'ffffff') {
-                      roleCE = 'fffffe';
-                    }
-
-                    var roleL = '000000';
-                    if (tinycolor(roleC).isDark()) {
-                      roleL = 'ffffff';
-                    }
+                    roleC = tc(roleC)
+                      .brighten(10)
+                      .toHex()
+                      .replace('000000', '000001');
 
                     utils.diEmb(
                       msg,
                       message,
                       fRU.user,
-                      roleCE,
+                      roleC,
                       'Você gostaria dessa cor?',
-                      `${roleC}`,
-                      `${roleL}`,
-                      `${roleC}`,
                       1,
                       cMen
                     );
@@ -490,31 +325,17 @@ module.exports = {
 
                     f1();
                   } else if (reaction.emoji.name === '⚫') {
-                    roleC = tinycolor(roleC).darken(10).toHex();
-
-                    if (roleC === '000000') {
-                      roleC = '000001';
-                    }
-
-                    var roleCE = roleC;
-                    if (roleCE === 'ffffff') {
-                      roleCE = 'fffffe';
-                    }
-
-                    var roleL = '000000';
-                    if (tinycolor(roleC).isDark()) {
-                      roleL = 'ffffff';
-                    }
+                    roleC = tc(roleC)
+                      .darken(10)
+                      .toHex()
+                      .replace('000000', '000001');
 
                     utils.diEmb(
                       msg,
                       message,
                       fRU.user,
-                      roleCE,
+                      roleC,
                       'Você gostaria dessa cor?',
-                      `${roleC}`,
-                      `${roleL}`,
-                      `${roleC}`,
                       1,
                       cMen
                     );
@@ -523,31 +344,15 @@ module.exports = {
 
                     f1();
                   } else if (reaction.emoji.name === '🎨') {
-                    if (roleC === '000000') {
-                      roleC = '000001';
-                    }
-
-                    let roleCE = roleC;
-                    if (roleCE === 'ffffff') {
-                      roleCE = 'fffffe';
-                    }
-
-                    let roleL = '000000';
-                    if (tinycolor(roleC).isDark()) {
-                      roleL = 'ffffff';
-                    }
-
                     utils.diEmb(
                       msg,
                       message,
                       fRU.user,
-                      roleCE,
+                      roleC,
                       'Digite uma cor para misturar',
-                      `${roleC}`,
-                      `${roleL}`,
-                      `${roleC}+＋`,
                       1,
-                      cMen
+                      cMen,
+                      `${roleC}+＋`
                     );
 
                     msg.reactions.removeAll();
@@ -563,34 +368,18 @@ module.exports = {
                         })
                         .then((message) => {
                           message = message.first();
-                          if (tinycolor(message.content).isValid()) {
-                            roleC = tinycolor
+                          if (tc(message.content).isValid()) {
+                            roleC = tc
                               .mix(roleC, message.content, (amount = 50))
-                              .toHex();
-
-                            if (roleC === '000000') {
-                              roleC = '000001';
-                            }
-
-                            roleCE = roleC;
-                            if (roleCE === 'ffffff') {
-                              roleCE = 'fffffe';
-                            }
-
-                            roleL = '000000';
-                            if (tinycolor(roleC).isDark()) {
-                              roleL = 'ffffff';
-                            }
+                              .toHex()
+                              .replace('000000', '000001');
 
                             utils.diEmb(
                               msg,
                               message,
                               fRU.user,
-                              roleCE,
+                              roleC,
                               'Cor misturada',
-                              `${roleC}`,
-                              `${roleL}`,
-                              `${roleC}`,
                               1,
                               cMen
                             );
@@ -604,13 +393,11 @@ module.exports = {
                               msg,
                               message,
                               fRU.user,
-                              roleCE,
+                              roleC,
                               'Cor inválida, digite uma cor válida para misturar',
-                              `${roleC}`,
-                              `${roleL}`,
-                              `${roleC}+＋`,
                               1,
-                              cMen
+                              cMen,
+                              `${roleC}+＋`
                             );
 
                             msg.reactions.removeAll();
@@ -624,41 +411,25 @@ module.exports = {
                             msg,
                             message,
                             message.author,
-                            roleCE,
-                            'Tempo esgotado',
                             roleC,
-                            roleL,
+                            'Tempo esgotado',
+                            0,
+                            0,
                             'Tempo%20esgotado'
                           );
                         });
                     }
                     fm1();
                   } else {
-                    if (roleC === '000000') {
-                      roleC = '000001';
-                    }
-
-                    let roleCE = roleC;
-                    if (roleCE === 'ffffff') {
-                      roleCE = 'fffffe';
-                    }
-
-                    let roleL = '000000';
-                    if (tinycolor(roleC).isDark()) {
-                      roleL = 'ffffff';
-                    }
-
                     utils.diEmb(
                       msg,
                       message,
                       fRU.user,
-                      roleCE,
+                      roleC,
                       'Digite uma nova cor',
-                      `${roleC}`,
-                      `${roleL}`,
-                      `${roleC}+->`,
                       1,
-                      cMen
+                      cMen,
+                      `${roleC}+->`
                     );
 
                     msg.reactions.removeAll();
@@ -675,32 +446,17 @@ module.exports = {
                         .then((message) => {
                           message = message.first();
 
-                          if (tinycolor(message.content).isValid()) {
-                            roleC = tinycolor(message.content).toHex();
-
-                            if (roleC === '000000') {
-                              roleC = '000001';
-                            }
-
-                            roleCE = roleC;
-                            if (roleCE === 'ffffff') {
-                              roleCE = 'fffffe';
-                            }
-
-                            roleL = '000000';
-                            if (tinycolor(roleC).isDark()) {
-                              roleL = 'ffffff';
-                            }
+                          if (tc(message.content).isValid()) {
+                            roleC = tc(message.content)
+                              .toHex()
+                              .replace('000000', '000001');
 
                             utils.diEmb(
                               msg,
                               message,
                               fRU.user,
-                              roleCE,
+                              roleC,
                               'Cor editada',
-                              `${roleC}`,
-                              `${roleL}`,
-                              `${roleC}`,
                               1,
                               cMen
                             );
@@ -714,13 +470,11 @@ module.exports = {
                               msg,
                               message,
                               fRU.user,
-                              roleCE,
+                              roleC,
                               'Cor inválida, digite uma nova cor válida',
-                              `${roleC}`,
-                              `${roleL}`,
-                              `${roleC}+->`,
                               1,
-                              cMen
+                              cMen,
+                              `${roleC}+->`
                             );
 
                             msg.reactions.removeAll();
@@ -734,10 +488,10 @@ module.exports = {
                             msg,
                             message,
                             message.author,
-                            roleCE,
-                            'Tempo esgotado',
                             roleC,
-                            roleL,
+                            'Tempo esgotado',
+                            0,
+                            0,
                             'Tempo%20esgotado'
                           );
                         });
@@ -747,24 +501,15 @@ module.exports = {
                 })
                 .catch((err) => {
                   console.error(err);
-                  var roleCE = roleC;
-                  if (roleCE === 'ffffff') {
-                    roleCE = 'fffffe';
-                  }
-
-                  var roleL = '000000';
-                  if (tinycolor(roleC).isDark()) {
-                    roleL = 'ffffff';
-                  }
 
                   utils.diEmb(
                     msg,
                     message,
                     message.author,
-                    roleCE,
-                    'Tempo esgotado',
                     roleC,
-                    roleL,
+                    'Tempo esgotado',
+                    0,
+                    0,
                     'Tempo%20esgotado'
                   );
                   msg.reactions.removeAll();
@@ -773,21 +518,12 @@ module.exports = {
             f1();
           });
       } else {
-        utils.diEmb(
-          1,
-          message,
-          message.author,
-          '000000',
-          'Cor inválida',
-          '000000',
-          'ffffff',
-          'Inválido'
-        );
+        utils.diEmb(1, message, message.author);
       }
     }
   },
 };
 
 module.exports.config = {
-  loadDBFirst: true, // Wait for the database connection to be present
+  loadDBFirst: true,
 };

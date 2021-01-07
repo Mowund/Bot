@@ -28,7 +28,7 @@ client.on('ready', () => {
     useFindAndModify: false,
   };
 
-  new WOKCommands(client, {
+  const wok = new WOKCommands(client, {
     commandsDir: 'commands',
     featureDir: 'features',
     messagesPath: 'messages.json',
@@ -50,6 +50,10 @@ client.on('ready', () => {
         emoji: '🚧',
       },
     ]);
+
+  wok.on('databaseConnected', (connection) => {
+    console.log('Database conectado!'.green);
+  });
 });
 
 {
