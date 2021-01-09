@@ -1,3 +1,6 @@
 module.exports = (client, instance) => {
-  if (message.channel.type === 'dm') return;
+  client.on('message'),
+    () => {
+      if (message.channel.type === 'dm') return;
+    };
 };
