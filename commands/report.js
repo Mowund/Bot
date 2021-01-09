@@ -7,6 +7,8 @@ module.exports = {
   category: 'Utils',
   description: 'Reporta um membro.',
   callback: async ({ message, args, client }) => {
+    if (message.channel.type === 'dm') return;
+
     message.delete();
     if (args[0] == 'help') {
       message.reply('Uso: !report <usuário> <motivo>');

@@ -7,6 +7,8 @@ module.exports = {
   category: 'Utils',
   description: 'Exibe um emoji pré-definido.',
   callback: async ({ message, args, client }) => {
+    if (message.channel.type === 'dm') return;
+
     var emj = emoji.name(args[0]);
 
     message.channel.send(emj);

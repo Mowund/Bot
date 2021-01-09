@@ -6,6 +6,8 @@ module.exports = {
   category: 'Utils',
   description: 'Expulsa um membro.',
   callback: async ({ message, args, client }) => {
+    if (message.channel.type === 'dm') return;
+
     if (!message.member.hasPermission('KICK_MEMBERS'))
       return errors.noPerms(message, 'Expulsar Membros');
     if (args[0] == 'help') {

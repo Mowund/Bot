@@ -5,6 +5,8 @@ module.exports = {
   category: 'Utils',
   description: 'Exibe informações do servidor.',
   callback: async ({ message, args, client }) => {
+    if (message.channel.type === 'dm') return;
+
     let serverembed = new Discord.MessageEmbed()
       .setDescription('Informações do Servidor')
       .setColor('#15f153')

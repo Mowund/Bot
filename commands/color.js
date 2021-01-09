@@ -14,6 +14,8 @@ module.exports = {
   expectedArgs: 'change (cor)',
   minArgs: 1,
   callback: async ({ message, args, client }) => {
+    if (message.channel.type === 'dm') return;
+
     cS = await colorSchema.findOne();
     if (!cS.cI.includes(message.channel.id)) return;
 

@@ -6,6 +6,8 @@ module.exports = {
   category: 'Utils',
   description: 'Remove o cargo de um membro.',
   callback: async ({ message, args, client }) => {
+    if (message.channel.type === 'dm') return;
+
     if (!message.member.hasPermission('MANAGE_ROLES'))
       return errors.noPerms(message, 'Gerenciar Cargos');
     if (args[0] == 'help') {

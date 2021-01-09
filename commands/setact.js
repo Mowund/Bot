@@ -5,6 +5,8 @@ module.exports = {
   category: 'Utils',
   description: 'Define um status do bot.',
   callback: async ({ message, args, client }) => {
+    if (message.channel.type === 'dm') return;
+
     if (!message.member.hasPermission('MANAGE_WEBHOOKS'))
       return errors.noPerms(message, 'Gerenciar Webhooks');
 

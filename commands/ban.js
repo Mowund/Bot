@@ -6,6 +6,8 @@ module.exports = {
   category: 'Utils',
   description: 'Bane um membro.',
   callback: async ({ message, args, client }) => {
+    if (message.channel.type === 'dm') return;
+
     message.delete();
     if (!message.member.hasPermission('BAN_MEMBERS'))
       return errors.noPerms(message, 'Banir Membros');

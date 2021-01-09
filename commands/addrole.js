@@ -6,6 +6,8 @@ module.exports = {
   category: 'Utils',
   description: 'Adicionar cargo à um membro.',
   callback: async ({ message, args, client }) => {
+    if (message.channel.type === 'dm') return;
+
     //!addrole @Smidul VIP
     if (!message.member.hasPermission('MANAGE_ROLES'))
       return errors.noPerms(message, 'Gerenciar Cargos');

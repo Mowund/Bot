@@ -5,6 +5,8 @@ module.exports = {
   category: 'Utils',
   description: 'Coloca uma tag [AFK] no seu nick.',
   callback: async ({ message, args, client }) => {
+    if (message.channel.type === 'dm') return;
+
     let gNick = message.member.displayName;
     const nick = gNick.replace(/\[AFK\] /g, '');
 

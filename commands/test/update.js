@@ -8,6 +8,8 @@ module.exports = {
   category: 'Utils',
   description: 'Para atualizações do servidor',
   callback: async ({ message, args, client }) => {
+    if (message.channel.type === 'dm') return;
+
     const channel = message.guild.channels.cache.find(
       (c) => c.id === '467133077475557376'
     );

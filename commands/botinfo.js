@@ -6,6 +6,8 @@ module.exports = {
   category: 'Utils',
   description: 'Exibe informações do bot.',
   callback: async ({ message, args, client }) => {
+    if (message.channel.type === 'dm') return;
+
     let clientembed = new Discord.MessageEmbed()
       .setTitle('**Informações do Bot**')
       .setColor('00ff55')

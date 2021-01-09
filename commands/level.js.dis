@@ -6,6 +6,8 @@ module.exports = {
   category: 'Utils',
   description: 'UNDEFINED',
   callback: async ({ message, args, client }) => {
+    if (message.channel.type === 'dm') return;
+    
     if (!xp[message.author.id]) {
       xp[message.author.id] = {
         xp: 0,

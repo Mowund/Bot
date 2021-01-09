@@ -7,6 +7,8 @@ module.exports = {
   category: 'Utils',
   description: 'Reage com um emoji pré-definido.',
   callback: async ({ message, args, client }) => {
+    if (message.channel.type === 'dm') return;
+
     var guild = message.guild;
     var channel = args[0];
     var id = args[1];

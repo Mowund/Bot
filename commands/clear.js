@@ -9,6 +9,8 @@ module.exports = {
   expectedArgs: '(quantidade)',
   minArgs: 1,
   callback: async ({ message, args, client }) => {
+    if (message.channel.type === 'dm') return;
+
     var msgc = parseInt(args[0]);
     var msgt = Math.floor(msgc + 1);
 

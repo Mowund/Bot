@@ -6,6 +6,8 @@ module.exports = {
   category: 'Utils',
   description: 'UNDEFINED',
   callback: async ({ message, args, client }) => {
+    if (message.channel.type === 'dm') return;
+    
     //!coins
     if (!coins[message.author.id]) {
       coins[message.author.id] = {

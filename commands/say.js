@@ -6,6 +6,8 @@ module.exports = {
   category: 'Utils',
   description: 'Reproduz uma mensagem.',
   callback: async ({ message, args, client }) => {
+    if (message.channel.type === 'dm') return;
+
     message.delete();
 
     let guild = client.guilds.cache.get(args[0]);

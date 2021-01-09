@@ -5,6 +5,8 @@ module.exports = {
   category: 'Utils',
   description: 'Mostra o tempo de resposta, ping e uptime do bot.',
   callback: async ({ message, args, client }) => {
+    if (message.channel.type === 'dm') return;
+
     let botMsg = await message.channel.send('〽️ Pingando...');
 
     botMsg
