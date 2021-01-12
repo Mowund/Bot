@@ -14,9 +14,11 @@ module.exports = {
       .setThumbnail(client.user.displayAvatarURL())
       .addField('Nome do Bot', client.user.username)
       .addField('Versão do Bot', pack.version, true)
+      .addField('Data de Criação', client.user.createdAt)
       .addField(
         'Servidores',
-        `O bot está em atualmente **${client.guilds.cache.size}** servidores.`
+        `O bot está em atualmente **${client.guilds.cache.size}** servidores.`,
+        true
       )
       .addField(
         'Convites',
