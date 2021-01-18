@@ -56,6 +56,15 @@ client.on('ready', () => {
   });
 });
 
+client.on('message', async() => {
+  if (command === "restart") {
+    if (message.author.id !== "205130563424616450") return;
+    message.reply("Reiniciando...");
+    client.destroy();
+    client.login(process.env.token);
+  };
+});
+
 {
   /*{client.on('ready', async() => {
     client.api.applications(client.user.id).commands.post({
