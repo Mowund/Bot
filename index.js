@@ -56,8 +56,8 @@ client.on('ready', () => {
   });
 });
 
-client.on('message', async() => {
-  if (message.content === "restart") {
+client.on('message', (message) => {
+  if (message.content === "}^restart") {
     if (message.author.id !== "205130563424616450") return;
     message.reply("Reiniciando...");
     client.destroy();
