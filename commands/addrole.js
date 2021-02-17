@@ -17,11 +17,11 @@ module.exports = {
     }
     let rMember =
       message.guild.member(message.mentions.users.first()) ||
-      message.guild.members.get(args[0]);
+      message.guild.members.cache.get(args[0]);
     if (!rMember) return errors.cantfindUser(message.channel);
     let role = args.join(' ').slice(22);
     if (!role) return message.reply('Especifique um cargo!');
-    let gRole = message.guild.roles.find(`name`, role);
+    let gRole = message.guild.roles.cache.find(`name`, role);
     if (!gRole) return message.reply('Não foi possível encontrar este cargo.');
 
     if (rMember.roles.has(gRole.id))

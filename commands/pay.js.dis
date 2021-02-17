@@ -17,7 +17,7 @@ module.exports = {
 
     let pUser =
       message.guild.member(message.mentions.users.first()) ||
-      message.guild.members.get(args[0]);
+      message.guild.members.cache.get(args[0]);
 
     if (!coins[pUser.id]) {
       coins[pUser.id] = {

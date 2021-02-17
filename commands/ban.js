@@ -16,7 +16,7 @@ module.exports = {
       return;
     }
     let bUser = message.guild.member(
-      message.mentions.users.first() || message.guild.members.get(args[0])
+      message.mentions.users.first() || message.guild.members.cache.get(args[0])
     );
     if (!bUser) return errors.cantfindUser(message.channel);
     if (bUser.id === client.user.id) return errors.clientuser(message);
