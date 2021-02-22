@@ -2,6 +2,36 @@ const Discord = require('discord.js');
 const tc = require('tinycolor2');
 const client = new Discord.Client();
 
+module.exports.iCP = async (client, itc, cnt, eph, tts, emb) => {
+  if (!eph || eph == 0) {
+    eph = 0;
+  } else if (eph == 1) {
+    eph = 64;
+  }
+
+  if (!tts || tts == 0) {
+    tts = false;
+  } else if (tts == 1) {
+    tts = true;
+  }
+
+  var dt = {
+    content: cnt,
+    flags: eph,
+    tts: tts,
+  };
+  if (emb && emb != 0) {
+    dt = { tts: tts, embeds: [cnt] };
+  }
+
+  return client.api.interactions(itc.id, itc.token).callback.post({
+    data: {
+      type: 3,
+      data: dt,
+    },
+  });
+};
+
 module.exports.msgEdit = async (chan, id, medit) => {
   try {
     const message = await chan.messages.fetch(id);
