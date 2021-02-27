@@ -123,16 +123,16 @@ module.exports = async (client, instance) => {
     const uI = guildI.members.cache.get(interaction.member.user.id);
     const uIF = await client.users.fetch(uI.id);
 
-    var tts = args
-      .find((arg) => arg['options'])
-      .options.find((arg) => arg.name == 'tts');
-    if (!tts) {
-      tts = false;
-    } else {
-      tts = tts.value;
-    }
-
     if (command == 'echo') {
+      var tts = args
+        .find((arg) => arg['options'])
+        .options.find((arg) => arg.name == 'tts');
+      if (!tts) {
+        tts = false;
+      } else {
+        tts = tts.value;
+      }
+
       if (args.find((arg) => arg.name == 'embed')) {
         var eD = args
           .find((arg) => arg['options'])
@@ -347,5 +347,5 @@ module.exports = async (client, instance) => {
 module.exports.config = {
   displayName: 'Echo Interaction',
   dbName: 'EchoI',
-  loadDBFirst: false,
+  loadDBFirst: true,
 };

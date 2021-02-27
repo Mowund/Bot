@@ -5,32 +5,35 @@ require('colors');
 require('log-timestamp');
 
 module.exports = async (client, instance) => {
-  client.api.applications(client.user.id).commands.post({
-    data: {
-      name: 'config',
-      description: 'Configura interações.',
-      options: [
-        {
-          name: 'delete',
-          description: 'Deleta uma interação. (Somente dono)',
-          type: 1,
-          options: [
-            {
-              name: 'id',
-              description: 'ID da interação.',
-              type: 3,
-              required: true,
-            },
-          ],
-        },
-        {
-          name: 'list',
-          description: 'Lista todas as interações no console. (Somente dono)',
-          type: 1,
-        },
-      ],
-    },
-  });
+  client.api
+    .applications(client.user.id)
+    .guilds('420007989261500418')
+    .commands.post({
+      data: {
+        name: 'config',
+        description: 'Configura interações.',
+        options: [
+          {
+            name: 'delete',
+            description: 'Deleta uma interação. (Somente dono)',
+            type: 1,
+            options: [
+              {
+                name: 'id',
+                description: 'ID da interação.',
+                type: 3,
+                required: true,
+              },
+            ],
+          },
+          {
+            name: 'list',
+            description: 'Lista todas as interações no console. (Somente dono)',
+            type: 1,
+          },
+        ],
+      },
+    });
 
   client.ws.on('INTERACTION_CREATE', async (interaction) => {
     const command = interaction.data.name.toLowerCase();
@@ -41,6 +44,10 @@ module.exports = async (client, instance) => {
     const uIF = await client.users.fetch(uI.id);
 
     var getId = await client.api.applications(client.user.id).commands.get();
+    var getIdG = await client.api
+      .applications(client.user.id)
+      .guilds(guildI.id)
+      .commands.get();
 
     var argsJ = args;
     if (args.find((arg) => arg['options'])) {
@@ -72,6 +79,7 @@ module.exports = async (client, instance) => {
 
       if (args.find((arg) => arg.name.toLowerCase() == 'list')) {
         console.table(getId);
+        console.table(getIdG);
         utils.iCP(
           client,
           interaction,
@@ -112,5 +120,5 @@ module.exports = async (client, instance) => {
 module.exports.config = {
   displayName: 'Configure Interactions',
   dbName: 'ConfigI',
-  loadDBFirst: false,
+  loadDBFirst: true,
 };

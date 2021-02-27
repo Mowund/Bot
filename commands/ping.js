@@ -12,7 +12,7 @@ module.exports = {
     botMsg
       .edit('', {
         embed: {
-          title: '📶 Ping',
+          title: '📶 Pong!',
           description: [
             '**Tempo de Resposta:** `' +
               (botMsg.createdAt - message.createdAt) +
