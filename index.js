@@ -3,41 +3,37 @@ const Discord = require('discord.js');
 const fs = require('fs');
 let coins = require('./coins.json');
 let xp = require('./xp.json');
+let env = require('./env.json');
 require('colors');
 require('log-timestamp');
-
-var dPrefix = botconfig.prefix;
-
-if (!process.env.token) {
-  var enJSON = require('./env.json');
-  process.env.token = enJSON.token;
-  process.env.mongo_uri = enJSON.mongo_uri;
-  dPrefix = botconfig.tprefix;
-}
-
 const WOKCommands = require('wokcommands');
 require('dotenv').config();
 
-const client = new Discord.Client({ partials: ['MESSAGE', 'REACTION'] });
+const client = new Discord.Client({
+  intents: ['GUILDS', 'GUILD_MESSAGES'],
+  partials: ['MESSAGE', 'REACTION'],
+});
 
 client.on('ready', () => {
-  const dbOptions = {
-    keepAlive: true,
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-    useFindAndModify: false,
-  };
+  client.user.setPresence({
+    activity: { name: 'Conectando ao database...' },
+    status: 'idle',
+  });
 
   const wok = new WOKCommands(client, {
     commandsDir: 'commands',
     featureDir: 'features',
     messagesPath: 'messages.json',
-    testServers: '747587598712569913',
+    testServers: '420007989261500418',
+    defaultLanguage: 'portuguese',
     showWarns: true,
-    dbOptions,
+    keepAlive: true,
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    useFindAndModify: false,
   })
-    .setMongoPath(process.env.mongo_uri)
-    .setDefaultPrefix(dPrefix)
+    .setMongoPath(env.mongo_uri)
+    .setDefaultPrefix(botconfig.prefix)
     .setBotOwner('251120969320497153')
     .setColor(0xff0000)
     .setCategorySettings([
@@ -53,11 +49,20 @@ client.on('ready', () => {
 
   wok.on('databaseConnected', (connection) => {
     console.log('Database conectado!'.green);
+    client.user.setPresence({
+      activity: { name: 'Começando a refazer o bot.' },
+      status: 'online',
+    });
+  });
+
+  wok.on('languageNotSupported', (message, lang) => {
+    var { guild } = message;
+    console.log(`"${guild.name}" Attempted to set language to "${lang}"`);
   });
 });
 
 {
-  /*  if(!message.member.roles.find(x => x.name === 'Não Registrados')){
+  /*  if(!message.member.roles.find(x => x.name == 'Não Registrados')){
     if(!coins[message.author.id]){
       coins[message.author.id] = {
         coins: 0
@@ -69,7 +74,7 @@ client.on('ready', () => {
     console.log(`${message.author.username}#${message.author.discriminator}: ` .blue);
     console.log(`COIN:` .cyan, `${coinAmt} ; ${baseAmt}` .green);
   
-    if(coinAmt === baseAmt){
+    if(coinAmt == baseAmt){
       coins[message.author.id] = {
         coins: coins[message.author.id].coins + coinAmt
       };
@@ -79,14 +84,14 @@ client.on('ready', () => {
   
     let coinEmbed = new Discord.MessageEmbed()
     .setAuthor(message.author.username)
-    .setColor('#0000FF')
+    .setColor('0000FF')
     .addField('💸', `${coinAmt} moedas adicionadas!`);
   
     message.channel.send(coinEmbed).then(msg => {msg.delete({timeout:1000})});
     }
   }
   
-    if(!message.member.roles.find(x => x.name === 'Não Registrados')){
+    if(!message.member.roles.find(x => x.name == 'Não Registrados')){
     let xpAdd = Math.floor(Math.random() * 7) + 8;
     console.log(`XP:` .cyan, `${xpAdd}` .green);
   
@@ -107,7 +112,7 @@ client.on('ready', () => {
       xp[message.author.id].level = curlvl + 1;
       let lvlup = new Discord.MessageEmbed()
       .setTitle('Upou de Nível!')
-      .setColor('#d604cf')
+      .setColor('d604cf')
       .addField('Novo Nível', curlvl + 1);
   
       message.channel.send(lvlup);
@@ -118,4 +123,4 @@ client.on('ready', () => {
   };*/
 }
 
-client.login(process.env.token).catch((err) => console.log(err));
+client.login(env.token).catch((err) => console.log(err));

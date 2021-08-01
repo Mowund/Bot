@@ -7,7 +7,7 @@ module.exports = {
   category: 'Utils',
   description: 'Reporta um membro.',
   callback: async ({ message, args, client }) => {
-    if (message.channel.type === 'dm') return;
+    if (!message.guild) return;
 
     message.delete();
     if (args[0] == 'help') {
@@ -22,14 +22,14 @@ module.exports = {
     if (!rreason) return errors.noReason(message.channel);
 
     let reportEmbed = new Discord.MessageEmbed()
-      .setColor('#ff6a00')
+      .setColor('ff6a00')
       .addField('Usuário Reportado', `${rUser} com o ID: ${rUser.id}`)
       .addField(
         'Reportado Por',
         `${message.author} com o ID: ${message.author.id}`
       )
       .addField('Canal', message.channel)
-      .addField('Tempo', message.createdAt)
+      .addField('Tempo', utils.toUTS(message.createdAt))
       .addField('Motivo', rreason);
 
     let reportschannel = message.guild.channels.cache.find(`name`, 'reportes');

@@ -6,7 +6,7 @@ module.exports = {
   category: 'Utils',
   description: 'UNDEFINED',
   callback: async ({ message, args, client }) => {
-    if (message.channel.type === 'dm') return;
+    if (!message.guild) return;
     
     if (!xp[message.author.id]) {
       xp[message.author.id] = {
@@ -21,7 +21,7 @@ module.exports = {
 
     let lvlEmbed = new Discord.MessageEmbed()
       .setAuthor(message.author.username)
-      .setColor('#d604cf')
+      .setColor('d604cf')
       .addField('Nível', curlvl, true)
       .addField('XP', curxp, true)
       .setFooter(

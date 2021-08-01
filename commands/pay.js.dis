@@ -7,7 +7,7 @@ module.exports = {
   category: 'Utils',
   description: 'UNDEFINED',
   callback: async ({ message, args, client }) => {
-    if (message.channel.type === 'dm') return;
+    if (!message.guild) return;
     
     //!pay @isatisfied 59345
 

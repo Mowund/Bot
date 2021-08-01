@@ -1,165 +1,645 @@
 {
-    "LANGUAGE_NOT_SUPPORTED": {
-      "en-us": "This bot does not have support for `{LANGUAGE}` at this time.",
-      "es": "Este bot no es compatible con `{LANGUAGE}` en este momento.",
-      "pt-br": "Este bot não é compatível com `{LANGUAGE}` por enquanto."
-    },
-    "CURRENT_LANGUAGE": {
-      "en-us": "The current language is set to `{LANGUAGE}`.",
-      "es": "El idioma actual está establecido en `{LANGUAGE}`.",
-      "pt-br": "O idioma atual está definido como `{LANGUAGE}`."
-    },
-    "NEW_LANGUAGE": {
-      "en-us": "Language set to `{LANGUAGE}`.",
-      "es": "Idioma configurado en `{LANGUAGE}`.",
-      "pt-br": "Idioma configurado para `{LANGUAGE}`."
-    },
-    "BOT_OWNERS_ONLY": {
-      "en-us": "Only the bot owner can run this command.",
-      "es": "Solo el propietario del bot puede ejecutar este comando.",
-      "pt-br": "Apenas o proprietário do bot pode executar este comando."
-    },
-    "DISABLED_COMMAND": {
-      "en-us": "That command is currently disabled in this server.",
-      "es": "Ese comando está actualmente deshabilitado en este servidor.",
-      "pt-br": "Este comando está atualmente desabilitado neste servidor."
-    },
-    "MISSING_PERMISSION": {
-      "en-us": "You must have the {PERM} permission in order to use this command.",
-      "es": "Debe tener el permiso {PERM} para poder utilizar este comando.",
-      "pt-br": "Você precisa ter a permissão {PERM} para utilizar este comando."
-    },
-    "MISSING_ROLES": {
-      "en-us": "You do not have the required roles to use this command!",
-      "es": "¡No tienes los roles necesarios para usar este comando!",
-      "pt-br": "Você não tem o cargo necessário para usar este comando!"
-    },
-    "COOLDOWN": {
-      "en-us": "You must wait {COOLDOWN} before using that command again.",
-      "es": "Debe esperar {COOLDOWN} antes de usar ese comando nuevamente.",
-      "pt-br": "Você precisa esperar {COOLDOWN} antes de usar este comando novamente."
-    },
-    "ENABLE_DISABLE_STATE": {
-      "en-us": "The state must be either \"enable\" or \"disable\".",
-      "es": "El estado debe ser \"habilitar\" o \"deshabilitar\".",
-      "pt-br": "O estado deve ser \"ativado\" ou \"desativado\"."
-    },
-    "CANNOT_ENABLE_DISABLE_IN_DMS": {
-      "en-us": "You cannot enable or disable commands in private messages.",
-      "es": "No puede habilitar o deshabilitar comandos en mensajes privados.",
-      "pt-br": "Você não pode ativar ou desativar comandos em mensagens privadas."
-    },
-    "COMMAND_ALREADY_ENABLED": {
-      "en-us": "That command is already enabled!",
-      "es": "¡Ese comando ya está habilitado!",
-      "pt-br": "Este comando já está ativado!"
-    },
-    "COMMAND_ALREADY_DISABLED": {
-      "en-us": "That command is already disabled!",
-      "es": "¡Ese comando ya está desactivado!",
-      "pt-br": "Este comando já está desativado!"
-    },
-    "COMMAND_NOW_ENABLED": {
-      "en-us": "{COMMAND} is now enabled!",
-      "es": "¡{COMMAND} ahora está habilitado!",
-      "pt-br": "{COMMAND} agora está ativado!"
-    },
-    "COMMAND_NOW_DISABLED": {
-      "en-us": "{COMMAND} is now disabled!",
-      "es": "¡{COMMAND} ahora está deshabilitada!",
-      "pt-br": "{COMMAND} agora está desativado!"
-    },
-    "UNKNOWN_COMMAND": {
-      "en-us": "Could not find command {COMMAND}!",
-      "es": "¡No se pudo encontrar el comando {COMMAND}!",
-      "pt-br": "Não foi possível encontrar o comando {COMMAND}!"
-    },
-    "CURRENT_PREFIX": {
-      "en-us": "The current prefix is {PREFIX}.",
-      "es": "El prefijo actual es {PREFIX}.",
-      "pt-br": "O prefixo atual é {PREFIX}."
-    },
-    "SET_PREFIX": {
-      "en-us": "Set the command prefix to {PREFIX}.",
-      "es": "Establezca el prefijo del comando en {PREFIX}.",
-      "pt-br": "Prefixo definido para {PREFIX}."
-    },
-    "CANNOT_SET_PREFIX_IN_DMS": {
-      "en-us": "You cannot set a prefix in a private message.",
-      "es": "No puede establecer un prefijo en un mensaje privado.",
-      "pt-br": "Você não pode definir um prefixo em uma mensagem privada"
-    },
-    "CANNOT_CHANGE_REQUIRED_ROLES_IN_DMS": {
-      "en-us": "You cannot change required roles in private messages.",
-      "es": "No puede cambiar los roles requeridos en los mensajes privados.",
-      "pt-br": "Você não pode alterar as funções necessárias em mensagens privadas"
-    },
-    "REMOVED_ALL_REQUIRED_ROLES": {
-      "en-us": "Removed all required roles from command {COMMAND}.",
-      "es": "Se eliminaron todos los roles requeridos del comando {COMMAND}.",
-      "pt-br": "Removidas todas as permissões necessárias para o comando {COMMAND}."
-    },
-    "ADDED_REQUIRED_ROLE": {
-      "en-us": "Added role {ROLE} to command {COMMAND}.",
-      "es": "Se agregó el rol {ROLE} al comando {COMMAND}.",
-      "pt-br": "Adicionado o cargo {ROLE} para o comando {COMMAND}."
-    },
-    "SYNTAX_ERROR": {
-      "en-us": "Correct usage: `{PREFIX}{COMMAND} {ARGUMENTS}`",
-      "es": "Uso correcto: `{PREFIX}{COMMAND} {ARGUMENTS}`",
-      "pt-br": "Uso correto: `{PREFIX}{COMMAND} {ARGUMENTS}`"
-    },
-    "NO_DATABASE_FOUND": {
-      "en-us": "No database connection found!",
-      "es": "¡No se encontró conexión a la base de datos!",
-      "pt-br": "Conexão ao banco de dados não encontrada!"
-    },
-    "GUILD_ONLY_COMMAND": {
-      "en-us": "This command can only be used within a server.",
-      "es": "Este comando solo se puede utilizar dentro de un servidor.",
-      "pt-br": "Este comando só pode ser usado em um servidor."
-    },
-    "NO_REACT_PERMS": {
-      "en-us": "This bot needs the \"Add Reactions\" permission to use the help menu.",
-      "es": "Este bot precisa da permissão \"Adicionar reações\" para usar o menu de ajuda.",
-      "pt-br": "Este bot precisa da permissão \"Adicionar reações\" para usar o menu de ajuda."
-    },
-    "HELP_MENU": {
-      "TITLE": {
-        "en-us": "Help Menu",
-        "es": "Menú de ayuda",
-        "pt-br": "Menu de ajuda"
-      },
-      "SELECT_A_CATEGORY": {
-        "en-us": "Please select a command category by clicking it's reaction.",
-        "es": "Seleccione una categoría de comando haciendo clic en su reacción.",
-        "pt-br": "Selecione uma categoria de comando clicando em sua reação."
-      },
-      "COMMANDS": {
-        "en-us": "commands",
-        "es": "comandos",
-        "pt-br": "comandos"
-      },
-      "DESCRIPTION_FIRST_LINE": {
-        "en-us": "Use 🚪 to return to the previous menu.",
-        "es": "Utilice 🚪 para volver al menú anterior.",
-        "pt-br": "Use 🚪 para retornar ao menu anterior"
-      },
-      "DESCRIPTION_SECOND_LINE": {
-        "en-us": "Use ⬅ and ➡ to navigate between pages.",
-        "es": "Utilice ⬅ y ➡ para navegar entre páginas.",
-        "pt-br": "Use ⬅ e ➡ para navegar entre as páginas."
-      },
-      "ALIASES": {
-        "en-us": "Aliases",
-        "es": "Alias",
-        "pt-br": "Variantes"
-      },
-      "SYNTAX": {
-        "en-us": "Syntax",
-        "es": "Sintaxis",
-        "pt-br": "Sintaxe"
-      }
-    }
-}
+  "LANGUAGE_NOT_SUPPORTED": {
+    "english": "This bot does not have support for `{LANGUAGE}` at this time.",
+    "spanish": "Este bot no es compatible con `{LANGUAGE}` en este momento.",
+    "portuguese": "Este bot não é compatível com `{LANGUAGE}` por enquanto."
+  },
+  "CURRENT_LANGUAGE": {
+    "english": "The current language is set to `{LANGUAGE}`.",
+    "spanish": "El idioma actual está establecido en `{LANGUAGE}`.",
+    "portuguese": "O idioma atual está definido como `{LANGUAGE}`."
+  },
+  "NEW_LANGUAGE": {
+    "english": "Language set to `{LANGUAGE}`.",
+    "spanish": "Idioma configurado en `{LANGUAGE}`.",
+    "portuguese": "Idioma definido para `{LANGUAGE}`."
+  },
+  "BOT_OWNERS_ONLY": {
+    "english": "Only the bot owner can run this command.",
+    "spanish": "Solo el propietario del bot puede ejecutar este comando.",
+    "portuguese": "Apenas o proprietário do bot pode executar este comando."
+  },
+  "DISABLED_COMMAND": {
+    "english": "That command is currently disabled in this server.",
+    "spanish": "Ese comando está actualmente deshabilitado en este servidor.",
+    "portuguese": "Este comando está atualmente desabilitado neste servidor."
+  },
+  "MISSING_PERMISSION": {
+    "english": "You must have the {PERM} permission in order to use this command.",
+    "spanish": "Debe tener el permiso {PERM} para poder utilizar este comando.",
+    "portuguese": "Você precisa ter a permissão {PERM} para utilizar este comando."
+  },
+  "MISSING_ROLES": {
+    "english": "You do not have the required roles to use this command!",
+    "spanish": "¡No tienes los roles necesarios para usar este comando!",
+    "portuguese": "Você não tem o cargo necessário para usar este comando!"
+  },
+  "COOLDOWN": {
+    "english": "You must wait {COOLDOWN} before using that command again.",
+    "spanish": "Debe esperar {COOLDOWN} antes de usar ese comando nuevamente.",
+    "portuguese": "Você precisa esperar {COOLDOWN} antes de usar este comando novamente."
+  },
+  "ENABLE_DISABLE_STATE": {
+    "english": "The state must be either \"enable\" or \"disable\".",
+    "spanish": "El estado debe ser \"habilitar\" o \"deshabilitar\".",
+    "portuguese": "O estado deve ser \"ativado\" ou \"desativado\"."
+  },
+  "CANNOT_ENABLE_DISABLE_IN_DMS": {
+    "english": "You cannot enable or disable commands in private messages.",
+    "spanish": "No puede habilitar o deshabilitar comandos en mensajes privados.",
+    "portuguese": "Você não pode ativar ou desativar comandos em mensagens privadas."
+  },
+  "COMMAND_ALREADY_ENABLED": {
+    "english": "That command is already enabled!",
+    "spanish": "¡Ese comando ya está habilitado!",
+    "portuguese": "Este comando já está ativado!"
+  },
+  "COMMAND_ALREADY_DISABLED": {
+    "english": "That command is already disabled!",
+    "spanish": "¡Ese comando ya está desactivado!",
+    "portuguese": "Este comando já está desativado!"
+  },
+  "COMMAND_NOW_ENABLED": {
+    "english": "{COMMAND} is now enabled!",
+    "spanish": "¡{COMMAND} ahora está habilitado!",
+    "portuguese": "{COMMAND} agora está ativado!"
+  },
+  "COMMAND_NOW_DISABLED": {
+    "english": "{COMMAND} is now disabled!",
+    "spanish": "¡{COMMAND} ahora está deshabilitada!",
+    "portuguese": "{COMMAND} agora está desativado!"
+  },
+  "UNKNOWN_COMMAND": {
+    "english": "Could not find command {COMMAND}!",
+    "spanish": "¡No se pudo encontrar el comando {COMMAND}!",
+    "portuguese": "Não foi possível encontrar o comando {COMMAND}!"
+  },
+  "CURRENT_PREFIX": {
+    "english": "The current prefix is {PREFIX}.",
+    "spanish": "El prefijo actual es {PREFIX}.",
+    "portuguese": "O prefixo atual é {PREFIX}."
+  },
+  "SET_PREFIX": {
+    "english": "Set the command prefix to {PREFIX}.",
+    "spanish": "Establezca el prefijo del comando en {PREFIX}.",
+    "portuguese": "Prefixo definido para {PREFIX}."
+  },
+  "CANNOT_SET_PREFIX_IN_DMS": {
+    "english": "You cannot set a prefix in a private message.",
+    "spanish": "No puede establecer un prefijo en un mensaje privado.",
+    "portuguese": "Você não pode definir um prefixo em uma mensagem privada"
+  },
+  "CANNOT_CHANGE_REQUIRED_ROLES_IN_DMS": {
+    "english": "You cannot change required roles in private messages.",
+    "spanish": "No puede cambiar los roles requeridos en los mensajes privados.",
+    "portuguese": "Você não pode alterar as funções necessárias em mensagens privadas"
+  },
+  "REMOVED_ALL_REQUIRED_ROLES": {
+    "english": "Removed all required roles from command {COMMAND}.",
+    "spanish": "Se eliminaron todos los roles requeridos del comando {COMMAND}.",
+    "portuguese": "Removidas todas as permissões necessárias para o comando {COMMAND}."
+  },
+  "ADDED_REQUIRED_ROLE": {
+    "english": "Added role {ROLE} to command {COMMAND}.",
+    "spanish": "Se agregó el rol {ROLE} al comando {COMMAND}.",
+    "portuguese": "Adicionado o cargo {ROLE} para o comando {COMMAND}."
+  },
+  "SYNTAX_ERROR": {
+    "english": "Correct usage: `{PREFIX}{COMMAND} {ARGUMENTS}`",
+    "spanish": "Uso correcto: `{PREFIX}{COMMAND} {ARGUMENTS}`",
+    "portuguese": "Uso correto: `{PREFIX}{COMMAND} {ARGUMENTS}`"
+  },
+  "NO_DATABASE_FOUND": {
+    "english": "No database connection found!",
+    "spanish": "¡No se encontró conexión a la base de datos!",
+    "portuguese": "Conexão ao banco de dados não encontrada!"
+  },
+  "GUILD_ONLY_COMMAND": {
+    "english": "This command can only be used within a server.",
+    "spanish": "Este comando solo se puede utilizar dentro de un servidor.",
+    "portuguese": "Este comando só pode ser usado em um servidor."
+  },
+  "NO_REACT_PERMS": {
+    "english": "This bot needs the \"Add Reactions\" permission to use the help menu.",
+    "spanish": "Este bot precisa da permissão \"Adicionar reações\" para usar o menu de ajuda.",
+    "portuguese": "Este bot precisa da permissão \"Adicionar reações\" para usar o menu de ajuda."
+  },
+  "EXCEPTION": {
+    "english": "An error occurred when running this command! This error has been reported to the developers.",
+    "spanish": "¡Se produjo un error al ejecutar este comando! Se ha informado de este error a los desarrolladores.",
+    "portuguese": "Ocorreu um erro ao executar este comando! Este erro foi relatado aos desenvolvedores."
+  },
 
+  "CANVAS_LINE_FIRST": {
+    "english": "Não traduzi.",
+    "spanish": "Não traduzi.",
+    "portuguese": "Agora essa linha é traduzível :D"
+  },
+
+  "COLOR_LIKE": {
+    "english": "Would you like this color?",
+    "spanish": "¿Te gustaría este color?",
+    "portuguese": "Você gostaria desta cor?"
+  },
+  "COLOR_SPECIFIED": {
+    "english": "Specified color",
+    "spanish": "Color especificado",
+    "portuguese": "Cor especificada"
+  },
+  "COLOR_AVATAR_ESTIMATED": {
+    "english": "Estimated color of your avatar",
+    "spanish": "Color estimado de tu avatar",
+    "portuguese": "Cor estimada do seu avatar"
+  },
+  "COLOR_TARGET_AVATAR_ESTIMATED": {
+    "english": "Estimated color in {USER}'s avatar",
+    "spanish": "Color estimado en el avatar de {USER}",
+    "portuguese": "Cor estimada no avatar de {USER}"
+  },
+  "COLOR_USER_CAN_INTERACT": {
+    "english": "{USER} can also interact with the system.",
+    "spanish": "{USER} también puede interactuar con el sistema.",
+    "portuguese": "{USER} também pode interagir com o sistema."
+  },
+  "COLOR_SAME_USER_CAN_INTERACT": {
+    "english": "It is not necessary to mention yourself if you're going to change your own color.",
+    "spanish": "No es necesario que te menciones si vas a cambiar tu propio color.",
+    "portuguese": "Não é necessário se mencionar caso for mudar sua própria cor."
+  },
+  "COLOR_INVALID": {
+    "english": "Invalid color",
+    "spanish": "Color inválido",
+    "portuguese": "Cor inválida"
+  },
+  "COLOR_INVALID_IMG": {
+    "english": "Invalid",
+    "spanish": "Inválido",
+    "portuguese": "Inválido"
+  },
+  "COLOR_CANCELED": {
+    "english": "Canceled",
+    "spanish": "Cancelado",
+    "portuguese": "Cancelado"
+  },
+  "COLOR_NO_ROLE": {
+    "english": "You don't have a color role.",
+    "spanish": "No tienes un rol de color.",
+    "portuguese": "Você não tem um cargo de cor."
+  },
+  "COLOR_TARGET_NO_ROLE": {
+    "english": "The mentioned user does not have a color role.",
+    "spanish": "El usuario mencionado no tiene un rol de color.",
+    "portuguese": "O usuário mencionado não tem um cargo de cor."
+  },
+  "COLOR_RGB_CONVERT": {
+    "english": "Converted to RGB",
+    "spanish": "Convertido a RGB",
+    "portuguese": "Convertido para RGB"
+  },
+  "COLOR_CURRENT": {
+    "english": "Current color",
+    "spanish": "Color actual",
+    "portuguese": "Cor atual"
+  },
+  "COLOR_TARGET_CURRENT": {
+    "english": "{USER}'s current color",
+    "spanish": "Color actual de {USER}",
+    "portuguese": "Cor atual de {USER}"
+  },
+  "COLOR_ALREADY_NO_ROLE": {
+    "english": "You already has no color role.",
+    "spanish": "Tu ya no tienes un rol de color.",
+    "portuguese": "Você já não tem um cargo de cor."
+  },
+  "COLOR_TARGET_ALREADY_NO_ROLE": {
+    "english": "The mentioned user already has no color role.",
+    "spanish": "El usuario mencionado ya no tiene un rol de color.",
+    "portuguese": "O usuário mencionado já não tem um cargo de cor."
+  },
+  "COLOR_DELETED_ROLE": {
+    "english": "Deleted color",
+    "spanish": "Color eliminado",
+    "portuguese": "Cor deletada"
+  },
+  "COLOR_TARGET_DELETED_ROLE": {
+    "english": "Deleted {USER}'s color",
+    "spanish": "{USER} color eliminado",
+    "portuguese": "Cor de {USER} deletada"
+  },
+  "COLOR_CREATED_ASSIGNED_ROLE": {
+    "english": "Created and assigned color",
+    "spanish": "Color creado y asignado",
+    "portuguese": "Cor criada e atribuída"
+  },
+  "COLOR_TARGET_CREATED_ASSIGNED_ROLE": {
+    "english": "Color created and assigned to {USER}",
+    "spanish": "Color creado y asignado a {USER}",
+    "portuguese": "Cor criada e atribuída à {USER}"
+  },
+  "COLOR_CHANGED_ROLE": {
+    "english": "Changed color",
+    "spanish": "Color cambiado",
+    "portuguese": "Cor alterada"
+  },
+  "COLOR_TARGET_CHANGED_ROLE": {
+    "english": "Changed {USER}'s color",
+    "spanish": "{USER} cambió de color",
+    "portuguese": "Cor de {USER} alterada"
+  },
+  "COLOR_CHANGED_ASSIGNED_ROLE": {
+    "english": "Changed and assigned color",
+    "spanish": "Color cambiado y asignado",
+    "portuguese": "Cor alterada e atribuída"
+  },
+  "COLOR_TARGET_CHANGED_ASSIGNED_ROLE": {
+    "english": "Color changed and assigned to {USER}",
+    "spanish": "{USER} color cambiado y asignado",
+    "portuguese": "Cor de {USER} alterada e atribuída"
+  },
+  "COLOR_MIX": {
+    "english": "Enter a color to mix",
+    "spanish": "Ingrese un color para mezclar",
+    "portuguese": "Digite uma cor para misturar"
+  },
+  "COLOR_MIX_INVALID": {
+    "english": "Invalid color, enter a valid color to mix",
+    "spanish": "Color no válido, ingrese un color válido para mezclar",
+    "portuguese": "Cor inválida, digite uma cor válida para misturar"
+  },
+  "COLOR_MIXED": {
+    "english": "Mixed color",
+    "spanish": "Color mezclado",
+    "portuguese": "Cor misturada"
+  },
+  "COLOR_MIXED_REPEAT": {
+    "english": "Mixed color, enter a color to mix again",
+    "spanish": "Color mezclado, ingrese un color para mezclar nuevamente",
+    "portuguese": "Cor misturada, digite uma cor para misturar novamente"
+  },
+  "COLOR_EDIT": {
+    "english": "Enter a new color",
+    "spanish": "Ingrese un nuevo color",
+    "portuguese": "Digite uma nova cor"
+  },
+  "COLOR_EDIT_ESTIMATED": {
+    "english": "Estimated color of your avatar, enter a valid color to edit again",
+    "spanish": "Color estimado de tu avatar, ingrese un color válido para editar nuevamente",
+    "portuguese": "Cor estimada do seu avatar, insira uma cor válida para editar novamente"
+  },
+  "COLOR_EDIT_INVALID": {
+    "english": "Invalid color, enter a new valid color",
+    "spanish": "Color inválido, ingresa un nuevo color válido",
+    "portuguese": "Cor inválida, digite uma nova cor válida"
+  },
+  "COLOR_EDITED": {
+    "english": "Edited color",
+    "spanish": "Color editado",
+    "portuguese": "Cor editada"
+  },
+  "COLOR_EDITED_REPEAT": {
+    "english": "Edited color, enter a valid color to edit again",
+    "spanish": "Color editado, ingrese un color válido para editar nuevamente",
+    "portuguese": "Cor editada, insira uma cor válida para editar novamente"
+  },
+  "COLOR_PREVIEW": {
+    "english": "You are previewing the color.",
+    "spanish": "Está obteniendo una vista previa del color.",
+    "portuguese": "Você está visualizando a cor."
+  },
+
+  "BOTINFO_TITLE": {
+    "english": "**Bot Info**",
+    "spanish": "**Información del Bot**",
+    "portuguese": "**Informações do Bot**"
+  },
+  "BOTINFO_NAME_FIELD": {
+    "english": "Bot Name",
+    "spanish": "Nombre del Bot",
+    "portuguese": "Nome do Bot"
+  },
+  "BOTINFO_VERSION_FIELD": {
+    "english": "Bot Version",
+    "spanish": "Versión del bot",
+    "portuguese": "Versão do Bot"
+  },
+  "BOTINFO_CREATION_FIELD": {
+    "english": "Creation Date",
+    "spanish": "Fecha de Creación",
+    "portuguese": "Data de Criação"
+  },
+  "BOTINFO_SERVERS_FIELD": {
+    "english": "Servers",
+    "spanish": "Servidores",
+    "portuguese": "Servidores"
+  },
+  "BOTINFO_SERVERS_FIELD_DESC": {
+    "english": "The bot is currently on **{SERVERS}** servers.",
+    "spanish": "El bot se encuentra actualmente en **{SERVERS}** servidores.",
+    "portuguese": "O bot está em atualmente **{SERVERS}** servidores."
+  },
+  "BOTINFO_INVITES_FIELD": {
+    "english": "Invites",
+    "spanish": "Invitacións",
+    "portuguese": "Convites"
+  },
+  "BOTINFO_INVITES_FIELD_DESC": {
+    "english": "[Community Server]({INVITE})\nPrivate bot, cannot be invited.",
+    "spanish": "[Servidor de la Comunidad]({INVITE})\nBot privado, no puede invitarte.",
+    "portuguese": "[Servidor de Comunidade]({INVITE})\nBot privado, não é possível convidá-lo."
+  },
+
+  "COMPONENTS": {
+    "EMOJI_VIEW": {
+      "english": "View",
+      "spanish": "Vista",
+      "portuguese": "Visualizar"
+    },
+    "EMOJI_EDIT": {
+      "english": "Edit",
+      "spanish": "Editar",
+      "portuguese": "Editar"
+    },
+    "EMOJI_EDIT_NAME": {
+      "english": "Rename",
+      "spanish": "Rebautizar",
+      "portuguese": "Renomear"
+    },
+    "EMOJI_EDIT_ROLES": {
+      "english": "Edit Roles",
+      "spanish": "Editar Roles",
+      "portuguese": "Editar Cargos"
+    },
+    "EMOJI_EDIT_ROLES_ADD": {
+      "english": "Add Role",
+      "spanish": "Agregar Rol",
+      "portuguese": "Adicionar Cargo"
+    },
+    "EMOJI_EDIT_ROLES_REMOVE": {
+      "english": "Remove Role",
+      "spanish": "Eliminar Rol",
+      "portuguese": "Remover Cargo"
+    },
+    "EMOJI_EDIT_ROLES_RESET": {
+      "english": "Reset Roles",
+      "spanish": "Restablecer Roles",
+      "portuguese": "Redefinir Cargos"
+    },
+    "EMOJI_EDIT_DELETE": {
+      "english": "Delete Emoji",
+      "spanish": "Borrar Emoji",
+      "portuguese": "Deletar Emoji"
+    },
+    "EMOJI_EDIT_DELETE_CONFIRM": {
+      "english": "Yes",
+      "spanish": "Sí",
+      "portuguese": "Sim"
+    }
+  },
+  "EMOJI_FIELD_NAME": {
+    "english": "Name",
+    "spanish": "Nombre",
+    "portuguese": "Nome"
+  },
+  "EMOJI_FIELD_ID": {
+    "english": "ID",
+    "spanish": "ID",
+    "portuguese": "ID"
+  },
+  "EMOJI_FIELD_ROLES": {
+    "english": "Roles",
+    "spanish": "Roles",
+    "portuguese": "Cargos"
+  },
+  "EMOJI_EDIT_EDITING": {
+    "english": "Editing emoji",
+    "spanish": "Edición de emoji",
+    "portuguese": "Editando emoji"
+  },
+  "EMOJI_EDIT_NAME": {
+    "english": "Renaming emoji",
+    "spanish": "Renombrar emoji",
+    "portuguese": "Renomeando emoji"
+  },
+  "EMOJI_EDIT_NAME_INVALID": {
+    "english": "Invalid Name",
+    "spanish": "Nombre Invalido",
+    "portuguese": "Nome Inválido"
+  },
+  "EMOJI_EDITED_NAME": {
+    "english": "Renamed emoji",
+    "spanish": "Emoji renombrado",
+    "portuguese": "Emoji renomeado"
+  },
+  "EMOJI_EDITED_NAME_REPEAT": {
+    "english": "Renamed emoji, enter a name to rename again",
+    "spanish": "Emoji renombrado, ingrese un nombre para cambiar el nombre nuevamente",
+    "portuguese": "Emoji renomeado, digite um nome para renomear novamente"
+  },
+  "EMOJI_EDIT_ROLES_INVALID": {
+    "english": "Invalid role",
+    "spanish": "Role invalido",
+    "portuguese": "Cargo inválido"
+  },
+  "EMOJI_EDIT_ROLES_RESETED": {
+    "english": "Reseted emoji's roles",
+    "spanish": "Roles de emoji restablecidos",
+    "portuguese": "Cargos do emoji redefinidos"
+  },
+  "EMOJI_EDITED_ROLES": {
+    "english": "Edited emoji's roles",
+    "spanish": "Roles de emoji editado",
+    "portuguese": "Cargos do emoji editado"
+  },
+  "EMOJI_EDIT_DELETING": {
+    "english": "Deleting emoji",
+    "spanish": "Eliminando emoji",
+    "portuguese": "Deletando emoji"
+  },
+  "EMOJI_EDIT_DELETING_DESC": {
+    "english": "Are you sure you want to delete this emoji?",
+    "spanish": "¿Estás seguro de que quieres eliminar este emoji?",
+    "portuguese": "Tem certeza que deseja deletar este emoji?"
+  },
+  "EMOJI_EDIT_DELETED": {
+    "english": "Emoji deleted",
+    "spanish": "Emoji eliminado",
+    "portuguese": "Emoji deletado"
+  },
+  "EMOJI_EDITING_ROLES": {
+    "english": "Editing emoji's roles",
+    "spanish": "Editando los roles de emoji",
+    "portuguese": "Editando os cargos do emoji"
+  },
+  "EMOJI_EDIT_ROLES_ADDING": {
+    "english": "Enter a role to add it to the emoji",
+    "spanish": "Ingrese un rol para agregarlo al emoji",
+    "portuguese": "Digite um cargo para adicioná-lo ao emoji"
+  },
+  "EMOJI_EDIT_ROLES_ADD_INVALID": {
+    "english": "Invalid role",
+    "spanish": "Role invalido",
+    "portuguese": "Cargo inválido"
+  },
+  "EMOJI_EDITED_ROLES_ADD_REPEAT": {
+    "english": "Role added to emoji, enter another role to add it",
+    "spanish": "Rol agregado a emoji, ingrese otro rol para agregarlo",
+    "portuguese": "Cargo adicionado ao emoji, digite outro cargo para adicioná-lo"
+  },
+  "EMOJI_EDIT_ROLES_ADDED_ALREADY": {
+    "english": "This role is already defined",
+    "spanish": "Este rol ya está definido",
+    "portuguese": "Este cargo já está definido"
+  },
+  "EMOJI_EDIT_ROLES_REMOVING": {
+    "english": "Enter a role to remove it from the emoji",
+    "spanish": "Ingresa un rol para eliminarlo del emoji",
+    "portuguese": "Digite um cargo para removê-lo do emoji"
+  },
+  "EMOJI_EDITED_ROLES_REMOVE_REPEAT": {
+    "english": "Role removed from emoji, enter another role to remove it",
+    "spanish": "Rol eliminado de emoji, ingrese otro rol para eliminarlo",
+    "portuguese": "Cargo removido do emoji, digite outro cargo para removê-lo"
+  },
+  "EMOJI_EDIT_ROLES_REMOVE_INVALID": {
+    "english": "Invalid role",
+    "spanish": "Role invalido",
+    "portuguese": "Cargo inválido"
+  },
+  "EMOJI_EDIT_ROLES_REMOVED": {
+    "english": "This role is already not defined",
+    "spanish": "Este rol ya no está definido",
+    "portuguese": "Este cargo já não está definido"
+  },
+  "EMOJI_EDIT_ROLES_REMOVED_ALREADY": {
+    "english": "This role is already not defined",
+    "spanish": "Este rol ya no está definido",
+    "portuguese": "Este cargo já não está definido"
+  },
+  "EMOJI_VIEW_VIEWING": {
+    "english": "Viewing emoji",
+    "spanish": "Viendo emoji",
+    "portuguese": "Visualizando emoji"
+  },
+  "EMOJI_UNALLOWED_SERVER": {
+    "english": "You are not allowed to edit an emoji from another server.",
+    "spanish": "No puedes editar un emoji de otro servidor.",
+    "portuguese": "Você não tem permissão para editar um emoji de outro servidor."
+  },
+
+  "PERMS": {
+    "REQUIRES": {
+      "english": "Requires `{PERM}` permission.",
+      "spanish": "Requiere permiso de `{PERM}`.",
+      "portuguese": "Requer permissão de `{PERM}`."
+    },
+    "MANAGE_EMOJIS": {
+      "english": "Manage Emojis",
+      "spanish": "Gestionar Emojis",
+      "portuguese": "Gerenciar Emojis"
+    },
+    "MANAGE_MESSAGES": {
+      "english": "Manage Messages",
+      "spanish": "Gestionar Mensajes",
+      "portuguese": "Gerenciar Mensagens"
+    },
+    "MANAGE_ROLES": {
+      "english": "Manage Roles",
+      "spanish": "Gestionar Roles",
+      "portuguese": "Gerenciar Cargos"
+    }
+  },
+
+  "GENERIC_DEPRECATED": {
+    "english": "Este comando está en desuso, use la versión del comando de barra inclinada (`{COMMAND}`).",
+    "spanish": "This command is deprecated, use the slash command version (`{COMMAND}`).",
+    "portuguese": "Este comando está obsoleto, use a versão de comando de barra (`{COMMAND}`)."
+  },
+  "GENERIC_COMPONENT_BACK": {
+    "english": "Back",
+    "spanish": "Vuelve",
+    "portuguese": "Voltar"
+  },
+  "GENERIC_COMPONENT_REPEAT": {
+    "english": "Repeat",
+    "spanish": "Repetir",
+    "portuguese": "Repetir"
+  },
+  "GENERIC_COMPONENT_MESSAGE_DELETE": {
+    "english": "Delete Message",
+    "spanish": "Borrar Mensaje",
+    "portuguese": "Deletar Mensagem"
+  },
+  "GENERIC_REQUESTED_BY": {
+    "english": "Requested by {USER}",
+    "spanish": "Solicitado por {USER}",
+    "portuguese": "Solicitado por {USER}"
+  },
+  "GENERIC_INTERACTED_BY": {
+    "english": "Interacted by {USER}",
+    "spanish": "Interactuado por {USER}",
+    "portuguese": "Interagido por {USER}"
+  },
+  "GENERIC_SUCCESS": {
+    "english": "Success",
+    "spanish": "Éxito",
+    "portuguese": "Êxito"
+  },
+  "GENERIC_TIME_OUT": {
+    "english": "Time's out",
+    "spanish": "Tiempo agotado",
+    "portuguese": "Tempo esgotado"
+  },
+  "GENERIC_ERROR": {
+    "english": "Error",
+    "spanish": "Error",
+    "portuguese": "Erro"
+  },
+  "GENERIC_ERROR_COMMAND": {
+    "english": "You are not allowed to interact with this command.",
+    "spanish": "No se le permite interactuar con este comando.",
+    "portuguese": "Você não tem permissão para interagir com este comando."
+  },
+  "GENERIC_UNALLOWED_CHAT": {
+    "english": "You are not allowed to use this command in this chat.",
+    "spanish": "No se le permite utilizar este comando en este chat.",
+    "portuguese": "Você não tem permissão para usar este comando neste chat."
+  },
+
+  "HELP_MENU": {
+    "TITLE": {
+      "english": "Help Menu",
+      "spanish": "Menú de Ayuda",
+      "portuguese": "Menu de Ajuda"
+    },
+    "SELECT_A_CATEGORY": {
+      "english": "Please select a command category by clicking it's reaction.",
+      "spanish": "Seleccione una categoría de comando haciendo clic en su reacción.",
+      "portuguese": "Selecione uma categoria de comando clicando em sua reação."
+    },
+    "COMMANDS": {
+      "english": "commands",
+      "spanish": "comandos",
+      "portuguese": "comandos"
+    },
+    "DESCRIPTION_FIRST_LINE": {
+      "english": "Use 🚪 to return to the previous menu.",
+      "spanish": "Utilice 🚪 para volver al menú anterior.",
+      "portuguese": "Use 🚪 para retornar ao menu anterior"
+    },
+    "DESCRIPTION_SECOND_LINE": {
+      "english": "Use ⬅ and ➡ to navigate between pages.",
+      "spanish": "Utilice ⬅ y ➡ para navegar entre páginas.",
+      "portuguese": "Use ⬅ e ➡ para navegar entre as páginas."
+    },
+    "ALIASES": {
+      "english": "Aliases",
+      "spanish": "Alias",
+      "portuguese": "Variantes"
+    },
+    "SYNTAX": {
+      "english": "Syntax",
+      "spanish": "Sintaxis",
+      "portuguese": "Sintaxe"
+    }
+  }
+}

@@ -6,7 +6,7 @@ module.exports = {
   category: 'Utils',
   description: 'Expulsa um membro.',
   callback: async ({ message, args, client }) => {
-    if (message.channel.type === 'dm') return;
+    if (!message.guild) return;
 
     if (!message.member.hasPermission('KICK_MEMBERS'))
       return errors.noPerms(message, 'Expulsar Membros');
@@ -23,14 +23,14 @@ module.exports = {
       return errors.equalPerms(message, kUser, 'Gerenciar Mensagens');
 
     let kickEmbed = new Discord.MessageEmbed()
-      .setColor('#e56b00')
+      .setColor('e56b00')
       .addField('Usuário Expulsado', `${kUser} com o ID ${kUser.id}`)
       .addField(
         'Expulsado Por',
         `<@${message.author.id}> com o ID ${message.author.id}`
       )
       .addField('Expulsado em', message.channel)
-      .addField('Hora', message.createdAt)
+      .addField('Hora', utils.toUTS(message.createdAt))
       .addField('Motivo', kReason);
 
     let kickChannel = message.guild.channels.cache.find(`name`, 'incidentes');

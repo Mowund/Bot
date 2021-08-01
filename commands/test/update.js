@@ -1,23 +1,23 @@
 const Discord = require('discord.js');
 const utils = require('../../utils/utils.js');
-const client = new Discord.Client();
+const client = new Discord.Client({ intents: ['GUILDS', 'GUILD_MESSAGES'] });
 
 module.exports = {
   name: 'update',
   category: 'Utils',
   description: 'Para atualizações do servidor',
   callback: async ({ message, args, client }) => {
-    if (message.channel.type === 'dm') return;
+    if (!message.guild) return;
 
     const channel = message.guild.channels.cache.find(
-      (c) => c.id === '420352343402348544'
+      (c) => c.id == '420352343402348544'
     );
 
     var e1 = new Discord.MessageEmbed()
-      .setTitle('**Snapshot 21w08a**')
+      .setTitle('**Snapshot 21w22a**')
       .addField(
         '**__Bots__**',
-        '∗ A partir da próxima snapshot, o <@618587791546384385> usará o mesmo versionamento do servidor.'
+        '∗ O <@618587791546384385> teve várias atualizações durante os anos, aqui estão algumas mudanças relevantes:'
       )
       .addField(
         '**__Cargos__**',
@@ -47,7 +47,7 @@ module.exports = {
 
     var role = '531267169464483860';
 
-    if (args[0] === 'release') {
+    if (args[0] == 'release') {
       message.channel.send(`<@&${role}> <@&772968044816498709>`);
       message.channel.send(e1).then((msg) => {
         msg.react('⛔').then(() => msg.react('✅'));
@@ -55,7 +55,7 @@ module.exports = {
         const filter = (reaction, user) => {
           return (
             ['⛔', '✅'].includes(reaction.emoji.name) &&
-            user.id === message.author.id
+            user.id == message.author.id
           );
         };
 
@@ -64,7 +64,7 @@ module.exports = {
           .then((collected) => {
             const reaction = collected.first();
 
-            if (reaction.emoji.name === '⛔') {
+            if (reaction.emoji.name == '⛔') {
               message.channel.send('**Cancelado**');
             } else {
               if (message.member.roles.cache.has('420008165762138124')) {
@@ -85,7 +85,7 @@ module.exports = {
             message.channel.send('**Tempo Esgotado.**');
           });
       });
-    } else if (args[0] === 'old') {
+    } else if (args[0] == 'old') {
       if (args[1]) {
         utils.msgEdit(channel, args[1], e1);
         message.channel.send(`Changelog editado para:`, e1);

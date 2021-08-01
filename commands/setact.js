@@ -5,7 +5,7 @@ module.exports = {
   category: 'Utils',
   description: 'Define um status do bot.',
   callback: async ({ message, args, client }) => {
-    if (message.channel.type === 'dm') return;
+    if (!message.guild) return;
 
     if (!message.member.hasPermission('MANAGE_WEBHOOKS'))
       return errors.noPerms(message, 'Gerenciar Webhooks');
@@ -19,7 +19,7 @@ module.exports = {
 
     message.channel.send(`Atividade setada para: \`${actype} ${act}\``);
 
-    if (actype === 'STREAMING') {
+    if (actype == 'STREAMING') {
       var acturl = args[1];
       act = args.slice(2).join(' ');
 
@@ -29,7 +29,7 @@ module.exports = {
       });
     }
 
-    if (actype === 'CUSTOM') {
+    if (actype == 'CUSTOM') {
       var acturl = args[1];
       act = args.slice(2).join(' ');
 

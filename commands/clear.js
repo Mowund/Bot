@@ -1,4 +1,5 @@
 const Discord = require('discord.js');
+const client = new Discord.Client({ intents: ['GUILDS', 'GUILD_MESSAGES'] });
 const errors = require('../utils/errors.js');
 
 module.exports = {
@@ -7,9 +8,14 @@ module.exports = {
   category: 'Utils',
   description: 'Limpa as mensagens no chat.',
   expectedArgs: '(quantidade)',
-  minArgs: 1,
-  callback: async ({ message, args, client }) => {
-    if (message.channel.type === 'dm') return;
+  callback: async ({ message, args, instance }) => {
+    if (message.channel.type == 'dm') return errors.disDM(message.channel);
+
+    var { guild } = message;
+
+    function getTS(path, values) {
+      return utils.getTSE(instance, guild, path, values);
+    }
 
     var msgc = parseInt(args[0]);
     var msgt = Math.floor(msgc + 1);
@@ -23,7 +29,7 @@ module.exports = {
     }
 
     if (!message.member.hasPermission('MANAGE_MESSAGES'))
-      return errors.noPerms(message, 'Gerenciar Mensagens');
+      return errors.noPerms(message, getTS(['PERMS', 'MANAGE_MESSAGES']));
     if (!args[0])
       return message.delete().then(errors.noMsgQuantity(message.channel));
 
@@ -31,7 +37,7 @@ module.exports = {
       message.channel
         .send(msgq)
         .then((msg) => {
-          msg.delete({ timeout: 5000 });
+          client.setTimeout(() => msg.delete(), 3000);
         })
         .catch(console.error);
     });

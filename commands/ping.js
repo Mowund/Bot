@@ -1,11 +1,12 @@
 const Discord = require('discord.js');
+const errors = require('../utils/errors.js');
 
 module.exports = {
   name: 'ping',
   category: 'Utils',
   description: 'Mostra o tempo de resposta, ping e uptime do bot.',
   callback: async ({ message, args, client }) => {
-    if (message.channel.type === 'dm') return;
+    if (message.channel.type == 'dm') return errors.disDM(message.channel);
 
     let botMsg = await message.channel.send('〽️ Pingando...');
 
@@ -17,7 +18,7 @@ module.exports = {
             '**Tempo de Resposta:** `' +
               (botMsg.createdAt - message.createdAt) +
               'ms`',
-            '**Bot:** `' + Math.round(client.ws.ping) + 'ms`',
+            '**API:** `' + Math.round(client.ws.ping) + 'ms`',
             '**Uptime:** `' + msToTime(client.uptime) + '`',
           ].join('\n'),
           color: 16711680,

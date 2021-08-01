@@ -6,7 +6,7 @@ module.exports = {
   category: 'Utils',
   description: 'UNDEFINED',
   callback: async ({ message, args, client }) => {
-    if (message.channel.type === 'dm') return;
+    if (message.channel.type == 'dm') return;
     
     //!coins
     if (!coins[message.author.id]) {
@@ -19,7 +19,7 @@ module.exports = {
 
     let coinEmbed = new Discord.MessageEmbed()
       .setAuthor(message.author.username)
-      .setColor('#00FF00')
+      .setColor('00FF00')
       .addField('💸', uCoins);
 
     message.channel.send(coinEmbed);
