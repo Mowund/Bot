@@ -1,4 +1,3 @@
-const env = require('../env.json');
 const fetch = require('node-fetch');
 
 module.exports = {
