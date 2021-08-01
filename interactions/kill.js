@@ -1,19 +1,36 @@
 const Discord = require('discord.js');
-const utils = require('../../utils/utils.js');
+const utils = require('../utils/utils.js');
 require('colors');
 require('log-timestamp');
 
-module.exports = async (client, instance) => {
-  client.ws.on('INTERACTION_CREATE', async (interaction) => {
+module.exports = {
+  name: 'INTERACTION_CREATE',
+  async execute(client, interaction) {
+    function getTS(path, values) {
+      return utils.getTSE(interaction.guild_id, path, values);
+    }
+    var guildI = client.guilds.cache.get(interaction.guild_id);
+    if (guildI) {
+      var uI = guildI.members.cache.get(interaction.member.user.id);
+      var uIF = await client.users.fetch(interaction.member.user.id);
+    }
+
     if (interaction.data.name) {
       var command = interaction.data.name.toLowerCase();
       var args = interaction.data.options;
 
-      var guildI = client.guilds.cache.get(interaction.guild_id);
-      var uI = guildI.members.cache.get(interaction.member.user.id);
-      var uIF = await client.users.fetch(uI.id);
-
       if (command == 'kill') {
+        if (!guildI)
+          return utils.iCP(
+            client,
+            0,
+            interaction,
+            [0, await getTS('GENERIC_NO_DM')],
+            1,
+            0,
+            1
+          );
+
         var kUser = uIF.username;
 
         if (args) {
@@ -24,7 +41,6 @@ module.exports = async (client, instance) => {
         }
 
         utils.iCP(
-          instance,
           client,
           0,
           interaction,
@@ -35,11 +51,5 @@ module.exports = async (client, instance) => {
         );
       }
     }
-  });
-};
-
-module.exports.config = {
-  displayName: 'Kill Interaction',
-  dbName: 'KillI',
-  loadDBFirst: true,
+  },
 };

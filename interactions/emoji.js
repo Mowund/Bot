@@ -1,16 +1,17 @@
 const Discord = require('discord.js');
-const { Util } = Discord;
-const utils = require('../../utils/utils.js');
-require('colors');
-require('log-timestamp');
+const { Util } = require('discord.js');
+const utils = require('../utils/utils.js');
 
-module.exports = async (client, instance) => {
-  client.ws.on('INTERACTION_CREATE', async (interaction) => {
-    const guildI = client.guilds.cache.get(interaction.guild_id);
-    const uI = guildI.members.cache.get(interaction.member.user.id);
-    const uIF = await client.users.fetch(uI.id);
+module.exports = {
+  name: 'INTERACTION_CREATE',
+  async execute(client, interaction) {
     function getTS(path, values) {
-      return utils.getTSE(instance, guildI, path, values);
+      return utils.getTSE(interaction.guild_id, path, values);
+    }
+    var guildI = client.guilds.cache.get(interaction.guild_id);
+    if (guildI) {
+      var uI = guildI.members.cache.get(interaction.member.user.id);
+      var uIF = await client.users.fetch(interaction.member.user.id);
     }
 
     var emjFR = [];
@@ -20,6 +21,17 @@ module.exports = async (client, instance) => {
       var args = interaction.data.options;
 
       if (command == 'emoji') {
+        if (!guildI)
+          return utils.iCP(
+            client,
+            0,
+            interaction,
+            [0, await getTS('GENERIC_NO_DM')],
+            1,
+            0,
+            1
+          );
+
         var emj = args
           .find((arg) => arg['options'])
           .options.find((arg) => arg.name == 'emoji')
@@ -60,7 +72,7 @@ module.exports = async (client, instance) => {
         }
 
         emjFN = {
-          name: getTS('EMOJI_FIELD_NAME'),
+          name: await getTS('EMOJI_FIELD_NAME'),
           value: '`' + emjName + '`',
           inline: true,
         };
@@ -70,11 +82,10 @@ module.exports = async (client, instance) => {
           }
         } else {
           return utils.iCP(
-            instance,
             client,
             0,
             interaction,
-            ['', 'Não contém um emoji válido.'],
+            [0, 'Não contém um emoji válido.'],
             1,
             0,
             1
@@ -99,12 +110,12 @@ module.exports = async (client, instance) => {
           }
 
           emjFN = {
-            name: getTS('EMOJI_FIELD_NAME'),
+            name: await getTS('EMOJI_FIELD_NAME'),
             value: '`' + emjName + '`',
             inline: true,
           };
           emjFR = {
-            name: getTS('EMOJI_FIELD_ROLES'),
+            name: await getTS('EMOJI_FIELD_ROLES'),
             value: emjRoles,
           };
         } else {
@@ -113,15 +124,15 @@ module.exports = async (client, instance) => {
 
         if (args.find((arg) => arg.name == 'edit')) {
           var emb = new Discord.MessageEmbed()
-            .setTitle(getTS('EMOJI_EDIT_EDITING'))
+            .setTitle(await getTS('EMOJI_EDIT_EDITING'))
             .addFields(
               {
-                name: getTS('EMOJI_FIELD_NAME'),
+                name: await getTS('EMOJI_FIELD_NAME'),
                 value: '`' + emjName + '`',
                 inline: true,
               },
               {
-                name: getTS('EMOJI_FIELD_ID'),
+                name: await getTS('EMOJI_FIELD_ID'),
                 value: '`' + emjID + '`',
                 inline: true,
               },
@@ -131,7 +142,7 @@ module.exports = async (client, instance) => {
             .setColor('ffff00')
             .setTimestamp(Date.now())
             .setFooter(
-              getTS('GENERIC_REQUESTED_BY', {
+              await getTS('GENERIC_REQUESTED_BY', {
                 USER: uIF.username,
               }),
               uIF.avatarURL()
@@ -140,11 +151,10 @@ module.exports = async (client, instance) => {
           if (emj) {
             if (emj.guild.id != guildI.id) {
               return utils.iCP(
-                instance,
                 client,
                 0,
                 interaction,
-                ['', getTS('EMOJI_UNALLOWED_SERVER')],
+                [0, await getTS('EMOJI_UNALLOWED_SERVER')],
                 1,
                 0,
                 1
@@ -152,11 +162,10 @@ module.exports = async (client, instance) => {
             }
           } else {
             utils.iCP(
-              instance,
               client,
               0,
               interaction,
-              ['', getTS('EMOJI_UNALLOWED_SERVER')],
+              [0, await getTS('EMOJI_UNALLOWED_SERVER')],
               1,
               0,
               1,
@@ -165,14 +174,13 @@ module.exports = async (client, instance) => {
           }
           if (!uI.permissions.has('MANAGE_EMOJIS')) {
             return utils.iCP(
-              instance,
               client,
               0,
               interaction,
               [
                 '',
-                getTS(['PERMS', 'REQUIRES'], {
-                  PERM: getTS(['PERMS', 'MANAGE_EMOJIS']),
+                await getTS(['PERMS', 'REQUIRES'], {
+                  PERM: await getTS(['PERMS', 'MANAGE_EMOJIS']),
                 }),
               ],
               1,
@@ -180,14 +188,14 @@ module.exports = async (client, instance) => {
               1
             );
           }
-          utils.iCP(instance, client, 0, interaction, 0, 0, 0, emb, [
+          utils.iCP(client, 0, interaction, 0, 0, 0, emb, [
             {
               type: 1,
               components: [
                 {
                   type: 2,
                   style: 1,
-                  label: getTS(['COMPONENTS', 'EMOJI_VIEW']),
+                  label: await getTS(['COMPONENTS', 'EMOJI_VIEW']),
                   emoji: {
                     name: '🔎',
                   },
@@ -196,7 +204,7 @@ module.exports = async (client, instance) => {
                 {
                   type: 2,
                   style: 2,
-                  label: getTS(['COMPONENTS', 'EMOJI_EDIT_NAME']),
+                  label: await getTS(['COMPONENTS', 'EMOJI_EDIT_NAME']),
                   emoji: {
                     name: '✏️',
                   },
@@ -205,7 +213,7 @@ module.exports = async (client, instance) => {
                 {
                   type: 2,
                   style: 2,
-                  label: getTS(['COMPONENTS', 'EMOJI_EDIT_ROLES']),
+                  label: await getTS(['COMPONENTS', 'EMOJI_EDIT_ROLES']),
                   emoji: {
                     name: '📜',
                   },
@@ -219,7 +227,7 @@ module.exports = async (client, instance) => {
                 {
                   type: 2,
                   style: 4,
-                  label: getTS(['COMPONENTS', 'EMOJI_EDIT_DELETE']),
+                  label: await getTS(['COMPONENTS', 'EMOJI_EDIT_DELETE']),
                   emoji: {
                     name: '🗑️',
                   },
@@ -230,11 +238,11 @@ module.exports = async (client, instance) => {
           ]);
         } else if (args.find((arg) => arg.name == 'view')) {
           var emb = new Discord.MessageEmbed()
-            .setTitle(getTS('EMOJI_VIEW_VIEWING'))
+            .setTitle(await getTS('EMOJI_VIEW_VIEWING'))
             .addFields(
               emjFN,
               {
-                name: getTS('EMOJI_FIELD_ID'),
+                name: await getTS('EMOJI_FIELD_ID'),
                 value: '`' + emjID + '`',
                 inline: true,
               },
@@ -244,20 +252,20 @@ module.exports = async (client, instance) => {
             .setColor('00ff00')
             .setTimestamp(Date.now())
             .setFooter(
-              getTS('GENERIC_REQUESTED_BY', {
+              await getTS('GENERIC_REQUESTED_BY', {
                 USER: uIF.username,
               }),
               uIF.avatarURL()
             );
 
-          utils.iCP(instance, client, 0, interaction, 0, 0, 0, emb, [
+          utils.iCP(client, 0, interaction, 0, 0, 0, emb, [
             {
               type: 1,
               components: [
                 {
                   type: 2,
                   style: 4,
-                  label: getTS('GENERIC_COMPONENT_MESSAGE_DELETE'),
+                  label: await getTS('GENERIC_COMPONENT_MESSAGE_DELETE'),
                   emoji: {
                     name: '🧹',
                   },
@@ -266,7 +274,7 @@ module.exports = async (client, instance) => {
                 {
                   type: 2,
                   style: 1,
-                  label: getTS(['COMPONENTS', 'EMOJI_EDIT']),
+                  label: await getTS(['COMPONENTS', 'EMOJI_EDIT']),
                   emoji: {
                     name: '📝',
                   },
@@ -291,7 +299,7 @@ module.exports = async (client, instance) => {
       );
 
       if (uIF.id != embAURL[2]) {
-        return utils.iCP(instance, client, 0, interaction, 0, 1, 0, 1);
+        return utils.iCP(client, 0, interaction, 0, 1, 0, 1);
       }
 
       var emjName;
@@ -316,12 +324,12 @@ module.exports = async (client, instance) => {
         }
 
         emjFN = {
-          name: getTS('EMOJI_FIELD_NAME'),
+          name: await getTS('EMOJI_FIELD_NAME'),
           value: '`' + emjName + '`',
           inline: true,
         };
         emjFR = {
-          name: getTS('EMOJI_FIELD_ROLES'),
+          name: await getTS('EMOJI_FIELD_ROLES'),
           value: emjRoles,
         };
       } else {
@@ -329,15 +337,15 @@ module.exports = async (client, instance) => {
       }
 
       var emb = new Discord.MessageEmbed()
-        .setTitle(getTS('EMOJI_EDIT_EDITING'))
+        .setTitle(await getTS('EMOJI_EDIT_EDITING'))
         .addFields(
           {
-            name: getTS('EMOJI_FIELD_NAME'),
+            name: await getTS('EMOJI_FIELD_NAME'),
             value: '`' + emjName + '`',
             inline: true,
           },
           {
-            name: getTS('EMOJI_FIELD_ID'),
+            name: await getTS('EMOJI_FIELD_ID'),
             value: '`' + emjID + '`',
             inline: true,
           },
@@ -347,21 +355,64 @@ module.exports = async (client, instance) => {
         .setColor('ffff00')
         .setTimestamp(Date.now())
         .setFooter(
-          getTS('GENERIC_INTERACTED_BY', {
+          await getTS('GENERIC_INTERACTED_BY', {
             USER: uIF.username,
           }),
           uIF.avatarURL()
         );
 
+      if (
+        !(
+          component_id == 'emoji_view' || component_id == 'emoji_message_delete'
+        ) &&
+        !uI.permissions.has('MANAGE_EMOJIS')
+      ) {
+        return utils.iCP(
+          client,
+          3,
+          interaction,
+          0,
+          0,
+          0,
+          emb.setTitle(await getTS('EMOJI_VIEW_VIEWING')).setColor('00ff00'),
+          [
+            {
+              type: 1,
+              components: [
+                {
+                  type: 2,
+                  style: 4,
+                  label: await getTS('GENERIC_COMPONENT_MESSAGE_DELETE'),
+                  emoji: {
+                    name: '🧹',
+                  },
+                  custom_id: 'emoji_message_delete',
+                },
+                {
+                  type: 2,
+                  style: 1,
+                  label: await getTS(['COMPONENTS', 'EMOJI_EDIT']),
+                  emoji: {
+                    name: '📝',
+                  },
+                  custom_id: 'emoji_edit',
+                  disabled: disEdit,
+                },
+              ],
+            },
+          ]
+        );
+      }
+
       if (component_id == 'emoji_edit') {
-        utils.iCP(instance, client, 3, interaction, 0, 0, 0, emb, [
+        utils.iCP(client, 3, interaction, 0, 0, 0, emb, [
           {
             type: 1,
             components: [
               {
                 type: 2,
                 style: 1,
-                label: getTS(['COMPONENTS', 'EMOJI_VIEW']),
+                label: await getTS(['COMPONENTS', 'EMOJI_VIEW']),
                 emoji: {
                   name: '🔎',
                 },
@@ -370,7 +421,7 @@ module.exports = async (client, instance) => {
               {
                 type: 2,
                 style: 2,
-                label: getTS(['COMPONENTS', 'EMOJI_EDIT_NAME']),
+                label: await getTS(['COMPONENTS', 'EMOJI_EDIT_NAME']),
                 emoji: {
                   name: '✏️',
                 },
@@ -379,7 +430,7 @@ module.exports = async (client, instance) => {
               {
                 type: 2,
                 style: 2,
-                label: getTS(['COMPONENTS', 'EMOJI_EDIT_ROLES']),
+                label: await getTS(['COMPONENTS', 'EMOJI_EDIT_ROLES']),
                 emoji: {
                   name: '📜',
                 },
@@ -393,7 +444,7 @@ module.exports = async (client, instance) => {
               {
                 type: 2,
                 style: 4,
-                label: getTS(['COMPONENTS', 'EMOJI_EDIT_DELETE']),
+                label: await getTS(['COMPONENTS', 'EMOJI_EDIT_DELETE']),
                 emoji: {
                   name: '🗑️',
                 },
@@ -404,14 +455,13 @@ module.exports = async (client, instance) => {
         ]);
       } else if (component_id == 'emoji_view') {
         utils.iCP(
-          instance,
           client,
           3,
           interaction,
           0,
           0,
           0,
-          emb.setTitle(getTS('EMOJI_VIEW_VIEWING')).setColor('00ff00'),
+          emb.setTitle(await getTS('EMOJI_VIEW_VIEWING')).setColor('00ff00'),
           [
             {
               type: 1,
@@ -419,7 +469,7 @@ module.exports = async (client, instance) => {
                 {
                   type: 2,
                   style: 4,
-                  label: getTS('GENERIC_COMPONENT_MESSAGE_DELETE'),
+                  label: await getTS('GENERIC_COMPONENT_MESSAGE_DELETE'),
                   emoji: {
                     name: '🧹',
                   },
@@ -428,7 +478,7 @@ module.exports = async (client, instance) => {
                 {
                   type: 2,
                   style: 1,
-                  label: getTS(['COMPONENTS', 'EMOJI_EDIT']),
+                  label: await getTS(['COMPONENTS', 'EMOJI_EDIT']),
                   emoji: {
                     name: '📝',
                   },
@@ -441,20 +491,19 @@ module.exports = async (client, instance) => {
         );
       } else if (component_id == 'emoji_edit_name') {
         emb.fields[0] = {
-          name: getTS('EMOJI_FIELD_NAME') + ' 📝',
+          name: (await getTS('EMOJI_FIELD_NAME')) + ' 📝',
           value: '`' + emj.name + '`',
           inline: true,
         };
 
         utils.iCP(
-          instance,
           client,
           3,
           interaction,
           0,
           0,
           0,
-          emb.setTitle(getTS('EMOJI_EDIT_NAME')),
+          emb.setTitle(await getTS('EMOJI_EDIT_NAME')),
           [
             {
               type: 1,
@@ -462,7 +511,7 @@ module.exports = async (client, instance) => {
                 {
                   type: 2,
                   style: 1,
-                  label: getTS('GENERIC_COMPONENT_BACK'),
+                  label: await getTS('GENERIC_COMPONENT_BACK'),
                   emoji: {
                     name: '↩️',
                   },
@@ -477,15 +526,17 @@ module.exports = async (client, instance) => {
 
         function fm1() {
           async function checkV() {
-            message = await utils.iCP(instance, client, 4, interaction);
-            if (message.embeds[0].title == getTS('EMOJI_EDIT_NAME')) {
+            message = await utils.iCP(client, 4, interaction);
+            if (message.embeds[0].title == (await getTS('EMOJI_EDIT_NAME'))) {
               return 1;
             } else if (
-              message.embeds[0].title == getTS('EMOJI_EDIT_NAME_INVALID')
+              message.embeds[0].title ==
+              (await getTS('EMOJI_EDIT_NAME_INVALID'))
             ) {
               return 2;
             } else if (
-              message.embeds[0].title == getTS('EMOJI_EDITED_NAME_REPEAT')
+              message.embeds[0].title ==
+              (await getTS('EMOJI_EDITED_NAME_REPEAT'))
             ) {
               return 3;
             } else {
@@ -506,22 +557,21 @@ module.exports = async (client, instance) => {
               if ((await checkV()) == 0) return;
               msg = msg.first();
               if (msg.content.length >= 2 && msg.content.length <= 32) {
-                emj.edit({ name: msg.content }).then((emj) => {
+                emj.edit({ name: msg.content }).then(async (emj) => {
                   emb.fields[0] = {
-                    name: getTS('EMOJI_FIELD_NAME') + ' 📝',
+                    name: (await getTS('EMOJI_FIELD_NAME')) + ' 📝',
                     value: '`' + emj.name + '`',
                     inline: true,
                   };
 
                   utils.iCP(
-                    instance,
                     client,
                     3,
                     interaction,
                     0,
                     0,
                     0,
-                    emb.setTitle(getTS('EMOJI_EDITED_NAME_REPEAT'))
+                    emb.setTitle(await getTS('EMOJI_EDITED_NAME_REPEAT'))
                   );
                 });
                 msg.delete();
@@ -529,14 +579,13 @@ module.exports = async (client, instance) => {
                 fm1();
               } else {
                 utils.iCP(
-                  instance,
                   client,
                   3,
                   interaction,
                   0,
                   0,
                   0,
-                  emb.setTitle(getTS('EMOJI_EDIT_NAME_INVALID'))
+                  emb.setTitle(await getTS('EMOJI_EDIT_NAME_INVALID'))
                 );
                 msg.delete();
 
@@ -546,14 +595,13 @@ module.exports = async (client, instance) => {
             .catch(async (err) => {
               if ((await checkV()) == 0) return;
               utils.iCP(
-                instance,
                 client,
                 3,
                 interaction,
                 0,
                 0,
                 0,
-                emb.setTitle(getTS('GENERIC_TIME_OUT')),
+                emb.setTitle(await getTS('GENERIC_TIME_OUT')),
                 [
                   {
                     type: 1,
@@ -561,7 +609,7 @@ module.exports = async (client, instance) => {
                       {
                         type: 2,
                         style: 1,
-                        label: getTS('GENERIC_COMPONENT_BACK'),
+                        label: await getTS('GENERIC_COMPONENT_BACK'),
                         emoji: {
                           name: '↩️',
                         },
@@ -570,7 +618,7 @@ module.exports = async (client, instance) => {
                       {
                         type: 2,
                         style: 1,
-                        label: getTS('GENERIC_COMPONENT_REPEAT'),
+                        label: await getTS('GENERIC_COMPONENT_REPEAT'),
                         emoji: {
                           name: '🔄',
                         },
@@ -583,14 +631,14 @@ module.exports = async (client, instance) => {
             });
         }
         fm1();
-        utils.iCP(instance, client, 3, interaction, 0, 0, 0, emb, [
+        utils.iCP(client, 3, interaction, 0, 0, 0, emb, [
           {
             type: 1,
             components: [
               {
                 type: 2,
                 style: 1,
-                label: getTS('GENERIC_COMPONENT_BACK'),
+                label: await getTS('GENERIC_COMPONENT_BACK'),
                 emoji: {
                   name: '↩️',
                 },
@@ -601,18 +649,17 @@ module.exports = async (client, instance) => {
         ]);
       } else if (component_id == 'emoji_edit_role') {
         emb.fields[2] = {
-          name: getTS('EMOJI_FIELD_ROLES') + ' 📝',
+          name: (await getTS('EMOJI_FIELD_ROLES')) + ' 📝',
           value: emjRoles,
         };
         utils.iCP(
-          instance,
           client,
           3,
           interaction,
           0,
           0,
           0,
-          emb.setTitle(getTS('EMOJI_EDITING_ROLES')),
+          emb.setTitle(await getTS('EMOJI_EDITING_ROLES')),
           [
             {
               type: 1,
@@ -620,7 +667,7 @@ module.exports = async (client, instance) => {
                 {
                   type: 2,
                   style: 1,
-                  label: getTS('GENERIC_COMPONENT_BACK'),
+                  label: await getTS('GENERIC_COMPONENT_BACK'),
                   emoji: {
                     name: '↩️',
                   },
@@ -629,7 +676,7 @@ module.exports = async (client, instance) => {
                 {
                   type: 2,
                   style: 3,
-                  label: getTS(['COMPONENTS', 'EMOJI_EDIT_ROLES_ADD']),
+                  label: await getTS(['COMPONENTS', 'EMOJI_EDIT_ROLES_ADD']),
                   emoji: {
                     name: '➕',
                   },
@@ -638,7 +685,7 @@ module.exports = async (client, instance) => {
                 {
                   type: 2,
                   style: 4,
-                  label: getTS(['COMPONENTS', 'EMOJI_EDIT_ROLES_REMOVE']),
+                  label: await getTS(['COMPONENTS', 'EMOJI_EDIT_ROLES_REMOVE']),
                   emoji: {
                     name: '➖',
                   },
@@ -652,7 +699,7 @@ module.exports = async (client, instance) => {
                 {
                   type: 2,
                   style: 2,
-                  label: getTS(['COMPONENTS', 'EMOJI_EDIT_ROLES_RESET']),
+                  label: await getTS(['COMPONENTS', 'EMOJI_EDIT_ROLES_RESET']),
                   emoji: {
                     name: '🔄',
                   },
@@ -664,18 +711,17 @@ module.exports = async (client, instance) => {
         );
       } else if (component_id == 'emoji_edit_roles_add') {
         emb.fields[2] = {
-          name: getTS('EMOJI_FIELD_ROLES') + ' 📝',
+          name: (await getTS('EMOJI_FIELD_ROLES')) + ' 📝',
           value: emjRoles,
         };
         utils.iCP(
-          instance,
           client,
           3,
           interaction,
           0,
           0,
           0,
-          emb.setTitle(getTS('EMOJI_EDIT_ROLES_ADDING')),
+          emb.setTitle(await getTS('EMOJI_EDIT_ROLES_ADDING')),
           [
             {
               type: 1,
@@ -683,7 +729,7 @@ module.exports = async (client, instance) => {
                 {
                   type: 2,
                   style: 1,
-                  label: getTS('GENERIC_COMPONENT_BACK'),
+                  label: await getTS('GENERIC_COMPONENT_BACK'),
                   emoji: {
                     name: '↩️',
                   },
@@ -692,7 +738,7 @@ module.exports = async (client, instance) => {
                 {
                   type: 2,
                   style: 3,
-                  label: getTS(['COMPONENTS', 'EMOJI_EDIT_ROLES_ADD']),
+                  label: await getTS(['COMPONENTS', 'EMOJI_EDIT_ROLES_ADD']),
                   emoji: {
                     name: '➕',
                   },
@@ -702,7 +748,7 @@ module.exports = async (client, instance) => {
                 {
                   type: 2,
                   style: 4,
-                  label: getTS(['COMPONENTS', 'EMOJI_EDIT_ROLES_REMOVE']),
+                  label: await getTS(['COMPONENTS', 'EMOJI_EDIT_ROLES_REMOVE']),
                   emoji: {
                     name: '➖',
                   },
@@ -716,7 +762,7 @@ module.exports = async (client, instance) => {
                 {
                   type: 2,
                   style: 2,
-                  label: getTS(['COMPONENTS', 'EMOJI_EDIT_ROLES_RESET']),
+                  label: await getTS(['COMPONENTS', 'EMOJI_EDIT_ROLES_RESET']),
                   emoji: {
                     name: '🔄',
                   },
@@ -731,14 +777,16 @@ module.exports = async (client, instance) => {
 
         function fm1() {
           async function checkV() {
-            message = await utils.iCP(instance, client, 4, interaction);
+            message = await utils.iCP(client, 4, interaction);
             if (
-              message.embeds[0].title == getTS('EMOJI_EDIT_ROLES_ADDING') ||
               message.embeds[0].title ==
-                getTS('EMOJI_EDIT_ROLES_ADD_INVALID') ||
+                (await getTS('EMOJI_EDIT_ROLES_ADDING')) ||
               message.embeds[0].title ==
-                getTS('EMOJI_EDITED_ROLES_ADD_REPEAT') ||
-              message.embeds[0].title == getTS('EMOJI_EDIT_ROLES_ADDED_ALREADY')
+                (await getTS('EMOJI_EDIT_ROLES_ADD_INVALID')) ||
+              message.embeds[0].title ==
+                (await getTS('EMOJI_EDITED_ROLES_ADD_REPEAT')) ||
+              message.embeds[0].title ==
+                (await getTS('EMOJI_EDIT_ROLES_ADDED_ALREADY'))
             ) {
               return 1;
             } else {
@@ -764,7 +812,6 @@ module.exports = async (client, instance) => {
               if (emjR) {
                 if (emj.roles.cache.has(emjR.id)) {
                   utils.iCP(
-                    instance,
                     client,
                     3,
                     interaction,
@@ -772,7 +819,7 @@ module.exports = async (client, instance) => {
                     0,
                     0,
                     emb
-                      .setTitle(getTS('EMOJI_EDIT_ROLES_ADDED_ALREADY'))
+                      .setTitle(await getTS('EMOJI_EDIT_ROLES_ADDED_ALREADY'))
                       .setColor('ff0000')
                   );
                   msg.delete();
@@ -780,7 +827,7 @@ module.exports = async (client, instance) => {
                 }
                 var emjRs = emj.roles.cache.set('', emjR.id);
 
-                emj.edit({ roles: emjRs }).then((emj) => {
+                emj.edit({ roles: emjRs }).then(async (emj) => {
                   var emjRoles = Util.discordSort(emj.roles.cache)
                     .map((r) => `${r}`)
                     .reverse()
@@ -789,12 +836,11 @@ module.exports = async (client, instance) => {
                     emjRoles = '@everyone';
                   }
                   emb.fields[2] = {
-                    name: getTS('EMOJI_FIELD_ROLES') + ' 📝',
+                    name: (await getTS('EMOJI_FIELD_ROLES')) + ' 📝',
                     value: emjRoles,
                   };
 
                   utils.iCP(
-                    instance,
                     client,
                     3,
                     interaction,
@@ -802,7 +848,7 @@ module.exports = async (client, instance) => {
                     0,
                     0,
                     emb
-                      .setTitle(getTS('EMOJI_EDITED_ROLES_ADD_REPEAT'))
+                      .setTitle(await getTS('EMOJI_EDITED_ROLES_ADD_REPEAT'))
                       .setColor('ff8000')
                   );
                 });
@@ -811,7 +857,6 @@ module.exports = async (client, instance) => {
                 fm1();
               } else {
                 utils.iCP(
-                  instance,
                   client,
                   3,
                   interaction,
@@ -819,7 +864,7 @@ module.exports = async (client, instance) => {
                   0,
                   0,
                   emb
-                    .setTitle(getTS('EMOJI_EDIT_ROLES_ADD_INVALID'))
+                    .setTitle(await getTS('EMOJI_EDIT_ROLES_ADD_INVALID'))
                     .setColor('ff0000')
                 );
                 msg.delete();
@@ -830,14 +875,13 @@ module.exports = async (client, instance) => {
             .catch(async (err) => {
               if ((await checkV()) == 0) return;
               utils.iCP(
-                instance,
                 client,
                 3,
                 interaction,
                 0,
                 0,
                 0,
-                emb.setTitle(getTS('GENERIC_TIME_OUT')),
+                emb.setTitle(await getTS('GENERIC_TIME_OUT')),
                 [
                   {
                     type: 1,
@@ -845,7 +889,7 @@ module.exports = async (client, instance) => {
                       {
                         type: 2,
                         style: 1,
-                        label: getTS('GENERIC_COMPONENT_BACK'),
+                        label: await getTS('GENERIC_COMPONENT_BACK'),
                         emoji: {
                           name: '↩️',
                         },
@@ -854,7 +898,10 @@ module.exports = async (client, instance) => {
                       {
                         type: 2,
                         style: 3,
-                        label: getTS(['COMPONENTS', 'EMOJI_EDIT_ROLES_ADD']),
+                        label: await getTS([
+                          'COMPONENTS',
+                          'EMOJI_EDIT_ROLES_ADD',
+                        ]),
                         emoji: {
                           name: '➕',
                         },
@@ -863,7 +910,10 @@ module.exports = async (client, instance) => {
                       {
                         type: 2,
                         style: 4,
-                        label: getTS(['COMPONENTS', 'EMOJI_EDIT_ROLES_REMOVE']),
+                        label: await getTS([
+                          'COMPONENTS',
+                          'EMOJI_EDIT_ROLES_REMOVE',
+                        ]),
                         emoji: {
                           name: '➖',
                         },
@@ -877,7 +927,10 @@ module.exports = async (client, instance) => {
                       {
                         type: 2,
                         style: 2,
-                        label: getTS(['COMPONENTS', 'EMOJI_EDIT_ROLES_RESET']),
+                        label: await getTS([
+                          'COMPONENTS',
+                          'EMOJI_EDIT_ROLES_RESET',
+                        ]),
                         emoji: {
                           name: '🔄',
                         },
@@ -890,14 +943,14 @@ module.exports = async (client, instance) => {
             });
         }
         fm1();
-        utils.iCP(instance, client, 3, interaction, 0, 0, 0, emb, [
+        utils.iCP(client, 3, interaction, 0, 0, 0, emb, [
           {
             type: 1,
             components: [
               {
                 type: 2,
                 style: 1,
-                label: getTS('GENERIC_COMPONENT_BACK'),
+                label: await getTS('GENERIC_COMPONENT_BACK'),
                 emoji: {
                   name: '↩️',
                 },
@@ -906,7 +959,7 @@ module.exports = async (client, instance) => {
               {
                 type: 2,
                 style: 3,
-                label: getTS(['COMPONENTS', 'EMOJI_EDIT_ROLES_ADD']),
+                label: await getTS(['COMPONENTS', 'EMOJI_EDIT_ROLES_ADD']),
                 emoji: {
                   name: '➕',
                 },
@@ -916,7 +969,7 @@ module.exports = async (client, instance) => {
               {
                 type: 2,
                 style: 4,
-                label: getTS(['COMPONENTS', 'EMOJI_EDIT_ROLES_REMOVE']),
+                label: await getTS(['COMPONENTS', 'EMOJI_EDIT_ROLES_REMOVE']),
                 emoji: {
                   name: '➖',
                 },
@@ -930,7 +983,7 @@ module.exports = async (client, instance) => {
               {
                 type: 2,
                 style: 2,
-                label: getTS(['COMPONENTS', 'EMOJI_EDIT_ROLES_RESET']),
+                label: await getTS(['COMPONENTS', 'EMOJI_EDIT_ROLES_RESET']),
                 emoji: {
                   name: '🔄',
                 },
@@ -941,18 +994,17 @@ module.exports = async (client, instance) => {
         ]);
       } else if (component_id == 'emoji_edit_roles_remove') {
         emb.fields[2] = {
-          name: getTS('EMOJI_FIELD_ROLES') + ' 📝',
+          name: (await getTS('EMOJI_FIELD_ROLES')) + ' 📝',
           value: emjRoles,
         };
         utils.iCP(
-          instance,
           client,
           3,
           interaction,
           0,
           0,
           0,
-          emb.setTitle(getTS('EMOJI_EDIT_ROLES_REMOVING')),
+          emb.setTitle(await getTS('EMOJI_EDIT_ROLES_REMOVING')),
           [
             {
               type: 1,
@@ -960,7 +1012,7 @@ module.exports = async (client, instance) => {
                 {
                   type: 2,
                   style: 1,
-                  label: getTS('GENERIC_COMPONENT_BACK'),
+                  label: await getTS('GENERIC_COMPONENT_BACK'),
                   emoji: {
                     name: '↩️',
                   },
@@ -969,7 +1021,7 @@ module.exports = async (client, instance) => {
                 {
                   type: 2,
                   style: 3,
-                  label: getTS(['COMPONENTS', 'EMOJI_EDIT_ROLES_ADD']),
+                  label: await getTS(['COMPONENTS', 'EMOJI_EDIT_ROLES_ADD']),
                   emoji: {
                     name: '➕',
                   },
@@ -978,7 +1030,7 @@ module.exports = async (client, instance) => {
                 {
                   type: 2,
                   style: 4,
-                  label: getTS(['COMPONENTS', 'EMOJI_EDIT_ROLES_REMOVE']),
+                  label: await getTS(['COMPONENTS', 'EMOJI_EDIT_ROLES_REMOVE']),
                   emoji: {
                     name: '➖',
                   },
@@ -993,7 +1045,7 @@ module.exports = async (client, instance) => {
                 {
                   type: 2,
                   style: 2,
-                  label: getTS(['COMPONENTS', 'EMOJI_EDIT_ROLES_RESET']),
+                  label: await getTS(['COMPONENTS', 'EMOJI_EDIT_ROLES_RESET']),
                   emoji: {
                     name: '🔄',
                   },
@@ -1008,15 +1060,16 @@ module.exports = async (client, instance) => {
 
         function fm1() {
           async function checkV() {
-            message = await utils.iCP(instance, client, 4, interaction);
+            message = await utils.iCP(client, 4, interaction);
             if (
-              message.embeds[0].title == getTS('EMOJI_EDIT_ROLES_REMOVING') ||
               message.embeds[0].title ==
-                getTS('EMOJI_EDIT_ROLES_REMOVE_INVALID') ||
+                (await getTS('EMOJI_EDIT_ROLES_REMOVING')) ||
               message.embeds[0].title ==
-                getTS('EMOJI_EDITED_ROLES_REMOVE_REPEAT') ||
+                (await getTS('EMOJI_EDIT_ROLES_REMOVE_INVALID')) ||
               message.embeds[0].title ==
-                getTS('EMOJI_EDIT_ROLES_REMOVED_ALREADY')
+                (await getTS('EMOJI_EDITED_ROLES_REMOVE_REPEAT')) ||
+              message.embeds[0].title ==
+                (await getTS('EMOJI_EDIT_ROLES_REMOVED_ALREADY'))
             ) {
               return 1;
             } else {
@@ -1042,7 +1095,6 @@ module.exports = async (client, instance) => {
               if (emjR) {
                 if (!emj.roles.cache.has(emjR.id)) {
                   utils.iCP(
-                    instance,
                     client,
                     3,
                     interaction,
@@ -1050,7 +1102,7 @@ module.exports = async (client, instance) => {
                     0,
                     0,
                     emb
-                      .setTitle(getTS('EMOJI_EDIT_ROLES_REMOVED_ALREADY'))
+                      .setTitle(await getTS('EMOJI_EDIT_ROLES_REMOVED_ALREADY'))
                       .setColor('ff0000')
                   );
                   msg.delete();
@@ -1060,7 +1112,7 @@ module.exports = async (client, instance) => {
                 var emjRs = emj.roles.cache;
                 emjRs.delete(emjR.id);
 
-                emj.edit({ roles: emjRs }).then((emj) => {
+                emj.edit({ roles: emjRs }).then(async (emj) => {
                   var emjRoles = Util.discordSort(emj.roles.cache)
                     .map((r) => `${r}`)
                     .reverse()
@@ -1069,12 +1121,11 @@ module.exports = async (client, instance) => {
                     emjRoles = '@everyone';
                   }
                   emb.fields[2] = {
-                    name: getTS('EMOJI_FIELD_ROLES') + ' 📝',
+                    name: (await getTS('EMOJI_FIELD_ROLES')) + ' 📝',
                     value: emjRoles,
                   };
 
                   utils.iCP(
-                    instance,
                     client,
                     3,
                     interaction,
@@ -1082,7 +1133,7 @@ module.exports = async (client, instance) => {
                     0,
                     0,
                     emb
-                      .setTitle(getTS('EMOJI_EDITED_ROLES_REMOVE_REPEAT'))
+                      .setTitle(await getTS('EMOJI_EDITED_ROLES_REMOVE_REPEAT'))
                       .setColor('ff8000')
                   );
                 });
@@ -1091,7 +1142,6 @@ module.exports = async (client, instance) => {
                 fm1();
               } else {
                 utils.iCP(
-                  instance,
                   client,
                   3,
                   interaction,
@@ -1099,7 +1149,7 @@ module.exports = async (client, instance) => {
                   0,
                   0,
                   emb
-                    .setTitle(getTS('EMOJI_EDIT_ROLES_REMOVE_INVALID'))
+                    .setTitle(await getTS('EMOJI_EDIT_ROLES_REMOVE_INVALID'))
                     .setColor('ff0000')
                 );
                 msg.delete();
@@ -1110,14 +1160,13 @@ module.exports = async (client, instance) => {
             .catch(async (err) => {
               if ((await checkV()) == 0) return;
               utils.iCP(
-                instance,
                 client,
                 3,
                 interaction,
                 0,
                 0,
                 0,
-                emb.setTitle(getTS('GENERIC_TIME_OUT')),
+                emb.setTitle(await getTS('GENERIC_TIME_OUT')),
                 [
                   {
                     type: 1,
@@ -1125,7 +1174,7 @@ module.exports = async (client, instance) => {
                       {
                         type: 2,
                         style: 1,
-                        label: getTS('GENERIC_COMPONENT_BACK'),
+                        label: await getTS('GENERIC_COMPONENT_BACK'),
                         emoji: {
                           name: '↩️',
                         },
@@ -1134,7 +1183,10 @@ module.exports = async (client, instance) => {
                       {
                         type: 2,
                         style: 3,
-                        label: getTS(['COMPONENTS', 'EMOJI_EDIT_ROLES_ADD']),
+                        label: await getTS([
+                          'COMPONENTS',
+                          'EMOJI_EDIT_ROLES_ADD',
+                        ]),
                         emoji: {
                           name: '➕',
                         },
@@ -1143,7 +1195,10 @@ module.exports = async (client, instance) => {
                       {
                         type: 2,
                         style: 4,
-                        label: getTS(['COMPONENTS', 'EMOJI_EDIT_ROLES_REMOVE']),
+                        label: await getTS([
+                          'COMPONENTS',
+                          'EMOJI_EDIT_ROLES_REMOVE',
+                        ]),
                         emoji: {
                           name: '➖',
                         },
@@ -1157,7 +1212,10 @@ module.exports = async (client, instance) => {
                       {
                         type: 2,
                         style: 2,
-                        label: getTS(['COMPONENTS', 'EMOJI_EDIT_ROLES_RESET']),
+                        label: await getTS([
+                          'COMPONENTS',
+                          'EMOJI_EDIT_ROLES_RESET',
+                        ]),
                         emoji: {
                           name: '🔄',
                         },
@@ -1170,14 +1228,14 @@ module.exports = async (client, instance) => {
             });
         }
         fm1();
-        utils.iCP(instance, client, 3, interaction, 0, 0, 0, emb, [
+        utils.iCP(client, 3, interaction, 0, 0, 0, emb, [
           {
             type: 1,
             components: [
               {
                 type: 2,
                 style: 1,
-                label: getTS('GENERIC_COMPONENT_BACK'),
+                label: await getTS('GENERIC_COMPONENT_BACK'),
                 emoji: {
                   name: '↩️',
                 },
@@ -1186,7 +1244,7 @@ module.exports = async (client, instance) => {
               {
                 type: 2,
                 style: 3,
-                label: getTS(['COMPONENTS', 'EMOJI_EDIT_ROLES_ADD']),
+                label: await getTS(['COMPONENTS', 'EMOJI_EDIT_ROLES_ADD']),
                 emoji: {
                   name: '➕',
                 },
@@ -1195,7 +1253,7 @@ module.exports = async (client, instance) => {
               {
                 type: 2,
                 style: 4,
-                label: getTS(['COMPONENTS', 'EMOJI_EDIT_ROLES_REMOVE']),
+                label: await getTS(['COMPONENTS', 'EMOJI_EDIT_ROLES_REMOVE']),
                 emoji: {
                   name: '➖',
                 },
@@ -1210,7 +1268,7 @@ module.exports = async (client, instance) => {
               {
                 type: 2,
                 style: 2,
-                label: getTS(['COMPONENTS', 'EMOJI_EDIT_ROLES_RESET']),
+                label: await getTS(['COMPONENTS', 'EMOJI_EDIT_ROLES_RESET']),
                 emoji: {
                   name: '🔄',
                 },
@@ -1220,7 +1278,7 @@ module.exports = async (client, instance) => {
           },
         ]);
       } else if (component_id == 'emoji_edit_roles_reset') {
-        emj.edit({ roles: [] }).then((emj) => {
+        emj.edit({ roles: [] }).then(async (emj) => {
           var emjRoles = Util.discordSort(emj.roles.cache)
             .map((r) => `${r}`)
             .reverse()
@@ -1229,18 +1287,19 @@ module.exports = async (client, instance) => {
             emjRoles = '@everyone';
           }
           emb.fields[2] = {
-            name: getTS('EMOJI_FIELD_ROLES') + ' 📝',
+            name: (await getTS('EMOJI_FIELD_ROLES')) + ' 📝',
             value: emjRoles,
           };
           utils.iCP(
-            instance,
             client,
             3,
             interaction,
             0,
             0,
             0,
-            emb.setTitle(getTS('EMOJI_EDIT_ROLES_RESETED')).setColor('ff8000'),
+            emb
+              .setTitle(await getTS('EMOJI_EDIT_ROLES_RESETED'))
+              .setColor('ff8000'),
             [
               {
                 type: 1,
@@ -1248,7 +1307,7 @@ module.exports = async (client, instance) => {
                   {
                     type: 2,
                     style: 1,
-                    label: getTS('GENERIC_COMPONENT_BACK'),
+                    label: await getTS('GENERIC_COMPONENT_BACK'),
                     emoji: {
                       name: '↩️',
                     },
@@ -1257,7 +1316,7 @@ module.exports = async (client, instance) => {
                   {
                     type: 2,
                     style: 3,
-                    label: getTS(['COMPONENTS', 'EMOJI_EDIT_ROLES_ADD']),
+                    label: await getTS(['COMPONENTS', 'EMOJI_EDIT_ROLES_ADD']),
                     emoji: {
                       name: '➕',
                     },
@@ -1266,7 +1325,10 @@ module.exports = async (client, instance) => {
                   {
                     type: 2,
                     style: 4,
-                    label: getTS(['COMPONENTS', 'EMOJI_EDIT_ROLES_REMOVE']),
+                    label: await getTS([
+                      'COMPONENTS',
+                      'EMOJI_EDIT_ROLES_REMOVE',
+                    ]),
                     emoji: {
                       name: '➖',
                     },
@@ -1280,7 +1342,10 @@ module.exports = async (client, instance) => {
                   {
                     type: 2,
                     style: 2,
-                    label: getTS(['COMPONENTS', 'EMOJI_EDIT_ROLES_RESET']),
+                    label: await getTS([
+                      'COMPONENTS',
+                      'EMOJI_EDIT_ROLES_RESET',
+                    ]),
                     emoji: {
                       name: '🔄',
                     },
@@ -1293,7 +1358,6 @@ module.exports = async (client, instance) => {
         });
       } else if (component_id == 'emoji_edit_delete') {
         utils.iCP(
-          instance,
           client,
           3,
           interaction,
@@ -1301,8 +1365,8 @@ module.exports = async (client, instance) => {
           0,
           0,
           emb
-            .setTitle(getTS('EMOJI_EDIT_DELETING'))
-            .setDescription(getTS('EMOJI_EDIT_DELETING_DESC'))
+            .setTitle(await getTS('EMOJI_EDIT_DELETING'))
+            .setDescription(await getTS('EMOJI_EDIT_DELETING_DESC'))
             .setColor('ff8000'),
           [
             {
@@ -1311,7 +1375,7 @@ module.exports = async (client, instance) => {
                 {
                   type: 2,
                   style: 1,
-                  label: getTS('GENERIC_COMPONENT_BACK'),
+                  label: await getTS('GENERIC_COMPONENT_BACK'),
                   emoji: {
                     name: '↩️',
                   },
@@ -1320,7 +1384,10 @@ module.exports = async (client, instance) => {
                 {
                   type: 2,
                   style: 3,
-                  label: getTS(['COMPONENTS', 'EMOJI_EDIT_DELETE_CONFIRM']),
+                  label: await getTS([
+                    'COMPONENTS',
+                    'EMOJI_EDIT_DELETE_CONFIRM',
+                  ]),
                   emoji: {
                     name: '✅',
                   },
@@ -1333,14 +1400,13 @@ module.exports = async (client, instance) => {
       } else if (component_id == 'emoji_edit_delete_confirm') {
         emj.delete();
         utils.iCP(
-          instance,
           client,
           3,
           interaction,
           0,
           0,
           0,
-          emb.setTitle(getTS('EMOJI_EDIT_DELETED')).setColor('ff0000'),
+          emb.setTitle(await getTS('EMOJI_EDIT_DELETED')).setColor('ff0000'),
           [
             {
               type: 1,
@@ -1348,7 +1414,7 @@ module.exports = async (client, instance) => {
                 {
                   type: 2,
                   style: 4,
-                  label: getTS('GENERIC_COMPONENT_MESSAGE_DELETE'),
+                  label: await getTS('GENERIC_COMPONENT_MESSAGE_DELETE'),
                   emoji: {
                     name: '🧹',
                   },
@@ -1359,14 +1425,8 @@ module.exports = async (client, instance) => {
           ]
         );
       } else if (component_id == 'emoji_message_delete') {
-        utils.iCP(instance, client, 5, interaction);
+        utils.iCP(client, 5, interaction);
       }
     }
-  });
-};
-
-module.exports.config = {
-  displayName: 'Emoji Interaction',
-  dbName: 'EmojiI',
-  loadDBFirst: true,
+  },
 };

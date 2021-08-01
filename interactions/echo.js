@@ -1,24 +1,37 @@
 const Discord = require('discord.js');
 const tc = require('tinycolor2');
-const utils = require('../../utils/utils.js');
+const utils = require('../utils/utils.js');
 require('colors');
 require('log-timestamp');
 
-module.exports = async (client, instance) => {
-  client.ws.on('INTERACTION_CREATE', async (interaction) => {
+module.exports = {
+  name: 'INTERACTION_CREATE',
+  async execute(client, interaction) {
+    function getTS(path, values) {
+      return utils.getTSE(interaction.guild_id, path, values);
+    }
+    var guildI = client.guilds.cache.get(interaction.guild_id);
+    if (guildI) {
+      var uI = guildI.members.cache.get(interaction.member.user.id);
+      var uIF = await client.users.fetch(interaction.member.user.id);
+    }
+
     if (interaction.data.name) {
-      const command = interaction.data.name.toLowerCase();
-      const args = interaction.data.options;
-
-      const guildI = client.guilds.cache.get(interaction.guild_id);
-      const uI = guildI.members.cache.get(interaction.member.user.id);
-      const uIF = await client.users.fetch(uI.id);
-
-      function getTS(path, values) {
-        return utils.getTSE(instance, guildI, path, values);
-      }
+      var command = interaction.data.name.toLowerCase();
+      var args = interaction.data.options;
 
       if (command == 'echo') {
+        if (!guildI)
+          return utils.iCP(
+            client,
+            0,
+            interaction,
+            [0, await getTS('GENERIC_NO_DM')],
+            1,
+            0,
+            1
+          );
+
         var tts = args
           .find((arg) => arg['options'])
           .options.find((arg) => arg.name == 'tts');
@@ -47,11 +60,10 @@ module.exports = async (client, instance) => {
             if (!uI.hasPermission('MANAGE_MESSAGES')) {
               if (tts == true && !uI.hasPermission('SEND_TTS_MESSAGES')) {
                 return utils.iCP(
-                  instance,
                   client,
                   interaction,
                   [
-                    getTS('GENERIC_ERROR'),
+                    await getTS('GENERIC_ERROR'),
                     'Você não tem permissão de `gerenciar mensagens` e `enviar mensagens TTS` para ecoar mensagens TTS em embed públicas, somente efêmeras.',
                   ],
                   1,
@@ -60,12 +72,11 @@ module.exports = async (client, instance) => {
                 );
               }
               return utils.iCP(
-                instance,
                 client,
                 0,
                 interaction,
                 [
-                  getTS('GENERIC_ERROR'),
+                  await getTS('GENERIC_ERROR'),
                   'Você não tem permissão de `gerenciar mensagens` para ecoar mensagens em embed públicas, somente efêmeras.',
                 ],
                 1,
@@ -74,12 +85,11 @@ module.exports = async (client, instance) => {
               );
             } else if (tts == true && !uI.hasPermission('SEND_TTS_MESSAGES')) {
               return utils.iCP(
-                instance,
                 client,
                 0,
                 interaction,
                 [
-                  getTS('GENERIC_ERROR'),
+                  await getTS('GENERIC_ERROR'),
                   'Você não tem permissão de `enviar mensagens TTS` para ecoar mensagens TTS em embed públicas, somente efêmeras.',
                 ],
                 1,
@@ -91,7 +101,6 @@ module.exports = async (client, instance) => {
 
           if (!eD.value)
             return utils.iCP(
-              instance,
               client,
               interaction,
               'Descrição não especificada.',
@@ -109,11 +118,10 @@ module.exports = async (client, instance) => {
 
             if (!tc(eC).isValid())
               return utils.iCP(
-                instance,
                 client,
                 0,
                 interaction,
-                [getTS('GENERIC_ERROR'), 'Cor inválida.'],
+                [await getTS('GENERIC_ERROR'), 'Cor inválida.'],
                 1,
                 0,
                 1
@@ -190,7 +198,7 @@ module.exports = async (client, instance) => {
             emb = emb.setThumbnail(eTH.value);
           }
 
-          utils.iCP(instance, client, 0, interaction, 0, sEP, tts, emb);
+          utils.iCP(client, 0, interaction, 0, sEP, tts, emb);
         }
 
         if (args.find((arg) => arg.name == 'say')) {
@@ -200,10 +208,9 @@ module.exports = async (client, instance) => {
 
           if (!mCN.value)
             return utils.iCP(
-              instance,
               client,
               interaction,
-              [getTS('GENERIC_ERROR'), 'Texto não especificado.'],
+              [await getTS('GENERIC_ERROR'), 'Texto não especificado.'],
               1,
               0,
               1
@@ -223,11 +230,10 @@ module.exports = async (client, instance) => {
             if (!uI.hasPermission('MANAGE_MESSAGES')) {
               if (tts == true && !uI.hasPermission('SEND_TTS_MESSAGES')) {
                 return utils.iCP(
-                  instance,
                   client,
                   interaction,
                   [
-                    getTS('GENERIC_ERROR'),
+                    await getTS('GENERIC_ERROR'),
                     'Você não tem permissão de `gerenciar mensagens` e `enviar mensagens TTS` para ecoar mensagens TTS públicas, somente efêmeras.',
                   ],
                   1,
@@ -236,12 +242,11 @@ module.exports = async (client, instance) => {
                 );
               }
               return utils.iCP(
-                instance,
                 client,
                 0,
                 interaction,
                 [
-                  getTS('GENERIC_ERROR'),
+                  await getTS('GENERIC_ERROR'),
                   'Você não tem permissão de `gerenciar mensagens` para ecoar mensagens públicas, somente efêmeras.',
                 ],
                 1,
@@ -251,12 +256,11 @@ module.exports = async (client, instance) => {
             }
             if (tts == true && !uI.hasPermission('SEND_TTS_MESSAGES')) {
               return utils.iCP(
-                instance,
                 client,
                 0,
                 interaction,
                 [
-                  getTS('GENERIC_ERROR'),
+                  await getTS('GENERIC_ERROR'),
                   'Você não tem permissão de `enviar mensagens TTS` para ecoar mensagens TTS públicas, somente efêmeras.',
                 ],
                 1,
@@ -266,15 +270,9 @@ module.exports = async (client, instance) => {
             }
           }
 
-          utils.iCP(instance, client, 0, interaction, mCN.value, sEP, tts);
+          utils.iCP(client, 0, interaction, mCN.value, sEP, tts);
         }
       }
     }
-  });
-};
-
-module.exports.config = {
-  displayName: 'Echo Interaction',
-  dbName: 'EchoI',
-  loadDBFirst: true,
+  },
 };

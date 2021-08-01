@@ -3,33 +3,36 @@ const tc = require('tinycolor2');
 const XMLHttpRequest = require('xmlhttprequest').XMLHttpRequest;
 const xhr = new XMLHttpRequest();
 const url = require('url');
+const messageHandler = require('./database');
 
-function getTSE(instance, guild, path, values) {
+module.exports.search = (objects, key) => {
+  for (var key in objects) {
+    var value = objects[key];
+  }
+
+  return value;
+};
+
+function getTSE(guild, path, values) {
   if (Array.isArray(path)) {
-    return instance.messageHandler.getEmbed(guild, path[0], path[1], values);
+    return messageHandler.getEmbedString(guild, path[0], path[1], values);
   } else {
-    return instance.messageHandler.get(guild, path, values);
+    return messageHandler.getString(guild, path, values);
   }
 }
-module.exports.getTSE = (instance, guild, path, values) =>
-  getTSE(instance, guild, path, values);
+module.exports.getTSE = (guild, path, values) => getTSE(guild, path, values);
 
-module.exports.iCP = async (
-  inst,
-  client,
-  opt,
-  itc,
-  cnt,
-  eph,
-  tts,
-  emb,
-  cmps
-) => {
-  const guildI = itc.guild_id;
-  const uI = itc.member.user;
-  const uIF = await client.users.fetch(uI.id);
+module.exports.iCP = async (client, opt, itc, cnt, eph, tts, emb, cmps) => {
   function getTS(path, values) {
-    return getTSE(inst, guildI, path, values);
+    return getTSE(itc.guild_id, path, values);
+  }
+  var guildI = itc.guild_id;
+
+  if (guildI) {
+    var uI = itc.member.user;
+    var uIF = await client.users.fetch(itc.member.user.id);
+  } else {
+    var uIF = await client.users.fetch(itc.user.id);
   }
   if (!cnt || cnt === 0) {
     cnt = '';
@@ -67,21 +70,21 @@ module.exports.iCP = async (
       var cnt = [];
     }
     if (!cnt[0] || cnt[0] == 0) {
-      cnt[0] = getTS('GENERIC_ERROR');
+      cnt[0] = await getTS('GENERIC_ERROR');
     }
     if (!cnt[1] || cnt[1] == 0) {
-      cnt[1] = getTS('GENERIC_ERROR_COMMAND');
+      cnt[1] = await getTS('GENERIC_ERROR_COMMAND');
     }
     if (!cnt[2] || cnt[2] == 0) {
-      cnt[2] = '#ff0000';
+      cnt[2] = 'ff0000';
     }
 
-    let embed = new Discord.MessageEmbed()
+    var emb = new Discord.MessageEmbed()
       .setTitle(cnt[0])
       .setDescription(cnt[1])
       .setColor(cnt[2])
       .setFooter(
-        getTS('GENERIC_REQUESTED_BY', {
+        await getTS('GENERIC_REQUESTED_BY', {
           USER: uIF.username,
         }),
         uIF.avatarURL()
@@ -91,7 +94,7 @@ module.exports.iCP = async (
     dt = {
       flags: eph,
       tts: tts,
-      embeds: [embed],
+      embeds: [emb],
       components: cmps,
     };
   }
@@ -129,6 +132,15 @@ module.exports.iCP = async (
           .messages('@original')
           .delete()
       );
+  } else if (opt === 6) {
+    return client.api
+      .interactions(itc.id, itc.token)
+      .callback.post({ data: { type: 5 } });
+  } else if (opt === 7) {
+    client.api
+      .webhooks(client.user.id, itc.token)
+      .messages('@original')
+      .patch({ data: dt });
   } else {
     return client.api
       .interactions(itc.id, itc.token)
@@ -145,8 +157,7 @@ module.exports.msgEdit = async (chan, id, medit) => {
   }
 };
 
-module.exports.diEmb = (
-  inst,
+module.exports.diEmb = async (
   client,
   eMsg,
   msg,
@@ -160,12 +171,12 @@ module.exports.diEmb = (
   diB,
   diL
 ) => {
+  function getTS(path, values) {
+    return utils.getTSE(interaction.guild_id, path, values);
+  }
   var guild = msg.guild;
   if (eMsg === 2) {
     guild = client.guilds.cache.get(msg.guild_id);
-  }
-  function getTS(path, values) {
-    return getTSE(inst, guild, path, values);
   }
 
   var ciCE = '000000';
@@ -195,31 +206,27 @@ module.exports.diEmb = (
     var diL = 'ffffff';
   }
   if (!diT || diT === 0) {
-    var diT = getTS('COLOR_INVALID_IMG');
+    var diT = await getTS('COLOR_INVALID_IMG');
   }
 
   if (!diEV || diEV === 0 || diEV === 1) {
     if (eMsg === 2) {
       msg = msg.message;
     }
-    if (msg.embeds[0]) {
-      var embIURL = new URL(msg.embeds[0].image.url).pathname.split(/[\/&]/);
-    } else {
-      var embIURL = [];
-    }
+    var embIURL = new URL(msg.embeds[0].image.url).pathname.split(/[\/&]/);
     var diEV = [embIURL[4]];
   }
 
   if (!title || title === 0) {
-    var title = getTS('COLOR_INVALID');
+    var title = await getTS('COLOR_INVALID');
   }
 
   if (!footer || footer === 0) {
-    footer = getTS('GENERIC_REQUESTED_BY', {
+    footer = await getTS('GENERIC_REQUESTED_BY', {
       USER: eU.username,
     });
   } else if (footer === 1) {
-    footer = getTS('GENERIC_INTERACTED_BY', {
+    footer = await getTS('GENERIC_INTERACTED_BY', {
       USER: eU.username,
     });
   }

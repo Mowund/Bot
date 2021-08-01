@@ -1,16 +1,41 @@
 const Discord = require('discord.js');
 const tc = require('tinycolor2');
-const utils = require('../../utils/utils.js');
+const utils = require('../utils/utils.js');
 const pm2 = require('pm2');
 require('colors');
 require('log-timestamp');
 
-module.exports = async (client, instance) => {
-  client.ws.on('INTERACTION_CREATE', async (interaction) => {
-    const guildI = client.guilds.cache.get(interaction.guild_id);
-    const channelI = guildI.channels.cache.get(interaction.channel_id);
-    const uI = guildI.members.cache.get(interaction.member.user.id);
-    const uIF = await client.users.fetch(uI.id);
+module.exports = {
+  name: 'INTERACTION_CREATE',
+  async execute(client, interaction) {
+    function getTS(path, values) {
+      return utils.getTSE(interaction.guild_id, path, values);
+    }
+    var guildI = client.guilds.cache.get(interaction.guild_id);
+    var intChan;
+
+    if (guildI) {
+      var uI = guildI.members.cache.get(interaction.member.user.id);
+      var uIF = await client.users.fetch(interaction.member.user.id);
+      var channelI = guildI.channels.cache.get(interaction.channel_id);
+      intChan =
+        uIF.username.blue +
+        ' ('.gray +
+        uIF.id.blue +
+        ') - '.gray +
+        guildI.name.green +
+        ' ('.gray +
+        guildI.id.green +
+        ') - '.gray +
+        '#'.cyan +
+        channelI.name.cyan;
+    } else {
+      intChan =
+        interaction.user.username.blue +
+        ' ('.gray +
+        interaction.user.id.blue +
+        ') -'.gray;
+    }
 
     var intValue = interaction.data;
     var intName = intValue.name || intValue.custom_id;
@@ -22,55 +47,62 @@ module.exports = async (client, instance) => {
         ':'.gray +
         `${intValue.component_type}`.red +
         ':'.gray;
+    } else if (interaction.type) {
+      intType =
+        'components'.red + ':'.gray + `${interaction.type}`.red + ':'.gray;
     }
 
     console.log(
-      guildI.name.green +
+      intChan +
         ' ('.gray +
-        guildI.id.green +
-        ') - '.gray +
-        '#'.cyan +
-        channelI.name.cyan +
-        ' ('.gray +
-        channelI.id.cyan +
-        ') - '.gray +
-        uIF.username.blue +
-        ' ('.gray +
-        uI.id.blue +
+        interaction.channel_id.cyan +
         '): '.gray +
         intType +
         intName.yellow +
         ':'.gray +
         JSON.stringify(intValue)
     );
+
     if (interaction.data.name) {
-      const command = interaction.data.name.toLowerCase();
+      var command = interaction.data.name.toLowerCase();
 
       args = interaction.data.options;
-      if (args.find((arg) => arg['options'])) {
-        var argsO = args
-          .find((arg) => arg['options'])
-          .options.find((arg) => arg['options']);
+      if (args) {
+        if (args.find((arg) => arg['options'])) {
+          var argsO = args
+            .find((arg) => arg['options'])
+            .options.find((arg) => arg['options']);
+        }
       }
 
-      function getTS(path, values) {
-        return utils.getTSE(instance, guildI, path, values);
+      if (guildI) {
+        var getId = await client.api
+          .applications(client.user.id)
+          .commands.get();
+        var getIdG = await client.api
+          .applications(client.user.id)
+          .guilds(guildI.id)
+          .commands.get();
       }
-
-      var getId = await client.api.applications(client.user.id).commands.get();
-      var getIdG = await client.api
-        .applications(client.user.id)
-        .guilds(guildI.id)
-        .commands.get();
 
       if (command == 'config') {
-        if (uI.id != '205130563424616450')
+        if (!guildI)
           return utils.iCP(
-            instance,
             client,
             0,
             interaction,
-            [getTS('GENERIC_ERROR'), 'Somente o dono pode usar esse comando.'],
+            [0, await getTS('GENERIC_NO_DM')],
+            1,
+            0,
+            1
+          );
+
+        if (uI.id != '205130563424616450')
+          return utils.iCP(
+            client,
+            0,
+            interaction,
+            [await getTS('GENERIC_ERROR'), 'Somente o dono pode usar esse comando.'],
             1,
             0,
             1
@@ -95,26 +127,24 @@ module.exports = async (client, instance) => {
 
           if (!iO)
             return utils.iCP(
-              instance,
               client,
               0,
               interaction,
-              [getTS('GENERIC_ERROR'), 'ID não especificado.'],
+              [await getTS('GENERIC_ERROR'), 'ID não especificado.'],
               1,
               0,
               1
             );
 
           if (
-            !getId.find((id) => id.id == iO.value) &&
-            !getIdG.find((id) => id.id == iO.value)
+            !getId.find((f) => f.id == iO.value) &&
+            !getIdG.find((f) => f.id == iO.value)
           )
             return utils.iCP(
-              instance,
               client,
               0,
               interaction,
-              [getTS('GENERIC_ERROR'), 'Interação não encontrada.'],
+              [await getTS('GENERIC_ERROR'), 'Interação não encontrada.'],
               1,
               0,
               1
@@ -131,11 +161,10 @@ module.exports = async (client, instance) => {
           }
 
           utils.iCP(
-            instance,
             client,
             0,
             interaction,
-            [getTS('GENERIC_SUCCESS'), 'Interação deletada.', '00ff00'],
+            [await getTS('GENERIC_SUCCESS'), 'Interação deletada.', '00ff00'],
             1,
             0,
             1
@@ -166,11 +195,10 @@ module.exports = async (client, instance) => {
                 .commands.get();
             } else {
               return utils.iCP(
-                instance,
                 client,
                 0,
                 interaction,
-                [getTS('GENERIC_ERROR'), 'Servidor inválido.'],
+                [await getTS('GENERIC_ERROR'), 'Servidor inválido.'],
                 1,
                 0,
                 1
@@ -190,11 +218,14 @@ module.exports = async (client, instance) => {
             console.table(getIdG);
           }
           utils.iCP(
-            instance,
             client,
             0,
             interaction,
-            [getTS('GENERIC_SUCCESS'), 'Interações listadas no console.', '00ff00'],
+            [
+              await getTS('GENERIC_SUCCESS'),
+              'Interações listadas no console.',
+              '00ff00',
+            ],
             1,
             0,
             1
@@ -219,11 +250,10 @@ module.exports = async (client, instance) => {
               pType = 2;
               if (!rC.id) {
                 return utils.iCP(
-                  instance,
                   client,
                   0,
                   interaction,
-                  [getTS('GENERIC_ERROR'), 'Cargo ou usuário inválido.'],
+                  [await getTS('GENERIC_ERROR'), 'Cargo ou usuário inválido.'],
                   1,
                   0,
                   1
@@ -238,11 +268,10 @@ module.exports = async (client, instance) => {
               guildP = client.guilds.cache.get(sO.value).id;
             } else {
               return utils.iCP(
-                instance,
                 client,
                 0,
                 interaction,
-                [getTS('GENERIC_ERROR'), 'Servidor inválido.'],
+                [await getTS('GENERIC_ERROR'), 'Servidor inválido.'],
                 1,
                 0,
                 1
@@ -252,11 +281,10 @@ module.exports = async (client, instance) => {
 
           if (!iO)
             return utils.iCP(
-              instance,
               client,
               0,
               interaction,
-              [getTS('GENERIC_ERROR'), 'ID não especificado.'],
+              [await getTS('GENERIC_ERROR'), 'ID não especificado.'],
               1,
               0,
               1
@@ -267,11 +295,10 @@ module.exports = async (client, instance) => {
             !getIdG.find((id) => id.id == iO.value)
           )
             return utils.iCP(
-              instance,
               client,
               0,
               interaction,
-              [getTS('GENERIC_ERROR'), 'Interação não encontrada.'],
+              [await getTS('GENERIC_ERROR'), 'Interação não encontrada.'],
               1,
               0,
               1
@@ -305,11 +332,14 @@ module.exports = async (client, instance) => {
               });
           }
           utils.iCP(
-            instance,
             client,
             0,
             interaction,
-            [getTS('GENERIC_SUCCESS'), 'Permissão da interação alterada.', '00ff00'],
+            [
+              await getTS('GENERIC_SUCCESS'),
+              'Permissão da interação alterada.',
+              '00ff00',
+            ],
             1,
             0,
             1
@@ -325,11 +355,10 @@ module.exports = async (client, instance) => {
 
           if (!iO)
             return utils.iCP(
-              instance,
               client,
               0,
               interaction,
-              [getTS('GENERIC_ERROR'), 'Opção não especificada.'],
+              [await getTS('GENERIC_ERROR'), 'Opção não especificada.'],
               1,
               0,
               1
@@ -343,11 +372,10 @@ module.exports = async (client, instance) => {
             pm2.stop(
               'index.js',
               utils.iCP(
-                instance,
                 client,
                 0,
                 interaction,
-                [getTS('GENERIC_SUCCESS'), 'Desligando...', '00ff00'],
+                [await getTS('GENERIC_SUCCESS'), 'Desligando...', '00ff00'],
                 1,
                 0,
                 1
@@ -364,11 +392,10 @@ module.exports = async (client, instance) => {
             pm2.restart(
               'index.js',
               utils.iCP(
-                instance,
                 client,
                 0,
                 interaction,
-                [getTS('GENERIC_SUCCESS'), 'Reiniciando...', '00ff00'],
+                [await getTS('GENERIC_SUCCESS'), 'Reiniciando...', '00ff00'],
                 1,
                 0,
                 1
@@ -378,11 +405,5 @@ module.exports = async (client, instance) => {
         }
       }
     }
-  });
-};
-
-module.exports.config = {
-  displayName: 'Configure Interactions',
-  dbName: 'ConfigI',
-  loadDBFirst: true,
+  },
 };

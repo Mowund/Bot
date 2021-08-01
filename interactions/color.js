@@ -1,25 +1,26 @@
 const Discord = require('discord.js');
 const tc = require('tinycolor2');
-const utils = require('../../utils/utils.js');
+const utils = require('../utils/utils.js');
 const chalk = require('chalk');
-const colorSchema = require('../../schemas/color-schema');
 const { getColorFromURL } = require('color-thief-node');
 require('colors');
 require('log-timestamp');
 
-module.exports = async (client, instance) => {
-  client.ws.on('INTERACTION_CREATE', async (interaction) => {
-    const guildI = client.guilds.cache.get(interaction.guild_id);
-    const channelI = guildI.channels.cache.get(interaction.channel_id);
-    const uI = guildI.members.cache.get(interaction.member.user.id);
-    const uIF = await client.users.fetch(uI.id);
+module.exports = {
+  name: 'INTERACTION_CREATE',
+  async execute(client, interaction) {
     function getTS(path, values) {
-      return utils.getTSE(instance, guildI, path, values);
+      return utils.getTSE(interaction.guild_id, path, values);
     }
-
-    var tRoleN = `USER-${uI.id}`;
-    var tRole = guildI.roles.cache.find((x) => x.name == tRoleN);
-    var pos = guildI.me.roles.highest.position;
+    var guildI = client.guilds.cache.get(interaction.guild_id);
+    if (guildI) {
+      var uI = guildI.members.cache.get(interaction.member.user.id);
+      var uIF = await client.users.fetch(interaction.member.user.id);
+      var channelI = guildI.channels.cache.get(interaction.channel_id);
+      var tRoleN = uI ? `USER-${uI.id}` : '';
+      var tRole = guildI.roles.cache.find((x) => x.name == tRoleN);
+      var pos = guildI.me.roles.highest.position;
+    }
 
     function dftCF(disabled) {
       if (!disabled) {
@@ -125,14 +126,24 @@ module.exports = async (client, instance) => {
       var args = interaction.data.options;
 
       if (command == 'color') {
-        cS = await colorSchema.findOne();
-        if (!cS.cI.includes(channelI.id))
+        if (!guildI)
           return utils.iCP(
-            instance,
             client,
             0,
             interaction,
-            [0, getTS('GENERIC_UNALLOWED_CHAT')],
+            [0, await getTS('GENERIC_NO_DM')],
+            1,
+            0,
+            1
+          );
+
+        var alwCH = db.get(guildI, 'color_allowed_channels');
+        if (!alwCH || !alwCH.includes(channelI.id))
+          return utils.iCP(
+            client,
+            0,
+            interaction,
+            [0, await getTS('GENERIC_UNALLOWED_CHAT')],
             1,
             0,
             1
@@ -144,7 +155,7 @@ module.exports = async (client, instance) => {
           if (tRole) {
             pColor = tc(tRole.hexColor).toHex();
           }
-          var eTitle = getTS('COLOR_SPECIFIED');
+          var eTitle = await getTS('COLOR_SPECIFIED');
           if (color) {
             if (color.options.find((arg) => arg.name == 'color')) {
               color = color.options.find((arg) => arg.name == 'color').value;
@@ -154,35 +165,32 @@ module.exports = async (client, instance) => {
               uIF.avatarURL({ format: 'png' })
             );
             color = tc(chalk.rgb(r, g, b)(`rgb(${r}, ${g}, ${b})`)).toHex();
-            eTitle = getTS('COLOR_AVATAR_ESTIMATED');
+            eTitle = await getTS('COLOR_AVATAR_ESTIMATED');
           }
           if (tc(color).isValid()) {
             var color = tc(color).toHex();
           } else {
             return utils.iCP(
-              instance,
               client,
               0,
               interaction,
               0,
               1,
               0,
-              utils.diEmb(instance, client, 2, interaction, uIF)
+              await utils.diEmb(client, 2, interaction, uIF)
             );
           }
 
           var color = color.replace('000000', '000001');
 
           utils.iCP(
-            instance,
             client,
             0,
             interaction,
             0,
             0,
             0,
-            utils.diEmb(
-              instance,
+            await utils.diEmb(
               client,
               2,
               interaction,
@@ -198,44 +206,40 @@ module.exports = async (client, instance) => {
           if (tRole) {
             var color = tc(tRole.hexColor).toHex();
             utils.iCP(
-              instance,
               client,
               0,
               interaction,
               0,
               1,
               0,
-              utils.diEmb(
-                instance,
+              await utils.diEmb(
                 client,
                 2,
                 interaction,
                 uIF,
                 [uIF.id, tc(tRole.hexColor).toHex()],
                 color,
-                getTS('COLOR_CURRENT'),
+                await getTS('COLOR_CURRENT'),
                 0
               )
             );
           }
         } else {
           utils.iCP(
-            instance,
             client,
             0,
             interaction,
             0,
             1,
             0,
-            utils.diEmb(
-              instance,
+            await utils.diEmb(
               client,
               2,
               interaction,
               uIF,
               [],
               0,
-              getTS('COLOR_NO_ROLE'),
+              await getTS('COLOR_NO_ROLE'),
               0
             )
           );
@@ -256,26 +260,24 @@ module.exports = async (client, instance) => {
       var diEV = [embAURL[2], embIURL[4]];
 
       if (uIF.id != diEV[0]) {
-        return utils.iCP(instance, client, 0, interaction, 0, 1, 0, 1);
+        return utils.iCP(client, 0, interaction, 0, 1, 0, 1);
       }
       if (component_id == 'color_cancel') {
         utils.iCP(
-          instance,
           client,
           3,
           interaction,
           0,
           0,
           0,
-          utils.diEmb(
-            instance,
+          await utils.diEmb(
             client,
             2,
             interaction,
             uIF,
             1,
             color,
-            getTS('COLOR_CANCELED'),
+            await getTS('COLOR_CANCELED'),
             1,
             0
           ),
@@ -286,7 +288,7 @@ module.exports = async (client, instance) => {
                 {
                   type: 2,
                   style: 4,
-                  label: getTS('GENERIC_COMPONENT_MESSAGE_DELETE'),
+                  label: await getTS('GENERIC_COMPONENT_MESSAGE_DELETE'),
                   emoji: {
                     name: '🧹',
                   },
@@ -298,8 +300,8 @@ module.exports = async (client, instance) => {
         );
       } else if (component_id == 'color_confirm') {
         if (tRole) {
-          function reSC() {
-            eTitle = getTS('COLOR_CHANGED_ROLE');
+          async function reSC() {
+            eTitle = await getTS('COLOR_CHANGED_ROLE');
             tRole.setPosition(pos - 1);
             tRole.setColor(color);
             client.setTimeout(() => {
@@ -311,8 +313,8 @@ module.exports = async (client, instance) => {
           }
           reSC();
         } else {
-          function reCR() {
-            eTitle = getTS('COLOR_CREATED_ASSIGNED_ROLE');
+          async function reCR() {
+            eTitle = await getTS('COLOR_CREATED_ASSIGNED_ROLE');
             guildI.roles
               .create({
                 data: {
@@ -344,15 +346,13 @@ module.exports = async (client, instance) => {
         }
 
         utils.iCP(
-          instance,
           client,
           3,
           interaction,
           0,
           0,
           0,
-          utils.diEmb(
-            instance,
+          await utils.diEmb(
             client,
             2,
             interaction,
@@ -370,7 +370,7 @@ module.exports = async (client, instance) => {
                 {
                   type: 2,
                   style: 4,
-                  label: getTS('GENERIC_COMPONENT_MESSAGE_DELETE'),
+                  label: await getTS('GENERIC_COMPONENT_MESSAGE_DELETE'),
                   emoji: {
                     name: '🧹',
                   },
@@ -382,22 +382,20 @@ module.exports = async (client, instance) => {
         );
       } else if (component_id == 'color_edit') {
         utils.iCP(
-          instance,
           client,
           3,
           interaction,
           0,
           0,
           0,
-          utils.diEmb(
-            instance,
+          await utils.diEmb(
             client,
             2,
             interaction,
             uIF,
             1,
             color,
-            getTS('COLOR_EDIT'),
+            await getTS('COLOR_EDIT'),
             1,
             0,
             `${color}+->`
@@ -423,13 +421,15 @@ module.exports = async (client, instance) => {
 
         function fm1() {
           async function checkV() {
-            message = await utils.iCP(instance, client, 4, interaction);
-            if (message.embeds[0].title == getTS('COLOR_EDIT')) {
+            message = await utils.iCP(client, 4, interaction);
+            if (message.embeds[0].title == (await getTS('COLOR_EDIT'))) {
               return 1;
-            } else if (message.embeds[0].title == getTS('COLOR_EDIT_INVALID')) {
+            } else if (
+              message.embeds[0].title == (await getTS('COLOR_EDIT_INVALID'))
+            ) {
               return 2;
             } else if (
-              message.embeds[0].title == getTS('COLOR_EDITED_REPEAT')
+              message.embeds[0].title == (await getTS('COLOR_EDITED_REPEAT'))
             ) {
               return 3;
             } else {
@@ -453,22 +453,20 @@ module.exports = async (client, instance) => {
                 color = tc(msg.content).toHex().replace('000000', '000001');
 
                 utils.iCP(
-                  instance,
                   client,
                   3,
                   interaction,
                   0,
                   0,
                   0,
-                  utils.diEmb(
-                    instance,
+                  await utils.diEmb(
                     client,
                     2,
                     interaction,
                     uIF,
                     1,
                     color,
-                    getTS('COLOR_EDITED_REPEAT'),
+                    await getTS('COLOR_EDITED_REPEAT'),
                     1,
                     0,
                     `${color}+->`
@@ -480,22 +478,20 @@ module.exports = async (client, instance) => {
                 fm1();
               } else {
                 utils.iCP(
-                  instance,
                   client,
                   3,
                   interaction,
                   0,
                   0,
                   0,
-                  utils.diEmb(
-                    instance,
+                  await utils.diEmb(
                     client,
                     2,
                     interaction,
                     uIF,
                     1,
                     color,
-                    getTS('COLOR_EDIT_INVALID'),
+                    await getTS('COLOR_EDIT_INVALID'),
                     1,
                     0,
                     `${color}+->`
@@ -510,22 +506,20 @@ module.exports = async (client, instance) => {
             .catch(async (err) => {
               if ((await checkV()) == 0) return;
               utils.iCP(
-                instance,
                 client,
                 3,
                 interaction,
                 0,
                 0,
                 0,
-                utils.diEmb(
-                  instance,
+                await utils.diEmb(
                   client,
                   2,
                   interaction,
                   uIF,
                   1,
                   color,
-                  getTS('COLOR_TIME_OUT'),
+                  await getTS('COLOR_TIME_OUT'),
                   0,
                   0
                 ),
@@ -557,22 +551,20 @@ module.exports = async (client, instance) => {
         }
         fm1();
         utils.iCP(
-          instance,
           client,
           3,
           interaction,
           0,
           0,
           0,
-          utils.diEmb(
-            instance,
+          await utils.diEmb(
             client,
             2,
             interaction,
             uIF,
             1,
             color,
-            getTS('COLOR_EDIT'),
+            await getTS('COLOR_EDIT'),
             1,
             0,
             `${color}+->`
@@ -606,22 +598,20 @@ module.exports = async (client, instance) => {
         reSPC();
 
         utils.iCP(
-          instance,
           client,
           3,
           interaction,
           0,
           0,
           0,
-          utils.diEmb(
-            instance,
+          await utils.diEmb(
             client,
             2,
             interaction,
             uIF,
             1,
             color,
-            getTS('COLOR_PREVIEW'),
+            await getTS('COLOR_PREVIEW'),
             1
           ),
           [
@@ -651,22 +641,20 @@ module.exports = async (client, instance) => {
       } else if (component_id == 'color_random') {
         color = tc.random().toHex().replace('000000', '000001');
         utils.iCP(
-          instance,
           client,
           3,
           interaction,
           0,
           0,
           0,
-          utils.diEmb(
-            instance,
+          await utils.diEmb(
             client,
             2,
             interaction,
             uIF,
             1,
             color,
-            getTS('COLOR_LIKE'),
+            await getTS('COLOR_LIKE'),
             1
           ),
           dftC
@@ -674,22 +662,20 @@ module.exports = async (client, instance) => {
       } else if (component_id == 'color_lighten') {
         color = tc(color).brighten(10).toHex().replace('000000', '000001');
         utils.iCP(
-          instance,
           client,
           3,
           interaction,
           0,
           0,
           0,
-          utils.diEmb(
-            instance,
+          await utils.diEmb(
             client,
             2,
             interaction,
             uIF,
             1,
             color,
-            getTS('COLOR_LIKE'),
+            await getTS('COLOR_LIKE'),
             1
           ),
           dftC
@@ -697,44 +683,40 @@ module.exports = async (client, instance) => {
       } else if (component_id == 'color_darken') {
         color = tc(color).darken(10).toHex().replace('000000', '000001');
         utils.iCP(
-          instance,
           client,
           3,
           interaction,
           0,
           0,
           0,
-          utils.diEmb(
-            instance,
+          await utils.diEmb(
             client,
             2,
             interaction,
             uIF,
             1,
             color,
-            getTS('COLOR_LIKE'),
+            await getTS('COLOR_LIKE'),
             1
           ),
           dftC
         );
       } else if (component_id == 'color_mix') {
         utils.iCP(
-          instance,
           client,
           3,
           interaction,
           0,
           0,
           0,
-          utils.diEmb(
-            instance,
+          await utils.diEmb(
             client,
             2,
             interaction,
             uIF,
             1,
             color,
-            getTS('COLOR_MIX'),
+            await getTS('COLOR_MIX'),
             1,
             0,
             `${color}+＋`
@@ -760,12 +742,16 @@ module.exports = async (client, instance) => {
 
         async function fm1() {
           async function checkV() {
-            message = await utils.iCP(instance, client, 4, interaction);
-            if (message.embeds[0].title == getTS('COLOR_MIX')) {
+            message = await utils.iCP(client, 4, interaction);
+            if (message.embeds[0].title == (await getTS('COLOR_MIX'))) {
               return 1;
-            } else if (message.embeds[0].title == getTS('COLOR_MIXED_REPEAT')) {
+            } else if (
+              message.embeds[0].title == (await getTS('COLOR_MIXED_REPEAT'))
+            ) {
               return 2;
-            } else if (message.embeds[0].title == getTS('COLOR_MIX_INVALID')) {
+            } else if (
+              message.embeds[0].title == (await getTS('COLOR_MIX_INVALID'))
+            ) {
               return 3;
             } else {
               return 0;
@@ -791,22 +777,20 @@ module.exports = async (client, instance) => {
                   .replace('000000', '000001');
 
                 utils.iCP(
-                  instance,
                   client,
                   3,
                   interaction,
                   0,
                   0,
                   0,
-                  utils.diEmb(
-                    instance,
+                  await utils.diEmb(
                     client,
                     2,
                     interaction,
                     uIF,
                     1,
                     color,
-                    getTS('COLOR_MIXED_REPEAT'),
+                    await getTS('COLOR_MIXED_REPEAT'),
                     1,
                     0,
                     `${color}+＋`
@@ -818,22 +802,20 @@ module.exports = async (client, instance) => {
                 fm1();
               } else {
                 utils.iCP(
-                  instance,
                   client,
                   3,
                   interaction,
                   0,
                   0,
                   0,
-                  utils.diEmb(
-                    instance,
+                  await utils.diEmb(
                     client,
                     2,
                     interaction,
                     uIF,
                     1,
                     color,
-                    getTS('COLOR_MIX_INVALID'),
+                    await getTS('COLOR_MIX_INVALID'),
                     1,
                     0,
                     `${color}+＋`
@@ -848,22 +830,20 @@ module.exports = async (client, instance) => {
             .catch(async (err) => {
               if ((await checkV()) == 0) return;
               utils.iCP(
-                instance,
                 client,
                 3,
                 interaction,
                 0,
                 0,
                 0,
-                utils.diEmb(
-                  instance,
+                await utils.diEmb(
                   client,
                   2,
                   interaction,
                   uIF,
                   1,
                   color,
-                  getTS('COLOR_TIME_OUT'),
+                  await getTS('COLOR_TIME_OUT'),
                   0,
                   0
                 ),
@@ -908,35 +888,27 @@ module.exports = async (client, instance) => {
           reSBPC();
         }
         utils.iCP(
-          instance,
           client,
           3,
           interaction,
           0,
           0,
           0,
-          utils.diEmb(
-            instance,
+          await utils.diEmb(
             client,
             2,
             interaction,
             uIF,
             1,
             color,
-            getTS('COLOR_LIKE'),
+            await getTS('COLOR_LIKE'),
             1
           ),
           dftC
         );
       } else if (component_id == 'color_message_delete') {
-        utils.iCP(instance, client, 5, interaction);
+        utils.iCP(client, 5, interaction);
       }
     }
-  });
-};
-
-module.exports.config = {
-  displayName: 'Color Interaction',
-  dbName: 'ColorI',
-  loadDBFirst: true,
+  },
 };

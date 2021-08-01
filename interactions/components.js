@@ -1,19 +1,37 @@
 const Discord = require('discord.js');
 const tc = require('tinycolor2');
-const utils = require('../../utils/utils.js');
+const utils = require('../utils/utils.js');
 require('colors');
 require('log-timestamp');
 
-module.exports = async (client, instance) => {
-  client.ws.on('INTERACTION_CREATE', async (interaction) => {
-    const guildI = client.guilds.cache.get(interaction.guild_id);
-    const uI = guildI.members.cache.get(interaction.member.user.id);
-    const uIF = await client.users.fetch(uI.id);
+module.exports = {
+  name: 'INTERACTION_CREATE',
+  async execute(client, interaction) {
+    function getTS(path, values) {
+      return utils.getTSE(interaction.guild_id, path, values);
+    }
+    var guildI = client.guilds.cache.get(interaction.guild_id);
+    if (guildI) {
+      var uI = guildI.members.cache.get(interaction.member.user.id);
+      var uIF = await client.users.fetch(interaction.member.user.id);
+    }
+
     if (interaction.data.name) {
       var command = interaction.data.name.toLowerCase();
       var args = interaction.data.options;
 
       if (command == 'components') {
+        if (!guildI)
+          return utils.iCP(
+            client,
+            0,
+            interaction,
+            [0, await getTS('GENERIC_NO_DM')],
+            1,
+            0,
+            1
+          );
+
         if (args.find((arg) => arg.name == 'test')) {
           var embed = new Discord.MessageEmbed()
             .setColor('aaaaaa')
@@ -21,7 +39,7 @@ module.exports = async (client, instance) => {
             .setFooter('ye', uIF.avatarURL())
             .setTimestamp(Date.now());
 
-          utils.iCP(instance, client, 0, interaction, 0, 1, 0, embed, [
+          utils.iCP(client, 0, interaction, 0, 1, 0, embed, [
             {
               type: 1,
               components: [
@@ -135,7 +153,7 @@ module.exports = async (client, instance) => {
             .setTitle('Teste :D')
             .setFooter('ye', uIF.avatarURL())
             .setTimestamp(Date.now());
-          utils.iCP(instance, client, 3, interaction, 0, 1, 0, embed, [
+          utils.iCP(client, 3, interaction, 0, 1, 0, embed, [
             {
               type: 1,
               components: [
@@ -228,7 +246,7 @@ module.exports = async (client, instance) => {
           .setFooter('ye', uIF.avatarURL())
           .setTimestamp(Date.now());
 
-        utils.iCP(instance, client, 3, interaction, 0, 1, 0, embed, [
+        utils.iCP(client, 3, interaction, 0, 1, 0, embed, [
           {
             type: 1,
             components: [
@@ -313,11 +331,5 @@ module.exports = async (client, instance) => {
         ]);
       }
     }
-  });
-};
-
-module.exports.config = {
-  displayName: 'Components Interaction',
-  dbName: 'ComponentsI',
-  loadDBFirst: true,
+  },
 };
