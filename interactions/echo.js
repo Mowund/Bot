@@ -26,7 +26,7 @@ module.exports = {
             client,
             0,
             interaction,
-            [0, await getTS('GENERIC_NO_DM')],
+            [0, await getTS(['GENERIC', 'NO_DM'])],
             1,
             0,
             1
@@ -63,7 +63,7 @@ module.exports = {
                   client,
                   interaction,
                   [
-                    await getTS('GENERIC_ERROR'),
+                    await getTS(['GENERIC', 'ERROR']),
                     'Você não tem permissão de `gerenciar mensagens` e `enviar mensagens TTS` para ecoar mensagens TTS em embed públicas, somente efêmeras.',
                   ],
                   1,
@@ -76,7 +76,7 @@ module.exports = {
                 0,
                 interaction,
                 [
-                  await getTS('GENERIC_ERROR'),
+                  await getTS(['GENERIC', 'ERROR']),
                   'Você não tem permissão de `gerenciar mensagens` para ecoar mensagens em embed públicas, somente efêmeras.',
                 ],
                 1,
@@ -89,7 +89,7 @@ module.exports = {
                 0,
                 interaction,
                 [
-                  await getTS('GENERIC_ERROR'),
+                  await getTS(['GENERIC', 'ERROR']),
                   'Você não tem permissão de `enviar mensagens TTS` para ecoar mensagens TTS em embed públicas, somente efêmeras.',
                 ],
                 1,
@@ -121,7 +121,7 @@ module.exports = {
                 client,
                 0,
                 interaction,
-                [await getTS('GENERIC_ERROR'), 'Cor inválida.'],
+                [await getTS(['GENERIC', 'ERROR']), 'Cor inválida.'],
                 1,
                 0,
                 1
@@ -210,7 +210,7 @@ module.exports = {
             return utils.iCP(
               client,
               interaction,
-              [await getTS('GENERIC_ERROR'), 'Texto não especificado.'],
+              [await getTS(['GENERIC', 'ERROR']), 'Texto não especificado.'],
               1,
               0,
               1
@@ -233,7 +233,7 @@ module.exports = {
                   client,
                   interaction,
                   [
-                    await getTS('GENERIC_ERROR'),
+                    await getTS(['GENERIC', 'ERROR']),
                     'Você não tem permissão de `gerenciar mensagens` e `enviar mensagens TTS` para ecoar mensagens TTS públicas, somente efêmeras.',
                   ],
                   1,
@@ -246,7 +246,7 @@ module.exports = {
                 0,
                 interaction,
                 [
-                  await getTS('GENERIC_ERROR'),
+                  await getTS(['GENERIC', 'ERROR']),
                   'Você não tem permissão de `gerenciar mensagens` para ecoar mensagens públicas, somente efêmeras.',
                 ],
                 1,
@@ -260,7 +260,7 @@ module.exports = {
                 0,
                 interaction,
                 [
-                  await getTS('GENERIC_ERROR'),
+                  await getTS(['GENERIC', 'ERROR']),
                   'Você não tem permissão de `enviar mensagens TTS` para ecoar mensagens TTS públicas, somente efêmeras.',
                 ],
                 1,

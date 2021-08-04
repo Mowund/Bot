@@ -12,56 +12,11 @@ module.exports = {
       return utils.getTSE(interaction.guild_id, path, values);
     }
     var guildI = client.guilds.cache.get(interaction.guild_id);
-    var intChan;
 
     if (guildI) {
       var uI = guildI.members.cache.get(interaction.member.user.id);
       var uIF = await client.users.fetch(interaction.member.user.id);
-      var channelI = guildI.channels.cache.get(interaction.channel_id);
-      intChan =
-        uIF.username.blue +
-        ' ('.gray +
-        uIF.id.blue +
-        ') - '.gray +
-        guildI.name.green +
-        ' ('.gray +
-        guildI.id.green +
-        ') - '.gray +
-        '#'.cyan +
-        channelI.name.cyan;
-    } else {
-      intChan =
-        interaction.user.username.blue +
-        ' ('.gray +
-        interaction.user.id.blue +
-        ') -'.gray;
     }
-
-    var intValue = interaction.data;
-    var intName = intValue.name || intValue.custom_id;
-
-    var intType = 'commands'.red + ':'.gray;
-    if (intValue.component_type) {
-      intType =
-        'components'.red +
-        ':'.gray +
-        `${intValue.component_type}`.red +
-        ':'.gray;
-    } else if (interaction.type) {
-      intType =
-        'components'.red + ':'.gray + `${interaction.type}`.red + ':'.gray;
-    }
-
-    console.log(
-      intChan +
-        ' ('.gray +
-        interaction.channel_id.cyan +
-        '): '.gray +
-        intType +
-        intName.yellow +
-        ':'.gray +
-        JSON.stringify(intValue)
-    );
 
     if (interaction.data.name) {
       var command = interaction.data.name.toLowerCase();
@@ -91,7 +46,7 @@ module.exports = {
             client,
             0,
             interaction,
-            [0, await getTS('GENERIC_NO_DM')],
+            [0, await getTS(['GENERIC', 'NO_DM'])],
             1,
             0,
             1
@@ -102,7 +57,10 @@ module.exports = {
             client,
             0,
             interaction,
-            [await getTS('GENERIC_ERROR'), 'Somente o dono pode usar esse comando.'],
+            [
+              await getTS(['GENERIC', 'ERROR']),
+              'Somente o dono pode usar esse comando.',
+            ],
             1,
             0,
             1
@@ -130,7 +88,7 @@ module.exports = {
               client,
               0,
               interaction,
-              [await getTS('GENERIC_ERROR'), 'ID não especificado.'],
+              [await getTS(['GENERIC', 'ERROR']), 'ID não especificado.'],
               1,
               0,
               1
@@ -144,7 +102,7 @@ module.exports = {
               client,
               0,
               interaction,
-              [await getTS('GENERIC_ERROR'), 'Interação não encontrada.'],
+              [await getTS(['GENERIC', 'ERROR']), 'Interação não encontrada.'],
               1,
               0,
               1
@@ -164,7 +122,11 @@ module.exports = {
             client,
             0,
             interaction,
-            [await getTS('GENERIC_SUCCESS'), 'Interação deletada.', '00ff00'],
+            [
+              await getTS(['GENERIC', 'SUCCESS']),
+              'Interação deletada.',
+              '00ff00',
+            ],
             1,
             0,
             1
@@ -198,7 +160,7 @@ module.exports = {
                 client,
                 0,
                 interaction,
-                [await getTS('GENERIC_ERROR'), 'Servidor inválido.'],
+                [await getTS(['GENERIC', 'ERROR']), 'Servidor inválido.'],
                 1,
                 0,
                 1
@@ -222,7 +184,7 @@ module.exports = {
             0,
             interaction,
             [
-              await getTS('GENERIC_SUCCESS'),
+              await getTS(['GENERIC', 'SUCCESS']),
               'Interações listadas no console.',
               '00ff00',
             ],
@@ -253,7 +215,10 @@ module.exports = {
                   client,
                   0,
                   interaction,
-                  [await getTS('GENERIC_ERROR'), 'Cargo ou usuário inválido.'],
+                  [
+                    await getTS(['GENERIC', 'ERROR']),
+                    'Cargo ou usuário inválido.',
+                  ],
                   1,
                   0,
                   1
@@ -271,7 +236,7 @@ module.exports = {
                 client,
                 0,
                 interaction,
-                [await getTS('GENERIC_ERROR'), 'Servidor inválido.'],
+                [await getTS(['GENERIC', 'ERROR']), 'Servidor inválido.'],
                 1,
                 0,
                 1
@@ -284,7 +249,7 @@ module.exports = {
               client,
               0,
               interaction,
-              [await getTS('GENERIC_ERROR'), 'ID não especificado.'],
+              [await getTS(['GENERIC', 'ERROR']), 'ID não especificado.'],
               1,
               0,
               1
@@ -298,7 +263,7 @@ module.exports = {
               client,
               0,
               interaction,
-              [await getTS('GENERIC_ERROR'), 'Interação não encontrada.'],
+              [await getTS(['GENERIC', 'ERROR']), 'Interação não encontrada.'],
               1,
               0,
               1
@@ -336,7 +301,7 @@ module.exports = {
             0,
             interaction,
             [
-              await getTS('GENERIC_SUCCESS'),
+              await getTS(['GENERIC', 'SUCCESS']),
               'Permissão da interação alterada.',
               '00ff00',
             ],
@@ -358,7 +323,7 @@ module.exports = {
               client,
               0,
               interaction,
-              [await getTS('GENERIC_ERROR'), 'Opção não especificada.'],
+              [await getTS(['GENERIC', 'ERROR']), 'Opção não especificada.'],
               1,
               0,
               1
@@ -375,7 +340,11 @@ module.exports = {
                 client,
                 0,
                 interaction,
-                [await getTS('GENERIC_SUCCESS'), 'Desligando...', '00ff00'],
+                [
+                  await getTS(['GENERIC', 'SUCCESS']),
+                  'Desligando...',
+                  '00ff00',
+                ],
                 1,
                 0,
                 1
@@ -395,7 +364,11 @@ module.exports = {
                 client,
                 0,
                 interaction,
-                [await getTS('GENERIC_SUCCESS'), 'Reiniciando...', '00ff00'],
+                [
+                  await getTS(['GENERIC', 'SUCCESS']),
+                  'Reiniciando...',
+                  '00ff00',
+                ],
                 1,
                 0,
                 1

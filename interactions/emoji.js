@@ -26,7 +26,7 @@ module.exports = {
             client,
             0,
             interaction,
-            [0, await getTS('GENERIC_NO_DM')],
+            [0, await getTS(['GENERIC', 'NO_DM'])],
             1,
             0,
             1
@@ -142,7 +142,7 @@ module.exports = {
             .setColor('ffff00')
             .setTimestamp(Date.now())
             .setFooter(
-              await getTS('GENERIC_REQUESTED_BY', {
+              await getTS(['GENERIC', 'REQUESTED_BY'], {
                 USER: uIF.username,
               }),
               uIF.avatarURL()
@@ -252,7 +252,7 @@ module.exports = {
             .setColor('00ff00')
             .setTimestamp(Date.now())
             .setFooter(
-              await getTS('GENERIC_REQUESTED_BY', {
+              await getTS(['GENERIC', 'REQUESTED_BY'], {
                 USER: uIF.username,
               }),
               uIF.avatarURL()
@@ -265,7 +265,7 @@ module.exports = {
                 {
                   type: 2,
                   style: 4,
-                  label: await getTS('GENERIC_COMPONENT_MESSAGE_DELETE'),
+                  label: await getTS(['GENERIC', 'COMPONENT_MESSAGE_DELETE']),
                   emoji: {
                     name: '🧹',
                   },
@@ -355,7 +355,7 @@ module.exports = {
         .setColor('ffff00')
         .setTimestamp(Date.now())
         .setFooter(
-          await getTS('GENERIC_INTERACTED_BY', {
+          await getTS(['GENERIC', 'INTERACTED_BY'], {
             USER: uIF.username,
           }),
           uIF.avatarURL()
@@ -382,7 +382,7 @@ module.exports = {
                 {
                   type: 2,
                   style: 4,
-                  label: await getTS('GENERIC_COMPONENT_MESSAGE_DELETE'),
+                  label: await getTS(['GENERIC', 'COMPONENT_MESSAGE_DELETE']),
                   emoji: {
                     name: '🧹',
                   },
@@ -469,7 +469,7 @@ module.exports = {
                 {
                   type: 2,
                   style: 4,
-                  label: await getTS('GENERIC_COMPONENT_MESSAGE_DELETE'),
+                  label: await getTS(['GENERIC', 'COMPONENT_MESSAGE_DELETE']),
                   emoji: {
                     name: '🧹',
                   },
@@ -511,7 +511,7 @@ module.exports = {
                 {
                   type: 2,
                   style: 1,
-                  label: await getTS('GENERIC_COMPONENT_BACK'),
+                  label: await getTS(['GENERIC', 'COMPONENT_BACK']),
                   emoji: {
                     name: '↩️',
                   },
@@ -601,7 +601,7 @@ module.exports = {
                 0,
                 0,
                 0,
-                emb.setTitle(await getTS('GENERIC_TIME_OUT')),
+                emb.setTitle(await getTS(['GENERIC', 'TIME_OUT'])),
                 [
                   {
                     type: 1,
@@ -609,7 +609,7 @@ module.exports = {
                       {
                         type: 2,
                         style: 1,
-                        label: await getTS('GENERIC_COMPONENT_BACK'),
+                        label: await getTS(['GENERIC', 'COMPONENT_BACK']),
                         emoji: {
                           name: '↩️',
                         },
@@ -618,7 +618,7 @@ module.exports = {
                       {
                         type: 2,
                         style: 1,
-                        label: await getTS('GENERIC_COMPONENT_REPEAT'),
+                        label: await getTS(['GENERIC', 'COMPONENT_REPEAT']),
                         emoji: {
                           name: '🔄',
                         },
@@ -638,7 +638,7 @@ module.exports = {
               {
                 type: 2,
                 style: 1,
-                label: await getTS('GENERIC_COMPONENT_BACK'),
+                label: await getTS(['GENERIC', 'COMPONENT_BACK']),
                 emoji: {
                   name: '↩️',
                 },
@@ -667,7 +667,7 @@ module.exports = {
                 {
                   type: 2,
                   style: 1,
-                  label: await getTS('GENERIC_COMPONENT_BACK'),
+                  label: await getTS(['GENERIC', 'COMPONENT_BACK']),
                   emoji: {
                     name: '↩️',
                   },
@@ -729,7 +729,7 @@ module.exports = {
                 {
                   type: 2,
                   style: 1,
-                  label: await getTS('GENERIC_COMPONENT_BACK'),
+                  label: await getTS(['GENERIC', 'COMPONENT_BACK']),
                   emoji: {
                     name: '↩️',
                   },
@@ -881,7 +881,7 @@ module.exports = {
                 0,
                 0,
                 0,
-                emb.setTitle(await getTS('GENERIC_TIME_OUT')),
+                emb.setTitle(await getTS(['GENERIC', 'TIME_OUT'])),
                 [
                   {
                     type: 1,
@@ -889,7 +889,7 @@ module.exports = {
                       {
                         type: 2,
                         style: 1,
-                        label: await getTS('GENERIC_COMPONENT_BACK'),
+                        label: await getTS(['GENERIC', 'COMPONENT_BACK']),
                         emoji: {
                           name: '↩️',
                         },
@@ -950,7 +950,7 @@ module.exports = {
               {
                 type: 2,
                 style: 1,
-                label: await getTS('GENERIC_COMPONENT_BACK'),
+                label: await getTS(['GENERIC', 'COMPONENT_BACK']),
                 emoji: {
                   name: '↩️',
                 },
@@ -1012,7 +1012,7 @@ module.exports = {
                 {
                   type: 2,
                   style: 1,
-                  label: await getTS('GENERIC_COMPONENT_BACK'),
+                  label: await getTS(['GENERIC', 'COMPONENT_BACK']),
                   emoji: {
                     name: '↩️',
                   },
@@ -1166,7 +1166,7 @@ module.exports = {
                 0,
                 0,
                 0,
-                emb.setTitle(await getTS('GENERIC_TIME_OUT')),
+                emb.setTitle(await getTS(['GENERIC', 'TIME_OUT'])),
                 [
                   {
                     type: 1,
@@ -1174,7 +1174,7 @@ module.exports = {
                       {
                         type: 2,
                         style: 1,
-                        label: await getTS('GENERIC_COMPONENT_BACK'),
+                        label: await getTS(['GENERIC', 'COMPONENT_BACK']),
                         emoji: {
                           name: '↩️',
                         },
@@ -1235,7 +1235,7 @@ module.exports = {
               {
                 type: 2,
                 style: 1,
-                label: await getTS('GENERIC_COMPONENT_BACK'),
+                label: await getTS(['GENERIC', 'COMPONENT_BACK']),
                 emoji: {
                   name: '↩️',
                 },
@@ -1307,7 +1307,7 @@ module.exports = {
                   {
                     type: 2,
                     style: 1,
-                    label: await getTS('GENERIC_COMPONENT_BACK'),
+                    label: await getTS(['GENERIC', 'COMPONENT_BACK']),
                     emoji: {
                       name: '↩️',
                     },
@@ -1375,7 +1375,7 @@ module.exports = {
                 {
                   type: 2,
                   style: 1,
-                  label: await getTS('GENERIC_COMPONENT_BACK'),
+                  label: await getTS(['GENERIC', 'COMPONENT_BACK']),
                   emoji: {
                     name: '↩️',
                   },
@@ -1414,7 +1414,7 @@ module.exports = {
                 {
                   type: 2,
                   style: 4,
-                  label: await getTS('GENERIC_COMPONENT_MESSAGE_DELETE'),
+                  label: await getTS(['GENERIC', 'COMPONENT_MESSAGE_DELETE']),
                   emoji: {
                     name: '🧹',
                   },

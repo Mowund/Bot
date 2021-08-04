@@ -131,7 +131,7 @@ module.exports = {
             client,
             0,
             interaction,
-            [0, await getTS('GENERIC_NO_DM')],
+            [0, await getTS(['GENERIC', 'NO_DM'])],
             1,
             0,
             1
@@ -143,7 +143,7 @@ module.exports = {
             client,
             0,
             interaction,
-            [0, await getTS('GENERIC_UNALLOWED_CHAT')],
+            [0, await getTS(['GENERIC', 'UNALLOWED_CHAT'])],
             1,
             0,
             1
@@ -288,7 +288,7 @@ module.exports = {
                 {
                   type: 2,
                   style: 4,
-                  label: await getTS('GENERIC_COMPONENT_MESSAGE_DELETE'),
+                  label: await getTS(['GENERIC', 'COMPONENT_MESSAGE_DELETE']),
                   emoji: {
                     name: '🧹',
                   },
@@ -370,7 +370,7 @@ module.exports = {
                 {
                   type: 2,
                   style: 4,
-                  label: await getTS('GENERIC_COMPONENT_MESSAGE_DELETE'),
+                  label: await getTS(['GENERIC', 'COMPONENT_MESSAGE_DELETE']),
                   emoji: {
                     name: '🧹',
                   },

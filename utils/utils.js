@@ -70,10 +70,10 @@ module.exports.iCP = async (client, opt, itc, cnt, eph, tts, emb, cmps) => {
       var cnt = [];
     }
     if (!cnt[0] || cnt[0] == 0) {
-      cnt[0] = await getTS('GENERIC_ERROR');
+      cnt[0] = await getTS(['GENERIC', 'ERROR']);
     }
     if (!cnt[1] || cnt[1] == 0) {
-      cnt[1] = await getTS('GENERIC_ERROR_COMMAND');
+      cnt[1] = await getTS(['GENERIC', 'ERROR_COMMAND']);
     }
     if (!cnt[2] || cnt[2] == 0) {
       cnt[2] = 'ff0000';
@@ -84,7 +84,7 @@ module.exports.iCP = async (client, opt, itc, cnt, eph, tts, emb, cmps) => {
       .setDescription(cnt[1])
       .setColor(cnt[2])
       .setFooter(
-        await getTS('GENERIC_REQUESTED_BY', {
+        await getTS(['GENERIC', 'REQUESTED_BY'], {
           USER: uIF.username,
         }),
         uIF.avatarURL()
@@ -222,11 +222,11 @@ module.exports.diEmb = async (
   }
 
   if (!footer || footer === 0) {
-    footer = await getTS('GENERIC_REQUESTED_BY', {
+    footer = await getTS(['GENERIC', 'REQUESTED_BY'], {
       USER: eU.username,
     });
   } else if (footer === 1) {
-    footer = await getTS('GENERIC_INTERACTED_BY', {
+    footer = await getTS(['GENERIC', 'INTERACTED_BY'], {
       USER: eU.username,
     });
   }

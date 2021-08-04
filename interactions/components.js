@@ -26,7 +26,7 @@ module.exports = {
             client,
             0,
             interaction,
-            [0, await getTS('GENERIC_NO_DM')],
+            [0, await getTS(['GENERIC', 'NO_DM'])],
             1,
             0,
             1

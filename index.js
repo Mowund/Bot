@@ -9,7 +9,7 @@ const interactionFiles = fs
   .filter((file) => file.endsWith('.js'));
 const sqlite = require('sqlite');
 const sqlite3 = require('sqlite3');
-const envs = require('./envs.json');
+const token = process.env.token ?? require('./env.json').token;
 require('colors');
 require('log-timestamp');
 
@@ -35,4 +35,4 @@ client.on('ready', () => {
   console.log('Bot iniciado.');
 });
 
-client.login(envs.token).catch((err) => console.log(err));
+client.login(token).catch((err) => console.log(err));

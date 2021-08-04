@@ -25,7 +25,7 @@ module.exports = {
             client,
             0,
             interaction,
-            [0, await getTS('GENERIC_NO_DM')],
+            [0, await getTS(['GENERIC', 'NO_DM'])],
             1,
             0,
             1
@@ -46,7 +46,7 @@ module.exports = {
             )
             .setTimestamp(Date.now())
             .setFooter(
-              await getTS('GENERIC_REQUESTED_BY', {
+              await getTS(['GENERIC', 'REQUESTED_BY'], {
                 USER: uIF.username,
               }),
               uIF.avatarURL()
@@ -63,7 +63,7 @@ module.exports = {
             )
             .setTimestamp(Date.now())
             .setFooter(
-              await getTS('GENERIC_REQUESTED_BY', {
+              await getTS(['GENERIC', 'REQUESTED_BY'], {
                 USER: uIF.username,
               }),
               uIF.avatarURL()

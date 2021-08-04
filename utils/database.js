@@ -72,7 +72,7 @@ module.exports.setLanguage = async (guild, language) =>
   await setLanguage(guild, language);
 
 async function getLanguage(guild) {
-  guild = !guild ? 'global' : guild;
+  guild = !guild ? 'global' : guild.id ? guild.id : guild;
   try {
     // equivalent to: INSERT INTO tags (name, description, username) values (?, ?, ?);
     const guildSettings = await GuildSettings.create({

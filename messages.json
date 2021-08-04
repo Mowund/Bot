@@ -1,135 +1,4 @@
 {
-  "LANGUAGE_NOT_SUPPORTED": {
-    "en-us": "This bot does not have support for `{LANGUAGE}` at this time.",
-    "es": "Este bot no es compatible con `{LANGUAGE}` en este momento.",
-    "pt-br": "Este bot não é compatível com `{LANGUAGE}` por enquanto."
-  },
-  "CURRENT_LANGUAGE": {
-    "en-us": "The current language is set to `{LANGUAGE}`.",
-    "es": "El idioma actual está establecido en `{LANGUAGE}`.",
-    "pt-br": "O idioma atual está definido como `{LANGUAGE}`."
-  },
-  "NEW_LANGUAGE": {
-    "en-us": "Language set to `{LANGUAGE}`.",
-    "es": "Idioma configurado en `{LANGUAGE}`.",
-    "pt-br": "Idioma definido para `{LANGUAGE}`."
-  },
-  "BOT_OWNERS_ONLY": {
-    "en-us": "Only the bot owner can run this command.",
-    "es": "Solo el propietario del bot puede ejecutar este comando.",
-    "pt-br": "Apenas o proprietário do bot pode executar este comando."
-  },
-  "DISABLED_COMMAND": {
-    "en-us": "That command is currently disabled in this server.",
-    "es": "Ese comando está actualmente deshabilitado en este servidor.",
-    "pt-br": "Este comando está atualmente desabilitado neste servidor."
-  },
-  "MISSING_PERMISSION": {
-    "en-us": "You must have the {PERM} permission in order to use this command.",
-    "es": "Debe tener el permiso {PERM} para poder utilizar este comando.",
-    "pt-br": "Você precisa ter a permissão {PERM} para utilizar este comando."
-  },
-  "MISSING_ROLES": {
-    "en-us": "You do not have the required roles to use this command!",
-    "es": "¡No tienes los roles necesarios para usar este comando!",
-    "pt-br": "Você não tem o cargo necessário para usar este comando!"
-  },
-  "COOLDOWN": {
-    "en-us": "You must wait {COOLDOWN} before using that command again.",
-    "es": "Debe esperar {COOLDOWN} antes de usar ese comando nuevamente.",
-    "pt-br": "Você precisa esperar {COOLDOWN} antes de usar este comando novamente."
-  },
-  "ENABLE_DISABLE_STATE": {
-    "en-us": "The state must be either \"enable\" or \"disable\".",
-    "es": "El estado debe ser \"habilitar\" o \"deshabilitar\".",
-    "pt-br": "O estado deve ser \"ativado\" ou \"desativado\"."
-  },
-  "CANNOT_ENABLE_DISABLE_IN_DMS": {
-    "en-us": "You cannot enable or disable commands in private messages.",
-    "es": "No puede habilitar o deshabilitar comandos en mensajes privados.",
-    "pt-br": "Você não pode ativar ou desativar comandos em mensagens privadas."
-  },
-  "COMMAND_ALREADY_ENABLED": {
-    "en-us": "That command is already enabled!",
-    "es": "¡Ese comando ya está habilitado!",
-    "pt-br": "Este comando já está ativado!"
-  },
-  "COMMAND_ALREADY_DISABLED": {
-    "en-us": "That command is already disabled!",
-    "es": "¡Ese comando ya está desactivado!",
-    "pt-br": "Este comando já está desativado!"
-  },
-  "COMMAND_NOW_ENABLED": {
-    "en-us": "{COMMAND} is now enabled!",
-    "es": "¡{COMMAND} ahora está habilitado!",
-    "pt-br": "{COMMAND} agora está ativado!"
-  },
-  "COMMAND_NOW_DISABLED": {
-    "en-us": "{COMMAND} is now disabled!",
-    "es": "¡{COMMAND} ahora está deshabilitada!",
-    "pt-br": "{COMMAND} agora está desativado!"
-  },
-  "UNKNOWN_COMMAND": {
-    "en-us": "Could not find command {COMMAND}!",
-    "es": "¡No se pudo encontrar el comando {COMMAND}!",
-    "pt-br": "Não foi possível encontrar o comando {COMMAND}!"
-  },
-  "CURRENT_PREFIX": {
-    "en-us": "The current prefix is {PREFIX}.",
-    "es": "El prefijo actual es {PREFIX}.",
-    "pt-br": "O prefixo atual é {PREFIX}."
-  },
-  "SET_PREFIX": {
-    "en-us": "Set the command prefix to {PREFIX}.",
-    "es": "Establezca el prefijo del comando en {PREFIX}.",
-    "pt-br": "Prefixo definido para {PREFIX}."
-  },
-  "CANNOT_SET_PREFIX_IN_DMS": {
-    "en-us": "You cannot set a prefix in a private message.",
-    "es": "No puede establecer un prefijo en un mensaje privado.",
-    "pt-br": "Você não pode definir um prefixo em uma mensagem privada"
-  },
-  "CANNOT_CHANGE_REQUIRED_ROLES_IN_DMS": {
-    "en-us": "You cannot change required roles in private messages.",
-    "es": "No puede cambiar los roles requeridos en los mensajes privados.",
-    "pt-br": "Você não pode alterar as funções necessárias em mensagens privadas"
-  },
-  "REMOVED_ALL_REQUIRED_ROLES": {
-    "en-us": "Removed all required roles from command {COMMAND}.",
-    "es": "Se eliminaron todos los roles requeridos del comando {COMMAND}.",
-    "pt-br": "Removidas todas as permissões necessárias para o comando {COMMAND}."
-  },
-  "ADDED_REQUIRED_ROLE": {
-    "en-us": "Added role {ROLE} to command {COMMAND}.",
-    "es": "Se agregó el rol {ROLE} al comando {COMMAND}.",
-    "pt-br": "Adicionado o cargo {ROLE} para o comando {COMMAND}."
-  },
-  "SYNTAX_ERROR": {
-    "en-us": "Correct usage: `{PREFIX}{COMMAND} {ARGUMENTS}`",
-    "es": "Uso correcto: `{PREFIX}{COMMAND} {ARGUMENTS}`",
-    "pt-br": "Uso correto: `{PREFIX}{COMMAND} {ARGUMENTS}`"
-  },
-  "NO_DATABASE_FOUND": {
-    "en-us": "No database connection found!",
-    "es": "¡No se encontró conexión a la base de datos!",
-    "pt-br": "Conexão ao banco de dados não encontrada!"
-  },
-  "GUILD_ONLY_COMMAND": {
-    "en-us": "This command can only be used within a server.",
-    "es": "Este comando solo se puede utilizar dentro de un servidor.",
-    "pt-br": "Este comando só pode ser usado em um servidor."
-  },
-  "NO_REACT_PERMS": {
-    "en-us": "This bot needs the \"Add Reactions\" permission to use the help menu.",
-    "es": "Este bot precisa da permissão \"Adicionar reações\" para usar o menu de ajuda.",
-    "pt-br": "Este bot precisa da permissão \"Adicionar reações\" para usar o menu de ajuda."
-  },
-  "EXCEPTION": {
-    "en-us": "An error occurred when running this command! This error has been reported to the developers.",
-    "es": "¡Se produjo un error al ejecutar este comando! Se ha informado de este error a los desarrolladores.",
-    "pt-br": "Ocorreu um erro ao executar este comando! Este erro foi relatado aos desenvolvedores."
-  },
-
   "CANVAS_LINE_FIRST": {
     "en-us": "Não traduzi.",
     "es": "Não traduzi.",
@@ -308,9 +177,9 @@
   },
 
   "BOTINFO_TITLE": {
-    "en-us": "**Bot Info**",
-    "es": "**Información del Bot**",
-    "pt-br": "**Informações do Bot**"
+    "en-us": "Bot Info",
+    "es": "Información del Bot",
+    "pt-br": "Informações do Bot"
   },
   "BOTINFO_NAME_FIELD": {
     "en-us": "Bot Name",
@@ -546,6 +415,11 @@
       "en-us": "The current guild language is: `{LANG}`.",
       "es": "El idioma actual del servidor es: `{LANG}`.",
       "pt-br": "O idioma atual do servidor é: `{LANG}`."
+    },
+    "NOT_SUPPORTED": {
+      "en-us": "This bot does not have support for `{LANGUAGE}` at this time.",
+      "es": "Este bot no es compatible con `{LANGUAGE}` en este momento.",
+      "pt-br": "Este bot não é compatível com `{LANGUAGE}` por enquanto."
     }
   },
 
@@ -556,24 +430,24 @@
       "pt-br": "{E} Pong!"
     },
     "RESPONSE_TIME": {
-      "en-us": "{E} **Response Time**",
-      "es": "{E} **Tiempo de Respuesta**",
-      "pt-br": "{E} **Tempo de Resposta**"
-    },
-    "API_LATENCY": {
-      "en-us": "{E} **API Latency**",
-      "es": "{E} **Latencia de API**",
-      "pt-br": "{E} **Latência da API**"
+      "en-us": "{E} Response Time",
+      "es": "{E} Tiempo de Respuesta",
+      "pt-br": "{E} Tempo de Resposta"
     },
     "EDITING_TIME": {
-      "en-us": "{E} **Editing Time**",
-      "es": "{E} **Tiempo de Edición**",
-      "pt-br": "{E} **Tempo de Edição**"
+      "en-us": "{E} Editing Time",
+      "es": "{E} Tiempo de Edición",
+      "pt-br": "{E} Tempo de Edição"
+    },
+    "API_LATENCY": {
+      "en-us": "{E} API Latency",
+      "es": "{E} Latencia de API",
+      "pt-br": "{E} Latência da API"
     },
     "UPTIME": {
-      "en-us": "{E} **Uptime**",
-      "es": "{E} **Tiempo de Actividad**",
-      "pt-br": "{E} **Tempo de Atividade**"
+      "en-us": "{E} Uptime",
+      "es": "{E} Tiempo de Actividad",
+      "pt-br": "{E} Tempo de Atividade"
     }
   },
 
@@ -600,97 +474,71 @@
     }
   },
 
-  "GENERIC_COMPONENT_BACK": {
-    "en-us": "Back",
-    "es": "Vuelve",
-    "pt-br": "Voltar"
-  },
-  "GENERIC_COMPONENT_REPEAT": {
-    "en-us": "Repeat",
-    "es": "Repetir",
-    "pt-br": "Repetir"
-  },
-  "GENERIC_COMPONENT_MESSAGE_DELETE": {
-    "en-us": "Delete Message",
-    "es": "Borrar Mensaje",
-    "pt-br": "Deletar Mensagem"
-  },
-  "GENERIC_REQUESTED_BY": {
-    "en-us": "Requested by {USER}",
-    "es": "Solicitado por {USER}",
-    "pt-br": "Solicitado por {USER}"
-  },
-  "GENERIC_INTERACTED_BY": {
-    "en-us": "Interacted by {USER}",
-    "es": "Interactuado por {USER}",
-    "pt-br": "Interagido por {USER}"
-  },
-  "GENERIC_SUCCESS": {
-    "en-us": "Success",
-    "es": "Éxito",
-    "pt-br": "Êxito"
-  },
-  "GENERIC_TIME_OUT": {
-    "en-us": "Time's out",
-    "es": "Tiempo agotado",
-    "pt-br": "Tempo esgotado"
-  },
-  "GENERIC_ERROR": {
-    "en-us": "Error",
-    "es": "Error",
-    "pt-br": "Erro"
-  },
-  "GENERIC_ERROR_COMMAND": {
-    "en-us": "You are not allowed to interact with this command.",
-    "es": "No se le permite interactuar con este comando.",
-    "pt-br": "Você não tem permissão para interagir com este comando."
-  },
-  "GENERIC_UNALLOWED_CHAT": {
-    "en-us": "You are not allowed to use this command in this chat.",
-    "es": "No se le permite utilizar este comando en este chat.",
-    "pt-br": "Você não tem permissão para usar este comando neste chat."
-  },
-  "GENERIC_NO_DM": {
-    "en-us": "This command cannot be used in DMs.",
-    "es": "Este comando no se puede utilizar en DM.",
-    "pt-br": "Este comando não pode ser usado em DMs."
-  },
-
-  "HELP_MENU": {
-    "TITLE": {
-      "en-us": "Help Menu",
-      "es": "Menú de Ayuda",
-      "pt-br": "Menu de Ajuda"
+  "GENERIC": {
+    "COMPONENT_BACK": {
+      "en-us": "Back",
+      "es": "Vuelve",
+      "pt-br": "Voltar"
     },
-    "SELECT_A_CATEGORY": {
-      "en-us": "Please select a command category by clicking it's reaction.",
-      "es": "Seleccione una categoría de comando haciendo clic en su reacción.",
-      "pt-br": "Selecione uma categoria de comando clicando em sua reação."
+    "COMPONENT_REPEAT": {
+      "en-us": "Repeat",
+      "es": "Repetir",
+      "pt-br": "Repetir"
     },
-    "COMMANDS": {
-      "en-us": "commands",
-      "es": "comandos",
-      "pt-br": "comandos"
+    "COMPONENT_MESSAGE_DELETE": {
+      "en-us": "Delete Message",
+      "es": "Borrar Mensaje",
+      "pt-br": "Deletar Mensagem"
     },
-    "DESCRIPTION_FIRST_LINE": {
-      "en-us": "Use 🚪 to return to the previous menu.",
-      "es": "Utilice 🚪 para volver al menú anterior.",
-      "pt-br": "Use 🚪 para retornar ao menu anterior"
+    "REQUESTED_BY": {
+      "en-us": "Requested by {USER}",
+      "es": "Solicitado por {USER}",
+      "pt-br": "Solicitado por {USER}"
     },
-    "DESCRIPTION_SECOND_LINE": {
-      "en-us": "Use ⬅ and ➡ to navigate between pages.",
-      "es": "Utilice ⬅ y ➡ para navegar entre páginas.",
-      "pt-br": "Use ⬅ e ➡ para navegar entre as páginas."
+    "INTERACTED_BY": {
+      "en-us": "Interacted by {USER}",
+      "es": "Interactuado por {USER}",
+      "pt-br": "Interagido por {USER}"
     },
-    "ALIASES": {
-      "en-us": "Aliases",
-      "es": "Alias",
-      "pt-br": "Variantes"
+    "SUCCESS": {
+      "en-us": "Success",
+      "es": "Éxito",
+      "pt-br": "Êxito"
     },
-    "SYNTAX": {
-      "en-us": "Syntax",
-      "es": "Sintaxis",
-      "pt-br": "Sintaxe"
+    "TIME_OUT": {
+      "en-us": "Time's out",
+      "es": "Tiempo agotado",
+      "pt-br": "Tempo esgotado"
+    },
+    "ERROR": {
+      "en-us": "Error",
+      "es": "Error",
+      "pt-br": "Erro"
+    },
+    "ERROR_COMMAND": {
+      "en-us": "You are not allowed to interact with this command.",
+      "es": "No se le permite interactuar con este comando.",
+      "pt-br": "Você não tem permissão para interagir com este comando."
+    },
+    "UNALLOWED_CHAT": {
+      "en-us": "You are not allowed to use this command in this chat.",
+      "es": "No se le permite utilizar este comando en este chat.",
+      "pt-br": "Você não tem permissão para usar este comando neste chat."
+    },
+    "NO_DM": {
+      "en-us": "This command cannot be used in DMs.",
+      "es": "Este comando no se puede utilizar en DM.",
+      "pt-br": "Este comando não pode ser usado em DMs."
+    },
+    "WIP": {
+      "en-us": "Work in progress",
+      "es": "En desarrollo",
+      "pt-br": "Em desenvolvimento"
+    },
+    "WIP_COMMAND": {
+      "en-us": "This command is currently under development",
+      "es": "Este comando está actualmente en desarrollo.",
+      "pt-br": "Este comando está atualmente em desenvolvimento."
     }
   }
 }
