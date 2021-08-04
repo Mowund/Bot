@@ -80,7 +80,7 @@ module.exports = {
           .addFields(
             {
               name: await getTS(['PING', 'RESPONSE_TIME'], { E: '⌛' }),
-              value: '`' + (itcTime - new Date(bMT).getTime()) + 'ms`',
+              value: '`' + (new Date(bMT).getTime() - itcTime) + 'ms`',
               inline: true,
             },
             {
