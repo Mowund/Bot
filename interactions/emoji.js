@@ -1,5 +1,4 @@
-const Discord = require('discord.js');
-const { Util } = require('discord.js');
+const { MessageEmbed, Permissions, Util } = require('discord.js');
 const utils = require('../utils/utils.js');
 
 module.exports = {
@@ -62,16 +61,15 @@ module.exports = {
         }
 
         emj = client.emojis.cache.find((emj) => emj.id == emjID);
-        emjVal = true;
-        emjURL = 'https://cdn.discordapp.com/emojis/' + emjID;
+        var emjVal = true;
+        var emjURL = 'https://cdn.discordapp.com/emojis/' + emjID;
         if (await utils.checkImage(emjURL + '.gif')) {
           emjURL = emjURL + '.gif';
         } else if (!(await utils.checkImage(emjURL))) {
           emjVal = false;
-        } else {
         }
 
-        emjFN = {
+        var emjFN = {
           name: await getTS('EMOJI_FIELD_NAME'),
           value: '`' + emjName + '`',
           inline: true,
@@ -94,7 +92,7 @@ module.exports = {
 
         if (emj) {
           if (
-            !uI.permissions.has('MANAGE_EMOJIS') ||
+            !uI.permissions.has(Permissions.FLAGS.MANAGE_EMOJIS) ||
             emj.guild.id != guildI.id
           ) {
             disEdit = true;
@@ -123,7 +121,7 @@ module.exports = {
         }
 
         if (args.find((arg) => arg.name == 'edit')) {
-          var emb = new Discord.MessageEmbed()
+          var emb = new MessageEmbed()
             .setTitle(await getTS('EMOJI_EDIT_EDITING'))
             .addFields(
               {
@@ -172,7 +170,7 @@ module.exports = {
               []
             );
           }
-          if (!uI.permissions.has('MANAGE_EMOJIS')) {
+          if (!uI.permissions.has(Permissions.FLAGS.MANAGE_EMOJIS)) {
             return utils.iCP(
               client,
               0,
@@ -237,7 +235,7 @@ module.exports = {
             },
           ]);
         } else if (args.find((arg) => arg.name == 'view')) {
-          var emb = new Discord.MessageEmbed()
+          var emb = new MessageEmbed()
             .setTitle(await getTS('EMOJI_VIEW_VIEWING'))
             .addFields(
               emjFN,
@@ -309,7 +307,10 @@ module.exports = {
       var emjFR = [];
 
       if (emj) {
-        if (!uI.permissions.has('MANAGE_EMOJIS') || emj.guild.id != guildI.id) {
+        if (
+          !uI.permissions.has(Permissions.FLAGS.MANAGE_EMOJIS) ||
+          emj.guild.id != guildI.id
+        ) {
           disEdit = true;
         }
 
@@ -336,7 +337,7 @@ module.exports = {
         disEdit = true;
       }
 
-      var emb = new Discord.MessageEmbed()
+      var emb = new MessageEmbed()
         .setTitle(await getTS('EMOJI_EDIT_EDITING'))
         .addFields(
           {
@@ -365,7 +366,7 @@ module.exports = {
         !(
           component_id == 'emoji_view' || component_id == 'emoji_message_delete'
         ) &&
-        !uI.permissions.has('MANAGE_EMOJIS')
+        !uI.permissions.has(Permissions.FLAGS.MANAGE_EMOJIS)
       ) {
         return utils.iCP(
           client,

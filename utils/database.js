@@ -18,12 +18,6 @@ const GuildSettings = sequelize.define('guild_settings', {
     unique: true,
   },
   language: { type: Sequelize.STRING, defaultValue: 'en-us' },
-  //username: Sequelize.STRING,
-  //usage_count: {
-  //  type: Sequelize.INTEGER,
-  //  defaultValue: 0,
-  //  allowNull: false,
-  //},
 });
 
 GuildSettings.sync();
@@ -47,7 +41,6 @@ module.exports.setColorChannels = (guild, channelID) =>
 async function setLanguage(guild, language) {
   guild = !guild ? 'global' : guild;
   try {
-    // equivalent to: INSERT INTO tags (name, description, username) values (?, ?, ?);
     const guildSettings = await GuildSettings.create({
       id: guild,
       language: language,
@@ -74,7 +67,6 @@ module.exports.setLanguage = async (guild, language) =>
 async function getLanguage(guild) {
   guild = !guild ? 'global' : guild.id ? guild.id : guild;
   try {
-    // equivalent to: INSERT INTO tags (name, description, username) values (?, ?, ?);
     const guildSettings = await GuildSettings.create({
       id: guild,
     });

@@ -1,39 +1,78 @@
 const { MessageEmbed, MessageActionRow, MessageButton } = require('discord.js');
 const utils = require('../utils/utils.js');
 const pack = require('../package.json');
+const database = require('../utils/database');
 require('colors');
 require('log-timestamp');
 
 module.exports = {
   name: 'interactionCreate',
   async execute(client, interaction) {
+    var {
+      channel,
+      channelId,
+      commandName,
+      componentType,
+      customId,
+      guild,
+      options,
+      user,
+    } = interaction;
+
+    var botMember = guild
+      ? guild.members.cache.get(client.user.id) ?? client.user
+      : client.user;
+    var userO = options ? options.getUser('user') ?? user : user;
+    var memberO = guild ? guild.members.cache.get(userO.id) ?? userO : userO;
+    var ephemeralTO = options ? options.getBoolean('ephemeral') ?? true : true;
+    var ephemeralFO = options
+      ? options.getBoolean('ephemeral') ?? false
+      : false;
+
+    // Log interaction to console
+    console.log(
+      user.username.blue +
+        ' ('.gray +
+        user.id.blue +
+        ') -'.gray +
+        (guild
+          ? ' ' +
+            guild.name.cyan +
+            ' ('.gray +
+            guild.id.cyan +
+            ') - '.gray +
+            '#'.green +
+            channel.name.green
+          : ' DM'.green) +
+        ' ('.gray +
+        channelId.green +
+        '): '.gray +
+        (componentType
+          ? interaction.type.red + ':'.gray + componentType.red + ':'.gray
+          : interaction.type.red + ':'.gray) +
+        (customId ?? commandName).yellow +
+        ':'.gray +
+        JSON.stringify(interaction).brightRed +
+        (options ? ':'.gray + JSON.stringify(options) : '')
+    );
+
     function getTS(path, values) {
-      return utils.getTSE(interaction.guild, path, values);
+      return utils.getTSE(guild, path, values);
     }
 
-    var user = interaction.options
-      ? interaction.options.getUser('user') ?? interaction.user
-      : interaction.user;
-    var member = interaction.guild
-      ? interaction.guild.members.cache.get(user.id) ?? user
-      : user;
-    var botMember = interaction.guild
-      ? interaction.guild.members.cache.get(client.user.id) ?? client.user
-      : client.user;
-
     var emb = new MessageEmbed()
-      .setColor(member.displayColor ?? '6622aa')
+      .setColor(memberO.displayColor ?? '6622aa')
       .setFooter(
         await getTS(['GENERIC', 'REQUESTED_BY'], {
-          USER: interaction.user.username,
+          USER: user.username,
         }),
-        interaction.user.avatarURL()
+        user.avatarURL()
       )
       .setTimestamp(Date.now());
 
     if (interaction.isCommand()) {
       // Botinfo command
-      if (interaction.commandName == 'botinfo') {
+      if (commandName == 'botinfo') {
         emb = emb
           .setColor(botMember.displayColor ?? '6622aa')
           .setTitle(await getTS('BOTINFO_TITLE'))
@@ -58,34 +97,87 @@ module.exports = {
             .setStyle('LINK')
             .setURL('https://discord.gg/f85rEGJ')
         );
-        await interaction.reply({ embeds: [emb], components: [row] });
+        await interaction.reply({
+          embeds: [emb],
+          components: [row],
+          ephemeral: ephemeralTO,
+        });
+      }
+      // Echo command
+      else if (commandName == 'echo') {
+        /*await interaction.reply({
+          embeds: [emb],
+          ephemeral: ephemeralTO,
+        });*/
       }
       // Kill command
-      else if (interaction.commandName == 'kill') {
+      else if (commandName == 'kill') {
         emb = emb
           .setColor('ff0000')
-          .setAuthor(user.username, user.avatarURL())
+          .setAuthor(userO.username, userO.avatarURL())
           .setDescription('Caiu para fora do mundo.');
-        await interaction.reply({ embeds: [emb] });
+        await interaction.reply({ embeds: [emb], ephemeral: ephemeralFO });
+      }
+      // Language command
+      else if (commandName == 'language') {
+        await interaction.deferReply({ ephemeral: ephemeralTO });
+
+        if (!guild) {
+          emb = emb
+            .setColor('ff0000')
+            .setTitle(await getTS(['GENERIC', 'ERROR']))
+            .setDescription(await getTS(['GENERIC', 'NO_DM']));
+          return interaction.editReply({
+            embeds: [emb],
+          });
+        }
+        language = options.getString('language');
+        if (language) {
+          database.setLanguage(guild.id, language);
+
+          var emb = emb
+            .setColor('00ff00')
+            .setTitle(await getTS(['LANGUAGE', 'CHANGED']))
+            .setDescription(
+              await getTS(['LANGUAGE', 'CHANGED_TO'], { LANG: language })
+            );
+          await interaction.editReply({
+            embeds: [emb],
+            ephemeral: ephemeralTO,
+          });
+        } else {
+          language = await database.getLanguage(guild.id);
+
+          var emb = emb
+            .setColor('00ff00')
+            .setTitle(await getTS(['LANGUAGE', 'CURRENT']))
+            .setDescription(
+              await getTS(['LANGUAGE', 'CURRENT_IS'], { LANG: language })
+            );
+          await interaction.editReply({
+            embeds: [emb],
+            ephemeral: ephemeralTO,
+          });
+        }
       }
       // Ping command
-      else if (interaction.commandName == 'ping') {
+      else if (commandName == 'ping') {
         var itcTime = Date.now();
+        await interaction.deferReply();
 
-        await interaction.defer();
         var bM = await interaction.fetchReply();
-        var bMT = bM.createdTimestamp ?? bM.timestamp;
+        var bMT = new Date(bM.createdTimestamp ?? bM.timestamp).getTime();
         emb = emb
           .setTitle(await getTS(['PING', 'TITLE'], { E: '🏓' }))
           .addFields(
             {
               name: await getTS(['PING', 'RESPONSE_TIME'], { E: '⌛' }),
-              value: '`' + (new Date(bMT).getTime() - itcTime) + 'ms`',
+              value: '`' + (bMT - itcTime) + 'ms`',
               inline: true,
             },
             {
               name: await getTS(['PING', 'EDITING_TIME'], { E: '⌚' }),
-              value: '`' + (Date.now() - new Date(bMT).getTime()) + 'ms`',
+              value: '`' + (Date.now() - bMT) + 'ms`',
               inline: true,
             },
             {
@@ -118,13 +210,13 @@ module.exports = {
 
           return str;
         }
-      } else if (interaction.commandName == 'punish') {
-        if (!interaction.guild) {
+      } else if (commandName == 'punish') {
+        if (!guild) {
           emb = emb
             .setColor('ff0000')
             .setTitle(await getTS(['GENERIC', 'ERROR']))
             .setDescription(await getTS(['GENERIC', 'NO_DM']));
-          return interaction.reply({ embeds: [emb] });
+          return interaction.reply({ embeds: [emb], ephemeral: true });
         }
 
         emb = emb
@@ -135,44 +227,12 @@ module.exports = {
     } else {
       emb = emb.setFooter(
         await getTS(['GENERIC', 'INTERACTED_BY'], {
-          USER: interaction.user.username,
+          USER: user.username,
         }),
-        interaction.user.avatarURL()
+        user.avatarURL()
       );
       if (interaction.isButton()) {
       }
     }
-
-    // Log interaction to console
-    console.log(
-      interaction.user.username.blue +
-        ' ('.gray +
-        interaction.user.id.blue +
-        ') -'.gray +
-        (interaction.guild
-          ? ' ' +
-            interaction.guild.name.cyan +
-            ' ('.gray +
-            interaction.guild.id.cyan +
-            ') - '.gray +
-            '#'.green +
-            interaction.channel.name.green
-          : '') +
-        ' ('.gray +
-        interaction.channelId.green +
-        '): '.gray +
-        (interaction.componentType
-          ? interaction.type.red +
-            ':'.gray +
-            interaction.componentType.red +
-            ':'.gray
-          : interaction.type.red + ':'.gray) +
-        (interaction.customId ?? interaction.commandName).yellow +
-        ':'.gray +
-        JSON.stringify(interaction).brightRed +
-        (interaction.options
-          ? ':'.gray + JSON.stringify(interaction.options)
-          : '')
-    );
   },
 };

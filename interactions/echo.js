@@ -44,7 +44,7 @@ module.exports = {
         if (args.find((arg) => arg.name == 'embed')) {
           var eD = args
             .find((arg) => arg['options'])
-            .options.find((arg) => arg.name == 'desc');
+            .options.find((arg) => arg.name == 'description');
 
           var sEP = args
             .find((arg) => arg['options'])
@@ -158,7 +158,7 @@ module.exports = {
 
           var eTH = args
             .find((arg) => arg['options'])
-            .options.find((arg) => arg.name == 'thumb');
+            .options.find((arg) => arg.name == 'thumbnail');
 
           var emb = new Discord.MessageEmbed()
             .setDescription(eD.value)

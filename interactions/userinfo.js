@@ -20,7 +20,7 @@ module.exports = {
       if (interaction.data.resolved) {
         var message = utils.search(interaction.data.resolved.messages);
 
-        if (command == 'userinfo') {
+        if (command == 'User Info') {
           return utils.iCP(
             client,
             0,

@@ -166,7 +166,7 @@ module.exports.diEmb = async (
   eC,
   title,
   footer,
-  desc,
+  description,
   diT,
   diB,
   diL
@@ -242,8 +242,8 @@ module.exports.diEmb = async (
     .setFooter(footer, eU.avatarURL())
     .setTimestamp(Date.now());
 
-  if (desc && desc != 0) {
-    emb = emb.setDescription(desc);
+  if (description && description != 0) {
+    emb = emb.setDescription(description);
   }
 
   if (eMsg === 0 || eMsg === 2) {

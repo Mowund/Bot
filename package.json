@@ -1,12 +1,12 @@
 {
   "name": "mowund",
-  "version": "1.0.0-dev",
+  "version": "1.18-dev",
   "main": "index.js",
   "dependencies": {
     "canvas": "^2.8.0",
     "chalk": "^4.1.2",
     "color-thief-node": "^1.0.4",
-    "discord.js": "^13.0.0-dev.t1628078860.90c2e07",
+    "discord.js": "^13.1.0-dev.t1628294652.60ace9a",
     "git": "^0.1.5",
     "keyv": "^4.0.3",
     "log-timestamp": "^0.3.0",
@@ -19,7 +19,6 @@
     "winston": "^3.3.3",
     "xmlhttprequest": "^1.8.0"
   },
-  "devDependencies": {},
   "scripts": {
     "start": "node index.js"
   },

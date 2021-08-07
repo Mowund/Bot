@@ -1,13 +1,20 @@
 module.exports = {
   name: 'ready',
   async execute(client) {
-    await client.application?.fetch();
-
-    /*await client.application?.commands.create({
+    if (false) {
+      await client.application?.commands.create({
         name: 'botinfo',
         description: "Send bot's information.",
+        options: [
+          {
+            name: 'ephemeral',
+            description: 'Send as an ephemeral message. Enabled by default.',
+            type: 5,
+            required: false,
+          },
+        ],
       });
-      /*await client.guilds.cache.get('420007989261500418')?.commands.create({
+      await client.guilds.cache.get('420007989261500418')?.commands.create({
         name: 'color',
         description: 'Sistema de cor.',
         options: [
@@ -58,7 +65,7 @@ module.exports = {
           },
         ],
       });
-      /*await client.guilds.cache.get('420007989261500418')?.commands.create({
+      await client.guilds.cache.get('420007989261500418')?.commands.create({
         name: 'components',
         description: 'Interação de botões.',
         options: [
@@ -69,18 +76,18 @@ module.exports = {
           },
         ],
       });
-      /*await client.guilds.cache.get('420007989261500418')?.commands.create({
+      await client.guilds.cache.get('420007989261500418')?.commands.create({
         name: 'config',
-        description: 'Configura o bot. (Somente dono)',
+        description: 'Configura o bot. (Bot owner only)',
         options: [
           {
             name: 'interaction',
-            description: 'Configura as interações. (Somente dono)',
+            description: 'Configura as interações. (Bot owner only)',
             type: 2,
             options: [
               {
                 name: 'delete',
-                description: 'Deleta uma interação. (Somente dono)',
+                description: 'Deleta uma interação. (Bot owner only)',
                 type: 1,
                 options: [
                   {
@@ -100,13 +107,13 @@ module.exports = {
               {
                 name: 'list',
                 description:
-                  'Lista todas as interações no console. (Somente dono)',
+                  'Lista todas as interações no console. (Bot owner only)',
                 type: 1,
                 options: [
                   {
                     name: 'perms',
                     description:
-                      'Listar permissões. Desativado por padrão. (Somente dono)',
+                      'Listar permissões. Desativado por padrão. (Bot owner only)',
                     type: 5,
                     required: false,
                   },
@@ -121,7 +128,7 @@ module.exports = {
               {
                 name: 'permission',
                 description:
-                  'Configura a permissão de uma interação. (Somente dono)',
+                  'Configura a permissão de uma interação. (Bot owner only)',
                 type: 1,
                 options: [
                   {
@@ -148,17 +155,17 @@ module.exports = {
           },
           {
             name: 'bot',
-            description: 'Configura o bot. (Somente dono)',
+            description: 'Configura o bot. (Bot owner only)',
             type: 2,
             options: [
               {
                 name: 'power',
-                description: 'Desliga ou reinicia o bot. (Somente dono)',
+                description: 'Desliga ou reinicia o bot. (Bot owner only)',
                 type: 1,
                 options: [
                   {
                     name: 'option',
-                    description: 'Opções. (Somente dono)',
+                    description: 'Opções. (Bot owner only)',
                     type: 3,
                     required: true,
                     choices: [
@@ -178,7 +185,7 @@ module.exports = {
           },
         ],
       });
-      /*await client.application?.commands.create({
+      await client.application?.commands.create({
         name: 'echo',
         description: 'Ecoa uma mensagem pelo bot.',
         options: [
@@ -189,7 +196,7 @@ module.exports = {
             type: 1,
             options: [
               {
-                name: 'desc',
+                name: 'description',
                 description: 'A descrição obrigatória do embed.',
                 type: 3,
                 required: true,
@@ -241,7 +248,7 @@ module.exports = {
                 required: false,
               },
               {
-                name: 'thumb',
+                name: 'thumbnail',
                 description:
                   'O link da thumbnail do embed. Desativado por padrão.',
                 type: 3,
@@ -257,7 +264,7 @@ module.exports = {
               {
                 name: 'ephemeral',
                 description:
-                  'Ativa ou desativa a mensagem efêmera. Desativado por padrão.',
+                  'Send as an ephemeral message. Enabled by default.',
                 type: 5,
                 required: false,
               },
@@ -278,7 +285,7 @@ module.exports = {
               {
                 name: 'ephemeral',
                 description:
-                  'Ativa ou desativa a mensagem efêmera. Desativado por padrão.',
+                  'Send as an ephemeral message. Enabled by default.',
                 type: 5,
                 required: false,
               },
@@ -293,7 +300,7 @@ module.exports = {
           },
         ],
       });
-      /*await client.application?.commands.create({
+      await client.application?.commands.create({
         name: 'emoji',
         description: 'Configura os emojis do servidor.',
         options: [
@@ -327,33 +334,39 @@ module.exports = {
           },
         ],
       });
-      /*await client.application?.commands.create({
+      await client.application?.commands.create({
         name: 'kill',
         description: 'Mata alguém.',
         options: [
           {
             name: 'user',
-            description: 'Algum usuário para matar.',
+            description: 'An user to kill.',
             type: 6,
+            required: false,
+          },
+          {
+            name: 'ephemeral',
+            description: 'Send as an ephemeral message. Enabled by default.',
+            type: 5,
             required: false,
           },
         ],
       });
-      /*await client.application?.commands.create({
+      await client.application?.commands.create({
         name: 'language',
-        description: 'Altera o idioma do servidor.',
+        description: "Change server's language.",
         options: [
           {
             name: 'language',
-            description: 'O idioma para alterar.',
+            description: 'The language to change.',
             type: 3,
             choices: [
               {
-                name: 'English',
+                name: 'English (United States)',
                 value: 'en-us',
               },
               {
-                name: 'Portuguese',
+                name: 'Portuguese (Brazil)',
                 value: 'pt-br',
               },
               {
@@ -362,24 +375,30 @@ module.exports = {
               },
             ],
           },
+          {
+            name: 'ephemeral',
+            description: 'Send as an ephemeral message. Enabled by default.',
+            type: 5,
+            required: false,
+          },
         ],
       });
-      /*await client.application?.commands.create({
+      await client.application?.commands.create({
         name: 'ping',
-        description: 'Vê a latência do bot.',
+        description: "Shows bot's latency.",
       });
-      /*await client.guilds.cache.get('420007989261500418')?.commands.create({
+      await client.guilds.cache.get('420007989261500418')?.commands.create({
         name: 'punish',
-        description: 'Pune ou despune um membro.',
+        description: 'Punish or unpunish a member.',
         options: [
           {
             name: 'add',
-            description: 'Pune um membro. (Somente dono)',
+            description: 'Punishes a member. (Bot owner only)',
             type: 1,
             options: [
               {
                 name: 'type',
-                description: 'Tipo de punimento.',
+                description: 'Punishment type.',
                 type: 3,
                 required: true,
                 choices: [
@@ -398,8 +417,8 @@ module.exports = {
                 ],
               },
               {
-                name: 'member',
-                description: 'Membro que será punido.',
+                name: 'user',
+                description: 'Member that will be punished.',
                 type: 6,
                 required: true,
               },
@@ -407,12 +426,12 @@ module.exports = {
           },
           {
             name: 'remove',
-            description: 'Despune um membro. (Somente dono)',
+            description: 'Unpunishes a member. (Bot owner only)',
             type: 1,
             options: [
               {
-                name: 'member',
-                description: 'Membro que será despunido.',
+                name: 'user',
+                description: 'Member that will be unpunished.',
                 type: 6,
                 required: true,
               },
@@ -420,16 +439,25 @@ module.exports = {
           },
         ],
       });
-      /*await client.guilds.cache.get('420007989261500418')?.commands.create({
-        type: 2,
-        name: 'userinfo',
-        description: 'Exibe informações do usúario.',
-      });
+      /*client.api
+        .applications(client.user.id)
+        .guilds('420007989261500418')
+        .commands.post({
+          type: 2,
+          name: 'User Info',
+          description: "Shows user's info.",
+        });
 
-      /*await client.guilds.cache.get('420007989261500418')?.commands.create({
-        type: 3,
-        name: 'messageinfo',
-        description: 'Exibe informações da mensagem.',
-      });*/
+      client.api
+        .applications(client.user.id)
+        .guilds('420007989261500418')
+        .commands.post({
+          data: {
+            type: 3,
+            name: 'Message Info',
+            description: "Shows message's info.",
+          },
+        });*/
+    }
   },
 };

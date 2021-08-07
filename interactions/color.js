@@ -304,7 +304,7 @@ module.exports = {
             eTitle = await getTS('COLOR_CHANGED_ROLE');
             tRole.setPosition(pos - 1);
             tRole.setColor(color);
-            client.setTimeout(() => {
+            setInterval(() => {
               if (tc(tRole.hexColor).toHex() != color) {
                 reSC();
                 console.log('Resetting Color');
@@ -326,7 +326,7 @@ module.exports = {
               .then((tRole) => {
                 function reAR() {
                   uI.roles.add(tRole);
-                  client.setTimeout(() => {
+                  setInterval(() => {
                     if (!uI.roles.cache.find((r) => r.name == tRoleN)) {
                       reAR();
                       console.log('Readding Role');
@@ -335,7 +335,7 @@ module.exports = {
                 }
                 reAR();
               });
-            client.setTimeout(() => {
+            setInterval(() => {
               if (!guildI.roles.cache.find((x) => x.name == tRoleN)) {
                 reCR();
                 console.log('Recreating Role');
@@ -588,7 +588,7 @@ module.exports = {
       } else if (component_id == 'color_preview') {
         function reSPC() {
           tRole.setColor(color);
-          client.setTimeout(() => {
+          setInterval(() => {
             if (tc(tRole.hexColor).toHex() != color) {
               reSPC();
               console.log('Resetting Preview Color');
@@ -878,7 +878,7 @@ module.exports = {
         if (component_id == 'color_back_preview') {
           function reSBPC() {
             tRole.setColor(diEV[1]);
-            client.setTimeout(() => {
+            setInterval(() => {
               if (tc(tRole.hexColor).toHex() != diEV[1]) {
                 reSBPC();
                 console.log('Resetting Back Previous Color');

@@ -19,7 +19,7 @@ module.exports = {
       var args = interaction.data.options;
       if (interaction.data.resolved) {
         var message = utils.search(interaction.data.resolved.messages);
-        if (command == 'messageinfo') {
+        if (command == 'Message Info') {
           var content = message.content;
           return utils.iCP(
             client,
