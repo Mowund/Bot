@@ -3,11 +3,17 @@ const Discord = require('discord.js');
 const fs = require('fs');
 let coins = require('./coins.json');
 let xp = require('./xp.json');
-let env = require('./env.json') ?? process.env;
 require('colors');
 require('log-timestamp');
 const WOKCommands = require('wokcommands');
 require('dotenv').config();
+
+var env;
+try {
+  env = require('./env.json');
+} catch {
+  env = process.env;
+}
 
 const client = new Discord.Client({
   intents: ['GUILDS', 'GUILD_MESSAGES'],
