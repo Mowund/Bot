@@ -3,7 +3,7 @@ const Discord = require('discord.js');
 const fs = require('fs');
 let coins = require('./coins.json');
 let xp = require('./xp.json');
-let env = require('./env.json');
+let env = require('./env.json') ?? process.env;
 require('colors');
 require('log-timestamp');
 const WOKCommands = require('wokcommands');
