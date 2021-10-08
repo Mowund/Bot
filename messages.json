@@ -1,544 +1,630 @@
 {
   "CANVAS_LINE_FIRST": {
-    "en-us": "Não traduzi.",
-    "es": "Não traduzi.",
-    "pt-br": "Agora essa linha é traduzível :D"
+    "en-US": "Não traduzi.",
+    "es-ES": "Não traduzi.",
+    "pt-BR": "Agora essa linha é traduzível :D"
   },
 
   "COLOR_LIKE": {
-    "en-us": "Would you like this color?",
-    "es": "¿Te gustaría este color?",
-    "pt-br": "Você gostaria desta cor?"
+    "en-US": "Would you like this color?",
+    "es-ES": "¿Te gustaría este color?",
+    "pt-BR": "Você gostaria desta cor?"
   },
   "COLOR_SPECIFIED": {
-    "en-us": "Specified color",
-    "es": "Color especificado",
-    "pt-br": "Cor especificada"
+    "en-US": "Specified color",
+    "es-ES": "Color especificado",
+    "pt-BR": "Cor especificada"
   },
   "COLOR_AVATAR_ESTIMATED": {
-    "en-us": "Estimated color of your avatar",
-    "es": "Color estimado de tu avatar",
-    "pt-br": "Cor estimada do seu avatar"
+    "en-US": "Estimated color of your avatar",
+    "es-ES": "Color estimado de tu avatar",
+    "pt-BR": "Cor estimada do seu avatar"
   },
   "COLOR_TARGET_AVATAR_ESTIMATED": {
-    "en-us": "Estimated color in {USER}'s avatar",
-    "es": "Color estimado en el avatar de {USER}",
-    "pt-br": "Cor estimada no avatar de {USER}"
+    "en-US": "Estimated color in {USER}'s avatar",
+    "es-ES": "Color estimado en el avatar de {USER}",
+    "pt-BR": "Cor estimada no avatar de {USER}"
   },
   "COLOR_USER_CAN_INTERACT": {
-    "en-us": "{USER} can also interact with the system.",
-    "es": "{USER} también puede interactuar con el sistema.",
-    "pt-br": "{USER} também pode interagir com o sistema."
+    "en-US": "{USER} can also interact with the system.",
+    "es-ES": "{USER} también puede interactuar con el sistema.",
+    "pt-BR": "{USER} também pode interagir com o sistema."
   },
   "COLOR_SAME_USER_CAN_INTERACT": {
-    "en-us": "It is not necessary to mention yourself if you're going to change your own color.",
-    "es": "No es necesario que te menciones si vas a cambiar tu propio color.",
-    "pt-br": "Não é necessário se mencionar caso for mudar sua própria cor."
+    "en-US": "It is not necessary to mention yourself if you're going to change your own color.",
+    "es-ES": "No es-ES necesario que te menciones si vas a cambiar tu propio color.",
+    "pt-BR": "Não é necessário se mencionar caso for mudar sua própria cor."
   },
   "COLOR_INVALID": {
-    "en-us": "Invalid color",
-    "es": "Color inválido",
-    "pt-br": "Cor inválida"
+    "en-US": "Invalid color",
+    "es-ES": "Color inválido",
+    "pt-BR": "Cor inválida"
   },
   "COLOR_INVALID_IMG": {
-    "en-us": "Invalid",
-    "es": "Inválido",
-    "pt-br": "Inválido"
+    "en-US": "Invalid",
+    "es-ES": "Inválido",
+    "pt-BR": "Inválido"
   },
   "COLOR_CANCELED": {
-    "en-us": "Canceled",
-    "es": "Cancelado",
-    "pt-br": "Cancelado"
+    "en-US": "Canceled",
+    "es-ES": "Cancelado",
+    "pt-BR": "Cancelado"
   },
   "COLOR_NO_ROLE": {
-    "en-us": "You don't have a color role.",
-    "es": "No tienes un rol de color.",
-    "pt-br": "Você não tem um cargo de cor."
+    "en-US": "You don't have a color role.",
+    "es-ES": "No tienes un rol de color.",
+    "pt-BR": "Você não tem um cargo de cor."
   },
   "COLOR_TARGET_NO_ROLE": {
-    "en-us": "The mentioned user does not have a color role.",
-    "es": "El usuario mencionado no tiene un rol de color.",
-    "pt-br": "O usuário mencionado não tem um cargo de cor."
+    "en-US": "The mentioned user does not have a color role.",
+    "es-ES": "El usuario mencionado no tiene un rol de color.",
+    "pt-BR": "O usuário mencionado não tem um cargo de cor."
   },
   "COLOR_RGB_CONVERT": {
-    "en-us": "Converted to RGB",
-    "es": "Convertido a RGB",
-    "pt-br": "Convertido para RGB"
+    "en-US": "Converted to RGB",
+    "es-ES": "Convertido a RGB",
+    "pt-BR": "Convertido para RGB"
   },
   "COLOR_CURRENT": {
-    "en-us": "Current color",
-    "es": "Color actual",
-    "pt-br": "Cor atual"
+    "en-US": "Current color",
+    "es-ES": "Color actual",
+    "pt-BR": "Cor atual"
   },
   "COLOR_TARGET_CURRENT": {
-    "en-us": "{USER}'s current color",
-    "es": "Color actual de {USER}",
-    "pt-br": "Cor atual de {USER}"
+    "en-US": "{USER}'s current color",
+    "es-ES": "Color actual de {USER}",
+    "pt-BR": "Cor atual de {USER}"
   },
   "COLOR_ALREADY_NO_ROLE": {
-    "en-us": "You already has no color role.",
-    "es": "Tu ya no tienes un rol de color.",
-    "pt-br": "Você já não tem um cargo de cor."
+    "en-US": "You already has no color role.",
+    "es-ES": "Tu ya no tienes un rol de color.",
+    "pt-BR": "Você já não tem um cargo de cor."
   },
   "COLOR_TARGET_ALREADY_NO_ROLE": {
-    "en-us": "The mentioned user already has no color role.",
-    "es": "El usuario mencionado ya no tiene un rol de color.",
-    "pt-br": "O usuário mencionado já não tem um cargo de cor."
+    "en-US": "The mentioned user already has no color role.",
+    "es-ES": "El usuario mencionado ya no tiene un rol de color.",
+    "pt-BR": "O usuário mencionado já não tem um cargo de cor."
   },
   "COLOR_DELETED_ROLE": {
-    "en-us": "Deleted color",
-    "es": "Color eliminado",
-    "pt-br": "Cor deletada"
+    "en-US": "Deleted color",
+    "es-ES": "Color eliminado",
+    "pt-BR": "Cor deletada"
   },
   "COLOR_TARGET_DELETED_ROLE": {
-    "en-us": "Deleted {USER}'s color",
-    "es": "{USER} color eliminado",
-    "pt-br": "Cor de {USER} deletada"
+    "en-US": "Deleted {USER}'s color",
+    "es-ES": "{USER} color eliminado",
+    "pt-BR": "Cor de {USER} deletada"
   },
   "COLOR_CREATED_ASSIGNED_ROLE": {
-    "en-us": "Created and assigned color",
-    "es": "Color creado y asignado",
-    "pt-br": "Cor criada e atribuída"
+    "en-US": "Created and assigned color",
+    "es-ES": "Color creado y asignado",
+    "pt-BR": "Cor criada e atribuída"
   },
   "COLOR_TARGET_CREATED_ASSIGNED_ROLE": {
-    "en-us": "Color created and assigned to {USER}",
-    "es": "Color creado y asignado a {USER}",
-    "pt-br": "Cor criada e atribuída à {USER}"
+    "en-US": "Color created and assigned to {USER}",
+    "es-ES": "Color creado y asignado a {USER}",
+    "pt-BR": "Cor criada e atribuída à {USER}"
   },
   "COLOR_CHANGED_ROLE": {
-    "en-us": "Changed color",
-    "es": "Color cambiado",
-    "pt-br": "Cor alterada"
+    "en-US": "Changed color",
+    "es-ES": "Color cambiado",
+    "pt-BR": "Cor alterada"
   },
   "COLOR_TARGET_CHANGED_ROLE": {
-    "en-us": "Changed {USER}'s color",
-    "es": "{USER} cambió de color",
-    "pt-br": "Cor de {USER} alterada"
+    "en-US": "Changed {USER}'s color",
+    "es-ES": "{USER} cambió de color",
+    "pt-BR": "Cor de {USER} alterada"
   },
   "COLOR_CHANGED_ASSIGNED_ROLE": {
-    "en-us": "Changed and assigned color",
-    "es": "Color cambiado y asignado",
-    "pt-br": "Cor alterada e atribuída"
+    "en-US": "Changed and assigned color",
+    "es-ES": "Color cambiado y asignado",
+    "pt-BR": "Cor alterada e atribuída"
   },
   "COLOR_TARGET_CHANGED_ASSIGNED_ROLE": {
-    "en-us": "Color changed and assigned to {USER}",
-    "es": "{USER} color cambiado y asignado",
-    "pt-br": "Cor de {USER} alterada e atribuída"
+    "en-US": "Color changed and assigned to {USER}",
+    "es-ES": "{USER} color cambiado y asignado",
+    "pt-BR": "Cor de {USER} alterada e atribuída"
   },
   "COLOR_MIX": {
-    "en-us": "Enter a color to mix",
-    "es": "Ingrese un color para mezclar",
-    "pt-br": "Digite uma cor para misturar"
+    "en-US": "Enter a color to mix",
+    "es-ES": "Ingrese un color para mezclar",
+    "pt-BR": "Digite uma cor para misturar"
   },
   "COLOR_MIX_INVALID": {
-    "en-us": "Invalid color, enter a valid color to mix",
-    "es": "Color no válido, ingrese un color válido para mezclar",
-    "pt-br": "Cor inválida, digite uma cor válida para misturar"
+    "en-US": "Invalid color, enter a valid color to mix",
+    "es-ES": "Color no válido, ingrese un color válido para mezclar",
+    "pt-BR": "Cor inválida, digite uma cor válida para misturar"
   },
   "COLOR_MIXED": {
-    "en-us": "Mixed color",
-    "es": "Color mezclado",
-    "pt-br": "Cor misturada"
+    "en-US": "Mixed color",
+    "es-ES": "Color mezclado",
+    "pt-BR": "Cor misturada"
   },
   "COLOR_MIXED_REPEAT": {
-    "en-us": "Mixed color, enter a color to mix again",
-    "es": "Color mezclado, ingrese un color para mezclar nuevamente",
-    "pt-br": "Cor misturada, digite uma cor para misturar novamente"
+    "en-US": "Mixed color, enter a color to mix again",
+    "es-ES": "Color mezclado, ingrese un color para mezclar nuevamente",
+    "pt-BR": "Cor misturada, digite uma cor para misturar novamente"
   },
   "COLOR_EDIT": {
-    "en-us": "Enter a new color",
-    "es": "Ingrese un nuevo color",
-    "pt-br": "Digite uma nova cor"
+    "en-US": "Enter a new color",
+    "es-ES": "Ingrese un nuevo color",
+    "pt-BR": "Digite uma nova cor"
   },
   "COLOR_EDIT_ESTIMATED": {
-    "en-us": "Estimated color of your avatar, enter a valid color to edit again",
-    "es": "Color estimado de tu avatar, ingrese un color válido para editar nuevamente",
-    "pt-br": "Cor estimada do seu avatar, insira uma cor válida para editar novamente"
+    "en-US": "Estimated color of your avatar, enter a valid color to edit again",
+    "es-ES": "Color estimado de tu avatar, ingrese un color válido para editar nuevamente",
+    "pt-BR": "Cor estimada do seu avatar, insira uma cor válida para editar novamente"
   },
   "COLOR_EDIT_INVALID": {
-    "en-us": "Invalid color, enter a new valid color",
-    "es": "Color inválido, ingresa un nuevo color válido",
-    "pt-br": "Cor inválida, digite uma nova cor válida"
+    "en-US": "Invalid color, enter a new valid color",
+    "es-ES": "Color inválido, ingresa un nuevo color válido",
+    "pt-BR": "Cor inválida, digite uma nova cor válida"
   },
   "COLOR_EDITED": {
-    "en-us": "Edited color",
-    "es": "Color editado",
-    "pt-br": "Cor editada"
+    "en-US": "Edited color",
+    "es-ES": "Color editado",
+    "pt-BR": "Cor editada"
   },
   "COLOR_EDITED_REPEAT": {
-    "en-us": "Edited color, enter a valid color to edit again",
-    "es": "Color editado, ingrese un color válido para editar nuevamente",
-    "pt-br": "Cor editada, insira uma cor válida para editar novamente"
+    "en-US": "Edited color, enter a valid color to edit again",
+    "es-ES": "Color editado, ingrese un color válido para editar nuevamente",
+    "pt-BR": "Cor editada, insira uma cor válida para editar novamente"
   },
   "COLOR_PREVIEW": {
-    "en-us": "You are previewing the color.",
-    "es": "Está obteniendo una vista previa del color.",
-    "pt-br": "Você está visualizando a cor."
+    "en-US": "You are previewing the color.",
+    "es-ES": "Está obteniendo una vista previa del color.",
+    "pt-BR": "Você está visualizando a cor."
   },
 
-  "BOTINFO_TITLE": {
-    "en-us": "Bot Info",
-    "es": "Información del Bot",
-    "pt-br": "Informações do Bot"
-  },
-  "BOTINFO_NAME_FIELD": {
-    "en-us": "Bot Name",
-    "es": "Nombre del Bot",
-    "pt-br": "Nome do Bot"
-  },
-  "BOTINFO_VERSION_FIELD": {
-    "en-us": "Bot Version",
-    "es": "Versión del bot",
-    "pt-br": "Versão do Bot"
-  },
-  "BOTINFO_CREATION_FIELD": {
-    "en-us": "Creation Date",
-    "es": "Fecha de Creación",
-    "pt-br": "Data de Criação"
-  },
-  "BOTINFO_SERVERS_FIELD": {
-    "en-us": "Servers",
-    "es": "Servidores",
-    "pt-br": "Servidores"
-  },
-  "BOTINFO_SERVERS_FIELD_DESC": {
-    "en-us": "The bot is currently on **{SERVERS}** servers.",
-    "es": "El bot se encuentra actualmente en **{SERVERS}** servidores.",
-    "pt-br": "O bot está em atualmente **{SERVERS}** servidores."
-  },
-  "BOTINFO_INVITES_BOT": {
-    "en-us": "Invite Bot",
-    "es": "Invitar al Bot",
-    "pt-br": "Convidar Bot"
-  },
-  "BOTINFO_INVITES_SUPPORT": {
-    "en-us": "Support Server",
-    "es": "Servidor de Soporte",
-    "pt-br": "Servidor de Suporte"
-  },
-
-  "COMPONENTS": {
-    "EMOJI_VIEW": {
-      "en-us": "View",
-      "es": "Vista",
-      "pt-br": "Visualizar"
+  "BOTINFO": {
+    "TITLE": {
+      "en-US": "Bot Info",
+      "es-ES": "Información del Bot",
+      "pt-BR": "Informações do Bot"
     },
-    "EMOJI_EDIT": {
-      "en-us": "Edit",
-      "es": "Editar",
-      "pt-br": "Editar"
+    "NAME_FIELD": {
+      "en-US": "Bot Name",
+      "es-ES": "Nombre del Bot",
+      "pt-BR": "Nome do Bot"
     },
-    "EMOJI_EDIT_NAME": {
-      "en-us": "Rename",
-      "es": "Rebautizar",
-      "pt-br": "Renomear"
+    "VERSION_FIELD": {
+      "en-US": "Bot Version",
+      "es-ES": "Versión del bot",
+      "pt-BR": "Versão do Bot"
     },
-    "EMOJI_EDIT_ROLES": {
-      "en-us": "Edit Roles",
-      "es": "Editar Roles",
-      "pt-br": "Editar Cargos"
+    "CREATION_FIELD": {
+      "en-US": "Creation Date",
+      "es-ES": "Fecha de Creación",
+      "pt-BR": "Data de Criação"
     },
-    "EMOJI_EDIT_ROLES_ADD": {
-      "en-us": "Add Role",
-      "es": "Agregar Rol",
-      "pt-br": "Adicionar Cargo"
+    "SERVERS_FIELD": {
+      "en-US": "Servers",
+      "es-ES": "Servidores",
+      "pt-BR": "Servidores"
     },
-    "EMOJI_EDIT_ROLES_REMOVE": {
-      "en-us": "Remove Role",
-      "es": "Eliminar Rol",
-      "pt-br": "Remover Cargo"
+    "SERVERS_FIELD_DESC": {
+      "en-US": "The bot is currently on **{SERVERS}** servers.",
+      "es-ES": "El bot se encuentra actualmente en **{SERVERS}** servidores.",
+      "pt-BR": "O bot está em atualmente **{SERVERS}** servidores."
     },
-    "EMOJI_EDIT_ROLES_RESET": {
-      "en-us": "Reset Roles",
-      "es": "Restablecer Roles",
-      "pt-br": "Redefinir Cargos"
+    "MEMBERS_FIELD": {
+      "en-US": "Members",
+      "es-ES": "Miembros",
+      "pt-BR": "Membros"
     },
-    "EMOJI_EDIT_DELETE": {
-      "en-us": "Delete Emoji",
-      "es": "Borrar Emoji",
-      "pt-br": "Deletar Emoji"
+    "MEMBERS_FIELD_DESC": {
+      "en-US": "There are currently **{MEMBERS}** members in total across all guilds.",
+      "es-ES": "Actualmente hay ** {MIEMBROS} ** miembros en total en todos los servidores.",
+      "pt-BR": "Existem atualmente **{MEMBERS}** membros no total em todas os servidores."
     },
-    "EMOJI_EDIT_DELETE_CONFIRM": {
-      "en-us": "Yes",
-      "es": "Sí",
-      "pt-br": "Sim"
+    "INVITES_BOT": {
+      "en-US": "Invite Bot",
+      "es-ES": "Invitar al Bot",
+      "pt-BR": "Convidar Bot"
+    },
+    "INVITES_SUPPORT": {
+      "en-US": "Support Server",
+      "es-ES": "Servidor de Soporte",
+      "pt-BR": "Servidor de Suporte"
     }
   },
-  "EMOJI_FIELD_NAME": {
-    "en-us": "Name",
-    "es": "Nombre",
-    "pt-br": "Nome"
+
+  "COMPONENT": {
+    "EMOJI": {
+      "VIEW": {
+        "en-US": "View",
+        "es-ES": "Vista",
+        "pt-BR": "Visualizar"
+      },
+      "EDIT": {
+        "en-US": "Edit",
+        "es-ES": "Editar",
+        "pt-BR": "Editar"
+      },
+      "EDIT_NAME": {
+        "en-US": "Rename",
+        "es-ES": "Rebautizar",
+        "pt-BR": "Renomear"
+      },
+      "EDIT_ROLES": {
+        "en-US": "Edit Roles",
+        "es-ES": "Editar Roles",
+        "pt-BR": "Editar Cargos"
+      },
+      "EDIT_ROLES_ADD": {
+        "en-US": "Add Role",
+        "es-ES": "Agregar Rol",
+        "pt-BR": "Adicionar Cargo"
+      },
+      "EDIT_ROLES_REMOVE": {
+        "en-US": "Remove Role",
+        "es-ES": "Eliminar Rol",
+        "pt-BR": "Remover Cargo"
+      },
+      "EDIT_ROLES_RESET": {
+        "en-US": "Reset Roles",
+        "es-ES": "Restablecer Roles",
+        "pt-BR": "Redefinir Cargos"
+      },
+      "EDIT_DELETE": {
+        "en-US": "Delete Emoji",
+        "es-ES": "Borrar Emoji",
+        "pt-BR": "Deletar Emoji"
+      },
+      "EDIT_DELETE_CONFIRM": {
+        "en-US": "Yes",
+        "es-ES": "Sí",
+        "pt-BR": "Sim"
+      }
+    }
   },
-  "EMOJI_FIELD_ID": {
-    "en-us": "ID",
-    "es": "ID",
-    "pt-br": "ID"
+
+  "ECHO": {
+    "ERROR": {}
   },
-  "EMOJI_FIELD_ROLES": {
-    "en-us": "Roles",
-    "es": "Roles",
-    "pt-br": "Cargos"
+
+  "EMOJI": {
+    "FIELD_NAME": {
+      "en-US": "Name",
+      "es-ES": "Nombre",
+      "pt-BR": "Nome"
+    },
+    "FIELD_ID": {
+      "en-US": "ID",
+      "es-ES": "ID",
+      "pt-BR": "ID"
+    },
+    "FIELD_ROLES": {
+      "en-US": "Roles",
+      "es-ES": "Roles",
+      "pt-BR": "Cargos"
+    },
+    "EDIT_EDITING": {
+      "en-US": "Editing emoji",
+      "es-ES": "Edición de emoji",
+      "pt-BR": "Editando emoji"
+    },
+    "EDIT_NAME": {
+      "en-US": "Renaming emoji",
+      "es-ES": "Renombrar emoji",
+      "pt-BR": "Renomeando emoji"
+    },
+    "EDIT_NAME_INVALID": {
+      "en-US": "Invalid Name",
+      "es-ES": "Nombre Invalido",
+      "pt-BR": "Nome Inválido"
+    },
+    "EDITED_NAME": {
+      "en-US": "Renamed emoji",
+      "es-ES": "Emoji renombrado",
+      "pt-BR": "Emoji renomeado"
+    },
+    "EDITED_NAME_REPEAT": {
+      "en-US": "Renamed emoji, enter a name to rename again",
+      "es-ES": "Emoji renombrado, ingrese un nombre para cambiar el nombre nuevamente",
+      "pt-BR": "Emoji renomeado, digite um nome para renomear novamente"
+    },
+    "EDIT_ROLES_INVALID": {
+      "en-US": "Invalid role",
+      "es-ES": "Role invalido",
+      "pt-BR": "Cargo inválido"
+    },
+    "EDIT_ROLES_RESETED": {
+      "en-US": "Reseted emoji's roles",
+      "es-ES": "Roles de emoji restablecidos",
+      "pt-BR": "Cargos do emoji redefinidos"
+    },
+    "EDITED_ROLES": {
+      "en-US": "Edited emoji's roles",
+      "es-ES": "Roles de emoji editado",
+      "pt-BR": "Cargos do emoji editado"
+    },
+    "EDIT_DELETING": {
+      "en-US": "Deleting emoji",
+      "es-ES": "Eliminando emoji",
+      "pt-BR": "Deletando emoji"
+    },
+    "EDIT_DELETING_DESC": {
+      "en-US": "Are you sure you want to delete this emoji?",
+      "es-ES": "¿Estás seguro de que quieres eliminar este emoji?",
+      "pt-BR": "Tem certeza que deseja deletar este emoji?"
+    },
+    "EDIT_DELETED": {
+      "en-US": "Emoji deleted",
+      "es-ES": "Emoji eliminado",
+      "pt-BR": "Emoji deletado"
+    },
+    "EDITING_ROLES": {
+      "en-US": "Editing emoji's roles",
+      "es-ES": "Editando los roles de emoji",
+      "pt-BR": "Editando os cargos do emoji"
+    },
+    "EDIT_ROLES_ADDING": {
+      "en-US": "Enter a role to add it to the emoji",
+      "es-ES": "Ingrese un rol para agregarlo al emoji",
+      "pt-BR": "Digite um cargo para adicioná-lo ao emoji"
+    },
+    "EDIT_ROLES_ADD_INVALID": {
+      "en-US": "Invalid role",
+      "es-ES": "Role invalido",
+      "pt-BR": "Cargo inválido"
+    },
+    "EDITED_ROLES_ADD_REPEAT": {
+      "en-US": "Role added to emoji, enter another role to add it",
+      "es-ES": "Rol agregado a emoji, ingrese otro rol para agregarlo",
+      "pt-BR": "Cargo adicionado ao emoji, digite outro cargo para adicioná-lo"
+    },
+    "EDIT_ROLES_ADDED_ALREADY": {
+      "en-US": "This role is already defined",
+      "es-ES": "Este rol ya está definido",
+      "pt-BR": "Este cargo já está definido"
+    },
+    "EDIT_ROLES_REMOVING": {
+      "en-US": "Enter a role to remove it from the emoji",
+      "es-ES": "Ingresa un rol para eliminarlo del emoji",
+      "pt-BR": "Digite um cargo para removê-lo do emoji"
+    },
+    "EDITED_ROLES_REMOVE_REPEAT": {
+      "en-US": "Role removed from emoji, enter another role to remove it",
+      "es-ES": "Rol eliminado de emoji, ingrese otro rol para eliminarlo",
+      "pt-BR": "Cargo removido do emoji, digite outro cargo para removê-lo"
+    },
+    "EDIT_ROLES_REMOVE_INVALID": {
+      "en-US": "Invalid role",
+      "es-ES": "Role invalido",
+      "pt-BR": "Cargo inválido"
+    },
+    "EDIT_ROLES_REMOVED": {
+      "en-US": "This role is already not defined",
+      "es-ES": "Este rol ya no está definido",
+      "pt-BR": "Este cargo já não está definido"
+    },
+    "EDIT_ROLES_REMOVED_ALREADY": {
+      "en-US": "This role is already not defined",
+      "es-ES": "Este rol ya no está definido",
+      "pt-BR": "Este cargo já não está definido"
+    },
+    "VIEW_VIEWING": {
+      "en-US": "Viewing emoji",
+      "es-ES": "Viendo emoji",
+      "pt-BR": "Visualizando emoji"
+    },
+    "UNALLOWED_SERVER": {
+      "en-US": "You are not allowed to edit an emoji from another server.",
+      "es-ES": "No puedes editar un emoji de otro servidor.",
+      "pt-BR": "Você não tem permissão para editar um emoji de outro servidor."
+    }
   },
-  "EMOJI_EDIT_EDITING": {
-    "en-us": "Editing emoji",
-    "es": "Edición de emoji",
-    "pt-br": "Editando emoji"
-  },
-  "EMOJI_EDIT_NAME": {
-    "en-us": "Renaming emoji",
-    "es": "Renombrar emoji",
-    "pt-br": "Renomeando emoji"
-  },
-  "EMOJI_EDIT_NAME_INVALID": {
-    "en-us": "Invalid Name",
-    "es": "Nombre Invalido",
-    "pt-br": "Nome Inválido"
-  },
-  "EMOJI_EDITED_NAME": {
-    "en-us": "Renamed emoji",
-    "es": "Emoji renombrado",
-    "pt-br": "Emoji renomeado"
-  },
-  "EMOJI_EDITED_NAME_REPEAT": {
-    "en-us": "Renamed emoji, enter a name to rename again",
-    "es": "Emoji renombrado, ingrese un nombre para cambiar el nombre nuevamente",
-    "pt-br": "Emoji renomeado, digite um nome para renomear novamente"
-  },
-  "EMOJI_EDIT_ROLES_INVALID": {
-    "en-us": "Invalid role",
-    "es": "Role invalido",
-    "pt-br": "Cargo inválido"
-  },
-  "EMOJI_EDIT_ROLES_RESETED": {
-    "en-us": "Reseted emoji's roles",
-    "es": "Roles de emoji restablecidos",
-    "pt-br": "Cargos do emoji redefinidos"
-  },
-  "EMOJI_EDITED_ROLES": {
-    "en-us": "Edited emoji's roles",
-    "es": "Roles de emoji editado",
-    "pt-br": "Cargos do emoji editado"
-  },
-  "EMOJI_EDIT_DELETING": {
-    "en-us": "Deleting emoji",
-    "es": "Eliminando emoji",
-    "pt-br": "Deletando emoji"
-  },
-  "EMOJI_EDIT_DELETING_DESC": {
-    "en-us": "Are you sure you want to delete this emoji?",
-    "es": "¿Estás seguro de que quieres eliminar este emoji?",
-    "pt-br": "Tem certeza que deseja deletar este emoji?"
-  },
-  "EMOJI_EDIT_DELETED": {
-    "en-us": "Emoji deleted",
-    "es": "Emoji eliminado",
-    "pt-br": "Emoji deletado"
-  },
-  "EMOJI_EDITING_ROLES": {
-    "en-us": "Editing emoji's roles",
-    "es": "Editando los roles de emoji",
-    "pt-br": "Editando os cargos do emoji"
-  },
-  "EMOJI_EDIT_ROLES_ADDING": {
-    "en-us": "Enter a role to add it to the emoji",
-    "es": "Ingrese un rol para agregarlo al emoji",
-    "pt-br": "Digite um cargo para adicioná-lo ao emoji"
-  },
-  "EMOJI_EDIT_ROLES_ADD_INVALID": {
-    "en-us": "Invalid role",
-    "es": "Role invalido",
-    "pt-br": "Cargo inválido"
-  },
-  "EMOJI_EDITED_ROLES_ADD_REPEAT": {
-    "en-us": "Role added to emoji, enter another role to add it",
-    "es": "Rol agregado a emoji, ingrese otro rol para agregarlo",
-    "pt-br": "Cargo adicionado ao emoji, digite outro cargo para adicioná-lo"
-  },
-  "EMOJI_EDIT_ROLES_ADDED_ALREADY": {
-    "en-us": "This role is already defined",
-    "es": "Este rol ya está definido",
-    "pt-br": "Este cargo já está definido"
-  },
-  "EMOJI_EDIT_ROLES_REMOVING": {
-    "en-us": "Enter a role to remove it from the emoji",
-    "es": "Ingresa un rol para eliminarlo del emoji",
-    "pt-br": "Digite um cargo para removê-lo do emoji"
-  },
-  "EMOJI_EDITED_ROLES_REMOVE_REPEAT": {
-    "en-us": "Role removed from emoji, enter another role to remove it",
-    "es": "Rol eliminado de emoji, ingrese otro rol para eliminarlo",
-    "pt-br": "Cargo removido do emoji, digite outro cargo para removê-lo"
-  },
-  "EMOJI_EDIT_ROLES_REMOVE_INVALID": {
-    "en-us": "Invalid role",
-    "es": "Role invalido",
-    "pt-br": "Cargo inválido"
-  },
-  "EMOJI_EDIT_ROLES_REMOVED": {
-    "en-us": "This role is already not defined",
-    "es": "Este rol ya no está definido",
-    "pt-br": "Este cargo já não está definido"
-  },
-  "EMOJI_EDIT_ROLES_REMOVED_ALREADY": {
-    "en-us": "This role is already not defined",
-    "es": "Este rol ya no está definido",
-    "pt-br": "Este cargo já não está definido"
-  },
-  "EMOJI_VIEW_VIEWING": {
-    "en-us": "Viewing emoji",
-    "es": "Viendo emoji",
-    "pt-br": "Visualizando emoji"
-  },
-  "EMOJI_UNALLOWED_SERVER": {
-    "en-us": "You are not allowed to edit an emoji from another server.",
-    "es": "No puedes editar un emoji de otro servidor.",
-    "pt-br": "Você não tem permissão para editar um emoji de outro servidor."
+
+  "KILL": {
+    "DIED": {
+      "en-US": "Fell out of the world.",
+      "pt-BR": "Caiu para fora do mundo.",
+      "es-ES": "Cayó para fuera del mundo."
+    }
   },
 
   "LANGUAGE": {
     "CHANGED": {
-      "en-us": "Changed language",
-      "es": "Idioma cambiado",
-      "pt-br": "Idioma alterado"
+      "en-US": "Changed language",
+      "es-ES": "Idioma cambiado",
+      "pt-BR": "Idioma alterado"
     },
     "CHANGED_TO": {
-      "en-us": "The guild language has been set to `{LANG}`.",
-      "es": "El idioma del servidor se ha establecido en `{LANG}`.",
-      "pt-br": "O idioma do servidor foi definido para `{LANG}`."
+      "en-US": "The language of the bot on this server has been set to `{LANG}`.",
+      "es-ES": "El idioma del bot en este servidor se ha establecido en `{LANG}`.",
+      "pt-BR": "O idioma do bot neste servidor foi definido para `{LANG}`."
     },
     "CURRENT": {
-      "en-us": "Current language",
-      "es": "Idioma actual",
-      "pt-br": "Idioma atual"
+      "en-US": "Current language",
+      "es-ES": "Idioma actual",
+      "pt-BR": "Idioma atual"
     },
     "CURRENT_IS": {
-      "en-us": "The current guild language is: `{LANG}`.",
-      "es": "El idioma actual del servidor es: `{LANG}`.",
-      "pt-br": "O idioma atual do servidor é: `{LANG}`."
+      "en-US": "The current language of the bot on this server is: `{LANG}`.",
+      "es-ES": "El idioma actual del bot en este servidor es: `{LANG}`.",
+      "pt-BR": "O idioma atual do bot neste servidor é: `{LANG}`."
     },
     "NOT_SUPPORTED": {
-      "en-us": "This bot does not have support for `{LANGUAGE}` at this time.",
-      "es": "Este bot no es compatible con `{LANGUAGE}` en este momento.",
-      "pt-br": "Este bot não é compatível com `{LANGUAGE}` por enquanto."
+      "en-US": "The bot currently does not have support for `{LANG}`.",
+      "es-ES": "Actualmente, el bot no tiene soporte para `{LANG}`.",
+      "pt-BR": "O bot atualmente não tem suporte para `{LANG}`."
     }
   },
 
   "PING": {
     "TITLE": {
-      "en-us": "{E} Pong!",
-      "es": "{E} Pong!",
-      "pt-br": "{E} Pong!"
+      "en-US": "Pong!",
+      "es-ES": "Pong!",
+      "pt-BR": "Pong!"
     },
-    "RESPONSE_TIME": {
-      "en-us": "{E} Response Time",
-      "es": "{E} Tiempo de Respuesta",
-      "pt-br": "{E} Tempo de Resposta"
+    "DEFERRED": {
+      "en-US": "Deferred",
+      "es-ES": "Diferido",
+      "pt-BR": "Adiado"
     },
-    "EDITING_TIME": {
-      "en-us": "{E} Editing Time",
-      "es": "{E} Tiempo de Edición",
-      "pt-br": "{E} Tempo de Edição"
+    "TIME": {
+      "DEFERMENT": {
+        "en-US": "Deferment Time",
+        "es-ES": "Tiempo de Aplazamiento",
+        "pt-BR": "Tempo de Adiamento"
+      },
+      "EDITING": {
+        "en-US": "Editing Time",
+        "es-ES": "Tiempo de Edición",
+        "pt-BR": "Tempo de Edição"
+      },
+      "RESPONSE": {
+        "en-US": "Response Time",
+        "es-ES": "Tiempo de Respuesta",
+        "pt-BR": "Tempo de Resposta"
+      }
     },
     "API_LATENCY": {
-      "en-us": "{E} API Latency",
-      "es": "{E} Latencia de API",
-      "pt-br": "{E} Latência da API"
+      "en-US": "API Latency",
+      "es-ES": "Latencia de API",
+      "pt-BR": "Latência da API"
     },
     "UPTIME": {
-      "en-us": "{E} Uptime",
-      "es": "{E} Tiempo de Actividad",
-      "pt-br": "{E} Tempo de Atividade"
+      "en-US": "Uptime",
+      "es-ES": "Tiempo de Actividad",
+      "pt-BR": "Tempo de Atividade"
+    },
+    "SHARD": {
+      "en-US": "Shard",
+      "es-ES": "Shard",
+      "pt-BR": "Shard"
     }
   },
 
-  "PERMS": {
+  "PERM": {
     "REQUIRES": {
-      "en-us": "Requires `{PERM}` permission.",
-      "es": "Requiere permiso de `{PERM}`.",
-      "pt-br": "Requer permissão de `{PERM}`."
+      "en-US": "Requires the `{PERM}` permission.",
+      "es-ES": "Requiere permiso `{PERM}`.",
+      "pt-BR": "Requer permissão `{PERM}`."
+    },
+    "ROLE_REQUIRES": {
+      "en-US": "{ROLE} requires the `{PERM}` permission for the interaction to work properly.",
+      "es-ES": "{ROLE} requiere el permiso `{PERM}` para que la interacción funcione correctamente.",
+      "pt-BR": "{ROLE} requer a permissão `{PERM}` para que a interação funcione corretamente."
     },
     "MANAGE_EMOJIS": {
-      "en-us": "Manage Emojis",
-      "es": "Gestionar Emojis",
-      "pt-br": "Gerenciar Emojis"
+      "en-US": "Manage Emojis",
+      "es-ES": "Gestionar Emojis",
+      "pt-BR": "Gerenciar Emojis"
+    },
+    "MANAGE_GUILD": {
+      "en-US": "Manage Guild",
+      "es-ES": "Administrar Servidor",
+      "pt-BR": "Gerenciar Servidor"
     },
     "MANAGE_MESSAGES": {
-      "en-us": "Manage Messages",
-      "es": "Gestionar Mensajes",
-      "pt-br": "Gerenciar Mensagens"
+      "en-US": "Manage Messages",
+      "es-ES": "Gestionar Mensajes",
+      "pt-BR": "Gerenciar Mensagens"
     },
     "MANAGE_ROLES": {
-      "en-us": "Manage Roles",
-      "es": "Gestionar Roles",
-      "pt-br": "Gerenciar Cargos"
+      "en-US": "Manage Roles",
+      "es-ES": "Gestionar Roles",
+      "pt-BR": "Gerenciar Cargos"
+    },
+    "USE_EXTERNAL_EMOJIS": {
+      "en-US": "Use External Emojis",
+      "es-ES": "Usar Emojis Externos",
+      "pt-BR": "Usar Emojis Externos"
+    }
+  },
+
+  "ERROR": {
+    "DM": {
+      "en-US": "This command cannot be used in DMs.",
+      "es-ES": "Este comando no se puede utilizar en DM.",
+      "pt-BR": "Este comando não pode ser usado em DMs."
+    },
+    "TIMED_OUT": {
+      "en-US": "Timed out",
+      "es-ES": "Tiempo agotado",
+      "pt-BR": "Tempo esgotado"
+    },
+    "EXECUTING_INTERACTION": {
+      "en-US": "An error occurred while executing this interaction.",
+      "es-ES": "Se produjo un error al ejecutar esta interacción.",
+      "pt-BR": "Ocorreu um erro ao executar esta interação."
+    },
+    "UNALLOWED": {
+      "CHAT": {
+        "en-US": "You are not allowed to use this command in this chat.",
+        "es-ES": "No se le permite utilizar este comando en este chat.",
+        "pt-BR": "Você não tem permissão para usar este comando neste chat."
+      },
+      "COMMAND": {
+        "en-US": "You are not allowed to interact with this command.",
+        "es-ES": "No se le permite interactuar con este comando.",
+        "pt-BR": "Você não tem permissão para interagir com este comando."
+      }
     }
   },
 
   "GENERIC": {
     "COMPONENT_BACK": {
-      "en-us": "Back",
-      "es": "Vuelve",
-      "pt-br": "Voltar"
+      "en-US": "Back",
+      "es-ES": "Vuelve",
+      "pt-BR": "Voltar"
     },
     "COMPONENT_REPEAT": {
-      "en-us": "Repeat",
-      "es": "Repetir",
-      "pt-br": "Repetir"
+      "en-US": "Repeat",
+      "es-ES": "Repetir",
+      "pt-BR": "Repetir"
     },
     "COMPONENT_MESSAGE_DELETE": {
-      "en-us": "Delete Message",
-      "es": "Borrar Mensaje",
-      "pt-br": "Deletar Mensagem"
+      "en-US": "Delete Message",
+      "es-ES": "Borrar Mensaje",
+      "pt-BR": "Deletar Mensagem"
+    },
+    "CURRENT": {
+      "en-US": "Current",
+      "es-ES": "Actual",
+      "pt-BR": "Atual"
+    },
+    "TOTAL": {
+      "en-US": "Total",
+      "es-ES": "Total",
+      "pt-BR": "Total"
     },
     "REQUESTED_BY": {
-      "en-us": "Requested by {USER}",
-      "es": "Solicitado por {USER}",
-      "pt-br": "Solicitado por {USER}"
+      "en-US": "Requested by {USER}",
+      "es-ES": "Solicitado por {USER}",
+      "pt-BR": "Solicitado por {USER}"
     },
     "INTERACTED_BY": {
-      "en-us": "Interacted by {USER}",
-      "es": "Interactuado por {USER}",
-      "pt-br": "Interagido por {USER}"
-    },
-    "SUCCESS": {
-      "en-us": "Success",
-      "es": "Éxito",
-      "pt-br": "Êxito"
-    },
-    "TIME_OUT": {
-      "en-us": "Time's out",
-      "es": "Tiempo agotado",
-      "pt-br": "Tempo esgotado"
+      "en-US": "Interacted by {USER}",
+      "es-ES": "Interactuado por {USER}",
+      "pt-BR": "Interagido por {USER}"
     },
     "ERROR": {
-      "en-us": "Error",
-      "es": "Error",
-      "pt-br": "Erro"
+      "en-US": "Error",
+      "es-ES": "Error",
+      "pt-BR": "Erro"
     },
-    "ERROR_COMMAND": {
-      "en-us": "You are not allowed to interact with this command.",
-      "es": "No se le permite interactuar con este comando.",
-      "pt-br": "Você não tem permissão para interagir com este comando."
+    "SUCCESS": {
+      "en-US": "Success",
+      "es-ES": "Éxito",
+      "pt-BR": "Êxito"
     },
-    "UNALLOWED_CHAT": {
-      "en-us": "You are not allowed to use this command in this chat.",
-      "es": "No se le permite utilizar este comando en este chat.",
-      "pt-br": "Você não tem permissão para usar este comando neste chat."
-    },
-    "NO_DM": {
-      "en-us": "This command cannot be used in DMs.",
-      "es": "Este comando no se puede utilizar en DM.",
-      "pt-br": "Este comando não pode ser usado em DMs."
+    "WARNING": {
+      "en-US": "Warning",
+      "es-ES": "Advertencia",
+      "pt-BR": "Aviso"
     },
     "WIP": {
-      "en-us": "Work in progress",
-      "es": "En desarrollo",
-      "pt-br": "Em desenvolvimento"
+      "en-US": "Work in progress",
+      "es-ES": "En desarrollo",
+      "pt-BR": "Em desenvolvimento"
     },
     "WIP_COMMAND": {
-      "en-us": "This command is currently under development",
-      "es": "Este comando está actualmente en desarrollo.",
-      "pt-br": "Este comando está atualmente em desenvolvimento."
+      "en-US": "This command is currently under development.",
+      "es-ES": "Este comando está actualmente en desarrollo.",
+      "pt-BR": "Este comando está atualmente em desenvolvimento."
     }
   }
 }

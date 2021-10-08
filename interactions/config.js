@@ -1,382 +1,292 @@
-const Discord = require('discord.js');
-const tc = require('tinycolor2');
-const utils = require('../utils/utils.js');
-const pm2 = require('pm2');
-require('colors');
-require('log-timestamp');
+const { Collection } = require('discord.js');
+const fs = require('node:fs');
+const { botOwners } = require('../botdefaults');
 
 module.exports = {
-  name: 'INTERACTION_CREATE',
-  async execute(client, interaction) {
-    function getTS(path, values) {
-      return utils.getTSE(interaction.guild_id, path, values);
-    }
-    var guildI = client.guilds.cache.get(interaction.guild_id);
-
-    if (guildI) {
-      var uI = guildI.members.cache.get(interaction.member.user.id);
-      var uIF = await client.users.fetch(interaction.member.user.id);
-    }
-
-    if (interaction.data.name) {
-      var command = interaction.data.name.toLowerCase();
-
-      args = interaction.data.options;
-      if (args) {
-        if (args.find((arg) => arg['options'])) {
-          var argsO = args
-            .find((arg) => arg['options'])
-            .options.find((arg) => arg['options']);
-        }
-      }
-
-      if (guildI) {
-        var getId = await client.api
-          .applications(client.user.id)
-          .commands.get();
-        var getIdG = await client.api
-          .applications(client.user.id)
-          .guilds(guildI.id)
-          .commands.get();
-      }
-
-      if (command == 'config') {
-        if (!guildI)
-          return utils.iCP(
-            client,
-            0,
-            interaction,
-            [0, await getTS(['GENERIC', 'NO_DM'])],
-            1,
-            0,
-            1
-          );
-
-        if (uI.id != '205130563424616450')
-          return utils.iCP(
-            client,
-            0,
-            interaction,
-            [
-              await getTS(['GENERIC', 'ERROR']),
-              'Somente o dono pode usar esse comando.',
-            ],
-            1,
-            0,
-            1
-          );
-
-        if (
-          args
-            .find((arg) => arg['options'])
-            .options.find((arg) => arg.name.toLowerCase() == 'delete')
-        ) {
-          iO = argsO.options.find((arg) => arg.name == 'id');
-
-          var sO = [];
-          if (argsO.options.find((arg) => arg.name == 'server')) {
-            sO = argsO.options.find((arg) => arg.name == 'server').value;
-          }
-
-          var getIdG = await client.api
-            .applications(client.user.id)
-            .guilds(sO)
-            .commands.get();
-
-          if (!iO)
-            return utils.iCP(
-              client,
-              0,
-              interaction,
-              [await getTS(['GENERIC', 'ERROR']), 'ID não especificado.'],
-              1,
-              0,
-              1
-            );
-
-          if (
-            !getId.find((f) => f.id == iO.value) &&
-            !getIdG.find((f) => f.id == iO.value)
-          )
-            return utils.iCP(
-              client,
-              0,
-              interaction,
-              [await getTS(['GENERIC', 'ERROR']), 'Interação não encontrada.'],
-              1,
-              0,
-              1
-            );
-
-          if (sO) {
-            client.api
-              .applications(client.user.id)
-              .guilds(sO)
-              .commands(iO.value)
-              .delete();
-          } else {
-            client.api.applications(client.user.id).commands(iO.value).delete();
-          }
-
-          utils.iCP(
-            client,
-            0,
-            interaction,
-            [
-              await getTS(['GENERIC', 'SUCCESS']),
-              'Interação deletada.',
-              '00ff00',
-            ],
-            1,
-            0,
-            1
-          );
-        }
-
-        if (
-          args
-            .find((arg) => arg['options'])
-            .options.find((arg) => arg.name.toLowerCase() == 'list')
-        ) {
-          var pBoolean = false;
-          if (argsO) {
-            if (argsO.options.find((arg) => arg.name == 'perms')) {
-              pBoolean = argsO.options.find((arg) => arg.name == 'perms').value;
-            } else {
-              var sO = argsO.options.find((arg) => arg.name == 'server');
-            }
-          }
-
-          var guildL = guildI.id;
-          if (sO) {
-            if (client.guilds.cache.get(sO.value)) {
-              guildL = client.guilds.cache.get(sO.value).id;
-              getIdG = await client.api
-                .applications(client.user.id)
-                .guilds(guildL)
-                .commands.get();
-            } else {
-              return utils.iCP(
-                client,
-                0,
-                interaction,
-                [await getTS(['GENERIC', 'ERROR']), 'Servidor inválido.'],
-                1,
-                0,
-                1
-              );
-            }
-          }
-
-          var getIdPG = await client.api
-            .applications(client.user.id)
-            .guilds(guildL)
-            .commands.permissions.get();
-
-          if (pBoolean == true) {
-            console.log(getIdPG.find((arg) => arg['permissions']));
-          } else {
-            console.table(getId);
-            console.table(getIdG);
-          }
-          utils.iCP(
-            client,
-            0,
-            interaction,
-            [
-              await getTS(['GENERIC', 'SUCCESS']),
-              'Interações listadas no console.',
-              '00ff00',
-            ],
-            1,
-            0,
-            1
-          );
-        }
-
-        if (
-          args
-            .find((arg) => arg['options'])
-            .options.find((arg) => arg.name.toLowerCase() == 'permission')
-        ) {
-          var iO = argsO.options.find((arg) => arg.name == 'id');
-          var rO = argsO.options.find((arg) => arg.name == 'restriction');
-          var sO = argsO.options.find((arg) => arg.name == 'server');
-
-          var rC;
-          if (rO) {
-            rC = guildI.members.cache.get(rO.value);
-            var pType = 1;
-            if (!rC) {
-              rC = guildI.roles.cache.get(rO.value);
-              pType = 2;
-              if (!rC.id) {
-                return utils.iCP(
-                  client,
-                  0,
-                  interaction,
-                  [
-                    await getTS(['GENERIC', 'ERROR']),
-                    'Cargo ou usuário inválido.',
-                  ],
-                  1,
-                  0,
-                  1
-                );
-              }
-            }
-          }
-
-          var guildP = guildI.id;
-          if (sO) {
-            if (client.guilds.cache.get(sO.value)) {
-              guildP = client.guilds.cache.get(sO.value).id;
-            } else {
-              return utils.iCP(
-                client,
-                0,
-                interaction,
-                [await getTS(['GENERIC', 'ERROR']), 'Servidor inválido.'],
-                1,
-                0,
-                1
-              );
-            }
-          }
-
-          if (!iO)
-            return utils.iCP(
-              client,
-              0,
-              interaction,
-              [await getTS(['GENERIC', 'ERROR']), 'ID não especificado.'],
-              1,
-              0,
-              1
-            );
-
-          if (
-            !getId.find((id) => id.id == iO.value) &&
-            !getIdG.find((id) => id.id == iO.value)
-          )
-            return utils.iCP(
-              client,
-              0,
-              interaction,
-              [await getTS(['GENERIC', 'ERROR']), 'Interação não encontrada.'],
-              1,
-              0,
-              1
-            );
-
-          if (rO) {
-            client.api
-              .applications(client.user.id)
-              .guilds(guildP)
-              .commands(iO.value)
-              .permissions.put({
-                data: {
-                  permissions: [
+  data: [
+    {
+      name: 'config',
+      description: 'Configure the bot. (Bot owner only)',
+      options: [
+        {
+          name: 'interaction',
+          description: 'Configura as interações. (Bot owner only)',
+          type: 'SUB_COMMAND_GROUP',
+          options: [
+            {
+              name: 'delete',
+              description: 'Deletes an interaction. (Bot owner only)',
+              type: 'SUB_COMMAND',
+              options: [
+                {
+                  name: 'id',
+                  description: 'Interaction ID.',
+                  type: 'STRING',
+                  required: true,
+                },
+                {
+                  name: 'server',
+                  description: 'Server ID. Defaults to global command.',
+                  type: 'STRING',
+                  required: false,
+                },
+                {
+                  name: 'ephemeral',
+                  description:
+                    'Send reply as an ephemeral message. Defaults to true.',
+                  type: 'BOOLEAN',
+                  required: false,
+                },
+              ],
+            },
+            {
+              name: 'list',
+              description:
+                'Lists all interactions and their IDs. (Bot owner only)',
+              type: 'SUB_COMMAND',
+              options: [
+                {
+                  name: 'server',
+                  description: 'Server ID. Defaults to global commands',
+                  type: 'STRING',
+                  required: false,
+                },
+                {
+                  name: 'ephemeral',
+                  description:
+                    'Send reply as an ephemeral message. Defaults to true.',
+                  type: 'BOOLEAN',
+                  required: false,
+                },
+              ],
+            },
+            {
+              name: 'permission',
+              description:
+                'Configura a permissão de uma interação. (Bot owner only)',
+              type: 'SUB_COMMAND',
+              options: [
+                {
+                  name: 'id',
+                  description: 'ID da interação.',
+                  type: 'STRING',
+                  required: true,
+                },
+                {
+                  name: 'restriction',
+                  description: 'O cargo ou usuário que pode usar.',
+                  type: 'MENTIONABLE',
+                  required: false,
+                },
+                {
+                  name: 'server',
+                  description: 'Server ID. Defaults to global commands.',
+                  type: 'STRING',
+                  required: false,
+                },
+                {
+                  name: 'ephemeral',
+                  description:
+                    'Send reply as an ephemeral message. Defaults to true.',
+                  type: 'BOOLEAN',
+                  required: false,
+                },
+              ],
+            },
+            {
+              name: 'update',
+              description: 'Update bot commands. (Bot owner only)',
+              type: 'SUB_COMMAND',
+              options: [
+                {
+                  name: 'id',
+                  description:
+                    'Id of a specific command. Defaults to all commands.',
+                  type: 'STRING',
+                  required: false,
+                },
+                {
+                  name: 'guildonly',
+                  description:
+                    'If guild only or not (global only). Defaults to both.',
+                  type: 'BOOLEAN',
+                  required: false,
+                },
+                {
+                  name: 'ephemeral',
+                  description:
+                    'Send reply as an ephemeral message. Defaults to true.',
+                  type: 'BOOLEAN',
+                  required: false,
+                },
+              ],
+            },
+          ],
+        },
+        {
+          name: 'bot',
+          description: 'Configura o bot. (Bot owner only)',
+          type: 'SUB_COMMAND_GROUP',
+          options: [
+            {
+              name: 'power',
+              description: 'Desliga ou reinicia o bot. (Bot owner only)',
+              type: 'SUB_COMMAND',
+              options: [
+                {
+                  name: 'option',
+                  description: 'Opções.',
+                  type: 'STRING',
+                  choices: [
                     {
-                      id: rC.id,
-                      type: pType,
-                      permission: true,
+                      name: 'Restart',
+                      value: 'restart',
+                    },
+                    {
+                      name: 'Shutdown',
+                      value: 'shutdown',
                     },
                   ],
+                  required: true,
                 },
-              });
+                {
+                  name: 'ephemeral',
+                  description:
+                    'Send reply as an ephemeral message. Defaults to true.',
+                  type: 'BOOLEAN',
+                  required: false,
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+  ],
+  guildOnly: '420007989261500418',
+  async execute(client, interaction, getTS, emb) {
+    var { guild, user, options } = interaction;
+    if (!botOwners.includes(user.id))
+      return interaction.reply('Somente o dono do bot pode usar esse comando.');
+
+    var userO = options?.getUser('user') ?? user;
+    var idO = options?.getString('id');
+    var guildO = options?.getBoolean('guild');
+    var guildOnlyO = options?.getBoolean('guildonly');
+    var ephemeralO = options?.getBoolean('ephemeral') ?? true;
+
+    var appCmds = client.application.commands;
+    var updCmds = [];
+
+    if (interaction.isCommand()) {
+      if (options?.getSubcommandGroup() === 'interaction')
+        if (options?.getSubcommand() === 'delete') {
+          client.application.commands.delete(idO, guildO);
+        } else if (options?.getSubcommand() === 'list') {
+        } else if (options?.getSubcommand() === 'update') {
+          await interaction.deferReply({ ephemeral: ephemeralO });
+
+          try {
+            const interactionFiles = fs
+              .readdirSync('./interactions')
+              .filter((file) => file.endsWith('.js'));
+
+            console.log('Started reloading application commands.'.yellow);
+            for (const file of interactionFiles) {
+              const event = require('../interactions/' + file);
+              const guild = await client.guilds.fetch(event.guildOnly);
+              for (const data of event.data) {
+                var findCmd = idO
+                  ? appCmds.fetch(idO, guild?.id)?.name
+                  : data.name;
+                if (data.name == findCmd) {
+                  if (
+                    event.guildOnly &&
+                    (guildOnlyO == null || guildOnlyO == true)
+                  ) {
+                    await appCmds.create(data, guild?.id);
+                    updCmds = updCmds.concat([[data.name, true, data.type]]);
+                    console.log(('Updated: ' + data.name + ' command').green);
+                  } else if (
+                    !event.guildOnly &&
+                    (guildOnlyO == null || guildOnlyO == false)
+                  ) {
+                    await appCmds.create(data);
+                    updCmds = updCmds.concat([[data.name, false, data.type]]);
+                    console.log(('Updated: ' + data.name + ' command').red);
+                  }
+                }
+              }
+            }
+
+            var updCmdGlobal = updCmds
+              .filter((a) => (!a[1] ? true : false))
+              .map((a) => {
+                if (!a[1])
+                  return (
+                    '**' +
+                    (a[2] == 'MESSAGE'
+                      ? 'Message'
+                      : a[2] == 'USER'
+                      ? 'User'
+                      : 'Chat') +
+                    '**: `' +
+                    a[0] +
+                    '`'
+                  );
+              })
+              .join('\n');
+            var updCmdGuild = updCmds
+              .filter((a) => (a[1] ? true : false))
+              .map((a) => {
+                if (a[1])
+                  return (
+                    '**' +
+                    (a[2] == 'MESSAGE'
+                      ? 'Message'
+                      : a[2] == 'USER'
+                      ? 'User'
+                      : 'Chat') +
+                    '**: `' +
+                    a[0] +
+                    '`'
+                  );
+              })
+              .join('\n');
+
+            console.log('Successfully reloaded application commands.'.green);
+          } catch (err) {
+            console.error(
+              'An error occured while reloading a application command:\n'.red,
+              err
+            );
+            return interaction.editReply({
+              embeds: [
+                emb({
+                  error:
+                    'An error occured while reloading a application command.',
+                }),
+              ],
+            });
+          }
+
+          if (updCmds.length != 0) {
+            emb = emb().setColor('00ff00').setTitle('Updated commands');
+
+            if (updCmdGlobal) {
+              emb().addField('Global Commands', updCmdGlobal, true);
+            }
+            if (updCmdGuild) {
+              emb().addField('Guild Commands', updCmdGuild, true);
+            }
           } else {
-            client.api
-              .applications(client.user.id)
-              .guilds(guildP)
-              .commands(iO.value)
-              .permissions.put({
-                data: {
-                  id: iO.value,
-                },
-              });
+            emb = emb({ type: 'error' }).setDescription('Unknown command.');
           }
-          utils.iCP(
-            client,
-            0,
-            interaction,
-            [
-              await getTS(['GENERIC', 'SUCCESS']),
-              'Permissão da interação alterada.',
-              '00ff00',
-            ],
-            1,
-            0,
-            1
-          );
+
+          interaction.editReply({
+            embeds: [emb],
+          });
         }
-
-        if (
-          args
-            .find((arg) => arg['options'])
-            .options.find((arg) => arg.name.toLowerCase() == 'power')
-        ) {
-          iO = argsO.options.find((arg) => arg['value']);
-
-          if (!iO)
-            return utils.iCP(
-              client,
-              0,
-              interaction,
-              [await getTS(['GENERIC', 'ERROR']), 'Opção não especificada.'],
-              1,
-              0,
-              1
-            );
-
-          if (iO.value == 'shutdown') {
-            client.user.setPresence({
-              activity: { name: 'Desligando...' },
-              status: 'dnd',
-            });
-            pm2.stop(
-              'index.js',
-              utils.iCP(
-                client,
-                0,
-                interaction,
-                [
-                  await getTS(['GENERIC', 'SUCCESS']),
-                  'Desligando...',
-                  '00ff00',
-                ],
-                1,
-                0,
-                1
-              )
-            );
-          }
-
-          if (iO.value == 'restart') {
-            client.user.setPresence({
-              activity: { name: 'Reiniciando...' },
-              status: 'idle',
-            });
-
-            pm2.restart(
-              'index.js',
-              utils.iCP(
-                client,
-                0,
-                interaction,
-                [
-                  await getTS(['GENERIC', 'SUCCESS']),
-                  'Reiniciando...',
-                  '00ff00',
-                ],
-                1,
-                0,
-                1
-              )
-            );
-          }
-        }
-      }
     }
   },
 };

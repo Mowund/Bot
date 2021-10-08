@@ -3,91 +3,25 @@ const tc = require('tinycolor2');
 const utils = require('../utils.js');
 const chalk = require('chalk');
 const { getColorFromURL } = require('color-thief-node');
-const { SlashCommandBuilder } = require('@discordjs/builders');
-const { botOwners } = require('../botdefaults.js');
 require('colors');
 require('log-timestamp');
 
 module.exports = {
-  data: [
-    new SlashCommandBuilder()
-      .setName('color')
-      .setDescription('Role color system.')
-      .addSubcommand((sub) =>
-        sub
-          .setName('change')
-          .setDescription('Changes the color of a color role.')
-          .addStringOption((opt) =>
-            opt.setName('color').setDescription('Any supported color.')
-          )
-          .addUserOption((opt) =>
-            opt
-              .setName('user')
-              .setDescription('An user. (Requires: Manage roles)')
-          )
-          .addBooleanOption((opt) =>
-            opt
-              .setName('ephemeral')
-              .setDescription(
-                'Send reply as an ephemeral message. Defaults to true.'
-              )
-          )
-      )
-      .addSubcommand((sub) =>
-        sub
-          .setName('current')
-          .setDescription('The current color of a color role.')
-          .addUserOption((opt) =>
-            opt.setName('user').setDescription('An user.')
-          )
-          .addBooleanOption((opt) =>
-            opt
-              .setName('ephemeral')
-              .setDescription(
-                'Send reply as an ephemeral message. Defaults to true.'
-              )
-          )
-      )
-      .addSubcommand((sub) =>
-        sub
-          .setName('remove')
-          .setDescription('Deletes a color role.')
-          .addUserOption((opt) =>
-            opt
-              .setName('user')
-              .setDescription('An user. (Requires: Manage roles)')
-          )
-          .addBooleanOption((opt) =>
-            opt
-              .setName('ephemeral')
-              .setDescription(
-                'Send reply as an ephemeral message. Defaults to true.'
-              )
-          )
-      ),
-  ],
-  guildOnly: '420007989261500418',
-  async execute(client, interaction, getTS, emb) {
-    var { user, guild, options } = interaction;
-    var userO = options?.getUser('user') ?? user;
-    var memberO = guild?.members.cache.get(userO.id) ?? userO;
-    var tRoleN = userO ? `USER-${userO.id}` : '';
-    var tRole = guild.roles.cache.find((x) => x.name == tRoleN);
-    var pos = guild.roles.botRoleFor(client.user.id).position;
+  name: '',
+  async execute(client, interaction) {
+    function getTS(path, values) {
+      return utils.getTSE(interaction.guild_id, path, values);
+    }
+    var guildI = client.guilds.cache.get(interaction.guild_id);
+    if (guildI) {
+      var uI = guildI.members.cache.get(interaction.member.user.id);
+      var uIF = await client.users.fetch(interaction.member.user.id);
+      var channelI = guildI.channels.cache.get(interaction.channel_id);
+      var tRoleN = uI ? `USER-${uI.id}` : '';
+      var tRole = guildI.roles.cache.find((x) => x.name == tRoleN);
+      var pos = guildI.me.roles.highest.position;
+    }
 
-    if (!interaction.inGuild())
-      return interaction.reply({
-        embeds: [emb({ type: 'error' }).setDescription(getTS(['ERROR', 'DM']))],
-        ephemeral: true,
-      });
-
-    if (!botOwners.includes(user.id))
-      return interaction.reply({
-        embeds: [emb({ type: 'wip' })],
-        ephemeral: true,
-      });
-
-    console.log(pos);
     function dftCF(disabled) {
       if (!disabled) {
         var disabled = [];
@@ -187,65 +121,107 @@ module.exports = {
       dftC = dftCF([{ id: 'preview', value: true }]);
     }
 
-    if (interaction.isCommand()) {
-      //var alwCH = database.get(guild, 'color_allowed_channels');
-      //if (!alwCH || !alwCH.includes(channelI.id))
-      //  return utils.iCP(
-      //    client,
-      //    0,
-      //    interaction,
-      //    [0, getTS(['ERROR', 'UNALLOWED', 'CHAT'])],
-      //    1,
-      //    0,
-      //    1
-      //  );
+    if (interaction.data.name) {
+      var command = interaction.data.name.toLowerCase();
+      var args = interaction.data.options;
 
-      if (options?.getSubcommand('change')) {
-        var color = options?.getString('color');
-        var pColor = [];
-        if (tRole) {
-          pColor = tc(tRole.hexColor).toHex();
-        }
-        var eTitle = getTS('COLOR_SPECIFIED');
-        if (!color) {
-          var [r, g, b] = await getColorFromURL(
-            userO.avatarURL({ format: 'png' })
-          );
-          color = tc(chalk.rgb(r, g, b)(`rgb(${r}, ${g}, ${b})`)).toHex();
-          eTitle = getTS('COLOR_AVATAR_ESTIMATED');
-        }
-        if (tc(color).isValid()) {
-          var color = tc(color).toHex();
-        } else {
+      if (command == 'color') {
+        if (!guildI)
           return utils.iCP(
             client,
             0,
             interaction,
-            0,
+            [0, getTS(['ERROR', 'DM'])],
             1,
             0,
-            await utils.diEmb(client, 2, interaction, userO)
+            1
           );
-        }
 
-        var color = color.replace('000000', '000001');
-
-        interaction.reply(
-          await utils.diEmb(
+        var alwCH = db.get(guildI, 'color_allowed_channels');
+        if (!alwCH || !alwCH.includes(channelI.id))
+          return utils.iCP(
             client,
-            2,
+            0,
             interaction,
-            userO,
-            [pColor],
-            color,
-            eTitle,
-            0
-          ),
-          dftC
-        );
-      } else if (options?.getSubcommand('current')) {
-        if (tRole) {
-          var color = tc(tRole.hexColor).toHex();
+            [0, getTS(['ERROR', 'UNALLOWED', 'CHAT'])],
+            1,
+            0,
+            1
+          );
+
+        if (args.find((arg) => arg.name == 'change')) {
+          var color = args.find((arg) => arg['options']);
+          var pColor = tRole ? tc(tRole.hexColor).toHex() : [];
+          var eTitle = getTS('COLOR_SPECIFIED');
+          if (color) {
+            if (color.options?.find((arg) => arg.name == 'color')) {
+              color = color.options?.find((arg) => arg.name == 'color').value;
+            }
+          } else {
+            var [r, g, b] = await getColorFromURL(
+              uIF.avatarURL({ format: 'png' })
+            );
+            color = tc(chalk.rgb(r, g, b)(`rgb(${r}, ${g}, ${b})`)).toHex();
+            eTitle = getTS('COLOR_AVATAR_ESTIMATED');
+          }
+          if (tc(color).isValid()) {
+            var color = tc(color).toHex();
+          } else {
+            return utils.iCP(
+              client,
+              0,
+              interaction,
+              0,
+              1,
+              0,
+              await utils.diEmb(client, 2, interaction, uIF)
+            );
+          }
+
+          var color = color.replace('000000', '000001');
+
+          utils.iCP(
+            client,
+            0,
+            interaction,
+            0,
+            0,
+            0,
+            await utils.diEmb(
+              client,
+              2,
+              interaction,
+              uIF,
+              [pColor],
+              color,
+              eTitle,
+              0
+            ),
+            dftC
+          );
+        } else if (args.find((arg) => arg.name == 'current')) {
+          if (tRole) {
+            var color = tc(tRole.hexColor).toHex();
+            utils.iCP(
+              client,
+              0,
+              interaction,
+              0,
+              1,
+              0,
+              await utils.diEmb(
+                client,
+                2,
+                interaction,
+                uIF,
+                [uIF.id, tc(tRole.hexColor).toHex()],
+                color,
+                getTS('COLOR_CURRENT'),
+                0
+              )
+            );
+          }
+        } else {
           utils.iCP(
             client,
             0,
@@ -257,36 +233,17 @@ module.exports = {
               client,
               2,
               interaction,
-              userO,
-              [userO.id, tc(tRole.hexColor).toHex()],
-              color,
-              getTS('COLOR_CURRENT'),
+              uIF,
+              [],
+              0,
+              getTS('COLOR_NO_ROLE'),
               0
             )
           );
         }
-      } else {
-        utils.iCP(
-          client,
-          0,
-          interaction,
-          0,
-          1,
-          0,
-          await utils.diEmb(
-            client,
-            2,
-            interaction,
-            userO,
-            [],
-            0,
-            getTS('COLOR_NO_ROLE'),
-            0
-          )
-        );
       }
     }
-    if (interaction.isButton()) {
+    if (interaction.data.custom_id) {
       var component_id = interaction.data.custom_id;
       if (!component_id.startsWith('color_')) return;
       var message = interaction.message;
@@ -299,7 +256,7 @@ module.exports = {
       color = embIURL[2];
       var diEV = [embAURL[2], embIURL[4]];
 
-      if (userO.id != diEV[0]) {
+      if (uIF.id != diEV[0]) {
         return utils.iCP(client, 0, interaction, 0, 1, 0, 1);
       }
       if (component_id == 'color_cancel') {
@@ -314,7 +271,7 @@ module.exports = {
             client,
             2,
             interaction,
-            userO,
+            uIF,
             1,
             color,
             getTS('COLOR_CANCELED'),
@@ -355,7 +312,7 @@ module.exports = {
         } else {
           async function reCR() {
             eTitle = getTS('COLOR_CREATED_ASSIGNED_ROLE');
-            guild.roles
+            guildI.roles
               .create({
                 data: {
                   name: tRoleN,
@@ -365,9 +322,9 @@ module.exports = {
               })
               .then((tRole) => {
                 function reAR() {
-                  userO.roles.add(tRole);
+                  uI.roles.add(tRole);
                   setInterval(() => {
-                    if (!userO.roles.cache.find((r) => r.name == tRoleN)) {
+                    if (!uI.roles.cache.find((r) => r.name == tRoleN)) {
                       reAR();
                       console.log('Readding Role');
                     }
@@ -376,7 +333,7 @@ module.exports = {
                 reAR();
               });
             setInterval(() => {
-              if (!guild.roles.cache.find((x) => x.name == tRoleN)) {
+              if (!guildI.roles.cache.find((x) => x.name == tRoleN)) {
                 reCR();
                 console.log('Recreating Role');
               }
@@ -396,7 +353,7 @@ module.exports = {
             client,
             2,
             interaction,
-            userO,
+            uIF,
             1,
             color,
             eTitle,
@@ -432,7 +389,7 @@ module.exports = {
             client,
             2,
             interaction,
-            userO,
+            uIF,
             1,
             color,
             getTS('COLOR_EDIT'),
@@ -457,7 +414,7 @@ module.exports = {
           ]
         );
 
-        var filter = (msg) => msg.author.id == userO.id;
+        var filter = (msg) => msg.author.id == uI.id;
 
         function fm1() {
           async function checkV() {
@@ -501,7 +458,7 @@ module.exports = {
                     client,
                     2,
                     interaction,
-                    userO,
+                    uIF,
                     1,
                     color,
                     getTS('COLOR_EDITED_REPEAT'),
@@ -526,7 +483,7 @@ module.exports = {
                     client,
                     2,
                     interaction,
-                    userO,
+                    uIF,
                     1,
                     color,
                     getTS('COLOR_EDIT_INVALID'),
@@ -554,7 +511,7 @@ module.exports = {
                   client,
                   2,
                   interaction,
-                  userO,
+                  uIF,
                   1,
                   color,
                   getTS('COLOR_TIME_OUT'),
@@ -599,7 +556,7 @@ module.exports = {
             client,
             2,
             interaction,
-            userO,
+            uIF,
             1,
             color,
             getTS('COLOR_EDIT'),
@@ -646,7 +603,7 @@ module.exports = {
             client,
             2,
             interaction,
-            userO,
+            uIF,
             1,
             color,
             getTS('COLOR_PREVIEW'),
@@ -689,7 +646,7 @@ module.exports = {
             client,
             2,
             interaction,
-            userO,
+            uIF,
             1,
             color,
             getTS('COLOR_LIKE'),
@@ -710,7 +667,7 @@ module.exports = {
             client,
             2,
             interaction,
-            userO,
+            uIF,
             1,
             color,
             getTS('COLOR_LIKE'),
@@ -731,7 +688,7 @@ module.exports = {
             client,
             2,
             interaction,
-            userO,
+            uIF,
             1,
             color,
             getTS('COLOR_LIKE'),
@@ -751,7 +708,7 @@ module.exports = {
             client,
             2,
             interaction,
-            userO,
+            uIF,
             1,
             color,
             getTS('COLOR_MIX'),
@@ -776,7 +733,7 @@ module.exports = {
           ]
         );
 
-        var filter = (msg) => msg.author.id == userO.id;
+        var filter = (msg) => msg.author.id == uI.id;
 
         async function fm1() {
           async function checkV() {
@@ -821,7 +778,7 @@ module.exports = {
                     client,
                     2,
                     interaction,
-                    userO,
+                    uIF,
                     1,
                     color,
                     getTS('COLOR_MIXED_REPEAT'),
@@ -846,7 +803,7 @@ module.exports = {
                     client,
                     2,
                     interaction,
-                    userO,
+                    uIF,
                     1,
                     color,
                     getTS('COLOR_MIX_INVALID'),
@@ -874,7 +831,7 @@ module.exports = {
                   client,
                   2,
                   interaction,
-                  userO,
+                  uIF,
                   1,
                   color,
                   getTS('COLOR_TIME_OUT'),
@@ -932,7 +889,7 @@ module.exports = {
             client,
             2,
             interaction,
-            userO,
+            uIF,
             1,
             color,
             getTS('COLOR_LIKE'),

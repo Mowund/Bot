@@ -1,37 +1,97 @@
-const Discord = require('discord.js');
-const { Util } = require('discord.js');
-const utils = require('../utils/utils.js');
+const { UserFlags, Util, Permissions } = require('discord.js');
+const { flagEmoji, emojis, botColor } = require('../botdefaults');
+const { toUTS } = require('../utils');
 
 module.exports = {
-  name: 'INTERACTION_CREATE',
-  async execute(client, interaction) {
-    function getTS(path, values) {
-      return utils.getTSE(interaction.guild_id, path, values);
-    }
-    var guildI = client.guilds.cache.get(interaction.guild_id);
-    if (guildI) {
-      var uI = guildI.members.cache.get(interaction.member.user.id);
-      var uIF = await client.users.fetch(interaction.member.user.id);
-    }
+  data: [
+    {
+      type: 'USER',
+      name: 'User Info',
+    },
+    {
+      name: 'userinfo',
+      description: 'Get information about a user.',
+      options: [
+        {
+          name: 'user',
+          description: 'The user to get information from.',
+          type: 'USER',
+          required: false,
+        },
+        {
+          name: 'ephemeral',
+          description: 'Send reply as an ephemeral message. Defaults to true.',
+          type: 'BOOLEAN',
+          required: false,
+        },
+      ],
+    },
+  ],
+  async execute(client, interaction, getTS, embed) {
+    var { guild, user, options } = interaction;
+    var userO = options?.getUser('user') ?? user;
+    var memberO = guild?.members.cache.get(userO.id) ?? userO;
+    var ephemeralO = options?.getBoolean('ephemeral') ?? true;
 
-    if (interaction.data.name) {
-      var command = interaction.data.name.toLowerCase();
-      var args = interaction.data.options;
-      if (interaction.data.resolved) {
-        var message = utils.search(interaction.data.resolved.messages);
+    if (interaction.isCommand() || interaction.isContextMenu()) {
+      await interaction.deferReply({ ephemeral: ephemeralO });
 
-        if (command == 'User Info') {
-          return utils.iCP(
-            client,
-            0,
-            interaction,
-            ['Isso é só', 'um teste no user'],
-            1,
-            0,
-            1
-          );
-        }
+      var fUser = await userO.fetch();
+      var flags =
+        userO.bot && !userO.flags.has(UserFlags.FLAGS.VERIFIED_BOT)
+          ? [emojis.bot]
+          : [];
+      for (flag of userO.flags.toArray()) {
+        flags.push(flagEmoji(flag));
       }
+
+      emb = embed()
+        .setColor(memberO?.displayColor ?? fUser.accentColor ?? botColor)
+        .setAuthor(userO.tag, userO.avatarURL())
+        .setThumbnail(
+          memberO?.avatarURL({ format: 'png' }) ??
+            userO.avatarURL({ format: 'png' })
+        )
+        .setImage(fUser.bannerURL({ format: 'png', size: 1024, dynamic: true }))
+        .setTitle('User Info')
+        .setDescription(`${userO} ` + flags.join(' '))
+        .addField('User ID', userO.id, true)
+        .addField('Account Created', toUTS(userO.createdTimestamp, 'R'), true);
+
+      if (interaction.inGuild()) {
+        emb
+          .addField('Joined Server', toUTS(memberO.joinedTimestamp, 'R'), true)
+          .addField(
+            'Roles',
+            Util.discordSort(memberO.roles.cache)
+              .map((r) => `${r}`)
+              .reverse()
+              .join(', ') || '@everyone'
+          );
+      }
+
+      await interaction.editReply({
+        embeds: [emb],
+      });
+      if (
+        interaction.inGuild() &&
+        !guild?.roles.everyone.permissions.has(
+          Permissions.FLAGS.USE_EXTERNAL_EMOJIS
+        )
+      )
+        interaction.followUp({
+          embeds: [
+            embed({ type: 'warn' }).setDescription(
+              getTS(['PERM', 'ROLE_REQUIRES'], {
+                stringKeys: {
+                  ROLE: '@everyone',
+                  PERM: getTS(['PERM', 'USE_EXTERNAL_EMOJIS']),
+                },
+              })
+            ),
+          ],
+          ephemeral: true,
+        });
     }
   },
 };
