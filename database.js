@@ -3,10 +3,9 @@ const messages = require('./messages.json');
 const { defaultLanguage, supportedLanguages } = require('./botdefaults');
 const { env } = require('./utils');
 
+let serviceAccount = JSON.parse(env('FIREBASE')).replace(/^(')|(')$/g, '');
 admin.initializeApp({
-  credential: admin.credential.cert(
-    JSON.parse(env('FIREBASE').replace(/^(')|(')$/g, ''))
-  ),
+  credential: admin.credential.cert(serviceAccount),
 });
 
 const db = admin.firestore();
