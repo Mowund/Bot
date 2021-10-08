@@ -1,6 +1,5 @@
 {
   "name": "mowund",
-  "version": "1.18-dev",
   "main": "index.js",
   "dependencies": {
     "@discordjs/builders": "^0.6.0",
@@ -35,5 +34,8 @@
   "bugs": {
     "url": "https://github.com/Smidul/Mowund-Bot/issues"
   },
-  "homepage": "https://github.com/Smidul/Mowund-Bot#readme"
+  "homepage": "https://github.com/Smidul/Mowund-Bot#readme",
+  "engines": {
+    "node": "16.x"
+  }
 }
