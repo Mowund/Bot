@@ -14,7 +14,7 @@ module.exports = {
   /**
    * Whether event logs are activated
    */
-  debugMode: true,
+  debugMode: false,
 };
 
 /**
