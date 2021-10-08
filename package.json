@@ -1,6 +1,6 @@
 {
   "name": "mowund",
-  "version": "1.0-alpha",
+  "version": "1.0",
   "main": "index.js",
   "dependencies": {
     "@discordjs/builders": "^0.6.0",
