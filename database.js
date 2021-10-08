@@ -1,18 +1,10 @@
 const admin = require('firebase-admin');
 const messages = require('./messages.json');
 const { defaultLanguage, supportedLanguages } = require('./botdefaults');
-
-var env;
-try {
-  env = require('./env.json');
-} catch {
-  env = process.env;
-}
-
-const serviceAccount = env.FIREBASE;
+const { env } = require('./utils');
 
 admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
+  credential: admin.credential.cert(JSON.parse(env('FIREBASE'))),
 });
 
 const db = admin.firestore();

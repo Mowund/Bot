@@ -4,9 +4,20 @@ const XMLHttpRequest = require('xmlhttprequest').XMLHttpRequest;
 const xhr = new XMLHttpRequest();
 const url = require('url');
 
-module.exports.search = (objects, key) => {
-  for (var key in objects) {
-    var value = objects[key];
+module.exports.env = (key) => {
+  try {
+    var env = require('./env.json');
+  } catch {
+    var env = process.env;
+  }
+
+  if (key) return env[key];
+  return env;
+};
+
+module.exports.search = (object, key) => {
+  for (var key in object) {
+    var value = object[key];
   }
 
   return value;

@@ -6,14 +6,8 @@ const client = new Client({
 });
 client.commands = new Collection();
 const fs = require('node:fs');
+const { env } = require('./utils');
 require('colors');
-
-var env;
-try {
-  env = require('./env.json');
-} catch {
-  env = process.env;
-}
 
 client.on('ready', async () => {
   client.user.setPresence({
@@ -60,4 +54,4 @@ for (const file of oldInteractionFiles) {
   client.ws.on(itc.name, (...args) => itc.execute(client, ...args));
 }
 
-client.login(env.TOKEN);
+client.login(env('TOKEN'));
