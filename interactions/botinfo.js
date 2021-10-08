@@ -35,7 +35,7 @@ module.exports = {
         .setTitle(getTS(['BOTINFO', 'TITLE']))
         .setThumbnail(client.user.avatarURL())
         .addField(getTS(['BOTINFO', 'NAME_FIELD']), client.user.username, true)
-        //.addField(getTS(['BOTINFO', 'VERSION_FIELD']), pack.version, true)
+        .addField(getTS(['BOTINFO', 'VERSION_FIELD']), pack.version, true)
         .addField(
           getTS(['BOTINFO', 'CREATION_FIELD']),
           toUTS(client.user.createdAt)
