@@ -4,7 +4,9 @@ const { defaultLanguage, supportedLanguages } = require('./botdefaults');
 const { env } = require('./utils');
 
 admin.initializeApp({
-  credential: admin.credential.cert(JSON.parse(env('FIREBASE'))),
+  credential: admin.credential.cert(
+    JSON.parse(env('FIREBASE').replace(/^(')|(')$/g, ''))
+  ),
 });
 
 const db = admin.firestore();
