@@ -3,6 +3,7 @@ const messages = require('./messages.json');
 const { defaultLanguage, supportedLanguages } = require('./botdefaults');
 const { env } = require('./utils');
 
+console.log(env('FIREBASE'));
 admin.initializeApp({
   credential: admin.credential.cert(JSON.parse(env('FIREBASE'))),
 });
