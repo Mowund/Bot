@@ -43,7 +43,7 @@ module.exports = {
     if (interaction.isApplicationCommand()) {
       await interaction.deferReply({ ephemeral: ephemeralO });
 
-      if (options?.getSubcommand() === 'info' || commandName === 'User Info') {
+      if (commandName === 'User Info' || options?.getSubcommand(true) === 'info') {
         const fUser = await userO.fetch(),
           flags = userO.bot
             ? userO.flags.has(UserFlags.FLAGS.VERIFIED_BOT)
