@@ -1,0 +1,297 @@
+'use strict';
+
+const fs = require('node:fs'),
+  { botOwners } = require('../defaults');
+
+module.exports = {
+  data: [
+    {
+      name: 'mowund',
+      description: 'Bot owner only commands.',
+      options: [
+        {
+          name: 'eval',
+          description: 'Return a result of a code (Bot owner only).',
+          type: 'SUB_COMMAND',
+          options: [
+            {
+              name: 'code',
+              description: 'The code to execute.',
+              type: 'STRING',
+              required: true,
+            },
+            {
+              name: 'await',
+              description: 'Await the code. Defaults to true.',
+              type: 'BOOLEAN',
+            },
+            {
+              name: 'ephemeral',
+              description: 'Send reply as an ephemeral message. Defaults to true.',
+              type: 'BOOLEAN',
+            },
+          ],
+        },
+        {
+          name: 'interaction',
+          description: 'Configures interactions. (Bot owner only)',
+          type: 'SUB_COMMAND_GROUP',
+          options: [
+            {
+              name: 'update',
+              description: 'Update bot commands. (Bot owner only)',
+              type: 'SUB_COMMAND',
+              options: [
+                {
+                  name: 'id',
+                  description: 'Id of a specific command. Defaults to all commands.',
+                  type: 'STRING',
+                },
+                {
+                  name: 'guild',
+                  description: 'The guild the command is at. Defaults to same-guild.',
+                  type: 'STRING',
+                },
+                {
+                  name: 'ephemeral',
+                  description: 'Send reply as an ephemeral message. Defaults to true.',
+                  type: 'BOOLEAN',
+                },
+              ],
+            },
+          ],
+        },
+        {
+          name: 'shard',
+          description: 'Configures shards. (Bot owner only)',
+          type: 'SUB_COMMAND_GROUP',
+          options: [
+            {
+              name: 'respawnall',
+              description: 'Respawns all shards. (Bot owner only)',
+              type: 'SUB_COMMAND',
+              options: [
+                {
+                  name: 'sharddelay',
+                  description: 'How long to wait between shards.',
+                  type: 'INTEGER',
+                },
+                {
+                  name: 'respawndelay',
+                  description: "How long to wait between killing a shard's process and restarting it.",
+                  type: 'INTEGER',
+                },
+                {
+                  name: 'timeout',
+                  description: 'The amount to wait for a shard to become ready before continuing to another.',
+                  type: 'INTEGER',
+                },
+                {
+                  name: 'ephemeral',
+                  description: 'Send reply as an ephemeral message. Defaults to true.',
+                  type: 'BOOLEAN',
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+  ],
+  async execute(client, interaction, st, embed) {
+    const { user, options } = interaction,
+      ephemeralO = options?.getBoolean('ephemeral') ?? true,
+      idO = options?.getString('id'),
+      guildO = options?.getString('guild');
+
+    if (interaction.isCommand()) {
+      await interaction.deferReply({ ephemeral: ephemeralO });
+
+      if (!botOwners.includes(user.id)) {
+        return interaction.editReply({
+          embeds: [embed({ type: 'error' }).setDescription(st.__('ERROR.DEVELOPERS_ONLY'))],
+        });
+      }
+
+      const guild = await client.shard
+        .broadcastEval((c, { id }) => c.guilds.cache.get(id), {
+          context: {
+            id: guildO,
+          },
+        })
+        .then(gA => gA.find(g => g));
+
+      if (guildO && !guild) {
+        return interaction.editReply({
+          embeds: [embed({ type: 'error' }).setDescription(st.__('ERROR.GUILD_NOT_FOUND'))],
+        });
+      }
+
+      let emb = [];
+
+      if (options?.getSubcommand() === 'eval') {
+        const codeO = options?.getString('code'),
+          awaitO = options?.getBoolean('await') ?? true;
+
+        try {
+          let evaled = awaitO ? await eval(codeO) : eval(codeO);
+
+          if (typeof evaled !== 'string') evaled = require('node:util').inspect(evaled);
+
+          emb = embed({ type: 'success' }).setDescription(`\`\`\`js\n${evaled}\`\`\``);
+          return interaction.editReply({ embeds: [emb] });
+        } catch (err) {
+          emb = embed({ type: 'error' }).setDescription(`\`\`\`js\n${err}\`\`\``);
+          return interaction.editReply({ embeds: [emb] });
+        }
+      }
+      if (options?.getSubcommandGroup() === 'interaction') {
+        const appCmds = client.application.commands,
+          fAppCmds = await appCmds.fetch();
+        let fGdCmds;
+        if (guild ?? interaction.guild) fGdCmds = await appCmds.fetch({ guildId: (guild ?? interaction.guild).id });
+
+        if (options?.getSubcommand() === 'update') {
+          let updCmds = [],
+            delCmds = [];
+
+          fAppCmds.each(c => (delCmds = delCmds.concat(c)));
+          if (fGdCmds) fGdCmds.each(c => (delCmds = delCmds.concat(c)));
+
+          try {
+            const interactionFiles = fs.readdirSync('./interactions').filter(f => f.endsWith('.js'));
+            for (const file of interactionFiles) {
+              const event = require(`../interactions/${file}`);
+              for (const data of event.data) {
+                const guildOnly = event.guildOnly?.find(i => i === (guild ?? interaction.guild)?.id),
+                  findCmd = idO
+                    ? (await appCmds.fetch(idO, { guildId: (guild ?? interaction.guild).id })) ??
+                      (await appCmds.fetch(idO))
+                    : data,
+                  searchCmd =
+                    fGdCmds?.find(c => c.name === findCmd.name) ?? fAppCmds.find(c => c.name === findCmd.name),
+                  dataEquals = searchCmd?.equals(data);
+
+                if (data.name === findCmd.name) {
+                  if (interaction.inGuild() && event.guildOnly) {
+                    if (idO) delCmds = delCmds.filter(c => c.name === data.name);
+                    const found = delCmds.find(c => c.name === data.name);
+                    delCmds =
+                      found && event.guildOnly?.includes(found?.guildId)
+                        ? delCmds.filter(c => c.name !== data.name)
+                        : delCmds;
+
+                    if ((!dataEquals || idO) && guildOnly) {
+                      const cmd = await appCmds.create(data, guild?.id || guildOnly);
+                      updCmds = updCmds.concat(cmd);
+                      console.log(`Updated guild (${guild?.id || guildOnly}) command: ${cmd.name} (${cmd.id})`.green);
+                    }
+                  } else if (!event.guildOnly) {
+                    if (idO) delCmds = delCmds.filter(c => c.name === data.name);
+                    const found = delCmds.find(c => c.name === data.name);
+                    delCmds = found ? delCmds.filter(c => c.name !== data.name || c.guildId) : delCmds;
+
+                    if ((!dataEquals || idO) && !guild) {
+                      const cmd = await appCmds.create(data);
+                      updCmds = updCmds.concat(cmd);
+                      console.log(`Updated global command: ${cmd.name} (${cmd.id})`.yellow);
+                    }
+                  }
+                }
+              }
+            }
+          } catch (err) {
+            console.error('An error occured while reloading an application command:\n'.red, err);
+            return interaction.editReply({
+              embeds: [
+                embed({ type: 'error' }).setDescription(
+                  `${st.__('MOWUND.INTERACTION.ERROR_RELOADING')}\n\`\`\`js\n${err}\`\`\``,
+                ),
+              ],
+            });
+          }
+
+          delCmds.forEach(c => {
+            if (c.guildId) {
+              (guild ?? interaction.guild).commands.delete(c.id);
+              console.log(`Deleted guild (${(guild ?? interaction.guild).id}) command: ${c.name} (${c.id})`.red);
+            } else {
+              appCmds.delete(c.id);
+              console.log(`Deleted global command: ${c.name} (${c.id})`.red);
+            }
+          });
+          const cmdMap = (cmds, guildOnly = false) =>
+              cmds
+                .filter(o => (guildOnly ? o.guildId : !o.guildId))
+                .map(o =>
+                  (guildOnly ? o.guildId : !o.guildId)
+                    ? `**${
+                        o.type === 'MESSAGE'
+                          ? st.__('GENERIC.MESSAGE')
+                          : o.type === 'USER'
+                          ? st.__('GENERIC.USER')
+                          : st.__('GENERIC.CHAT')
+                      }**: \`${o.name}\``
+                    : '',
+                )
+                .join('\n'),
+            updCmdGlobal = cmdMap(updCmds),
+            updCmdGuild = cmdMap(updCmds, true),
+            delCmdGlobal = cmdMap(delCmds),
+            delCmdGuild = cmdMap(delCmds, true);
+
+          if (updCmds.length > 0) {
+            const e = embed({ title: st.__('MOWUND.INTERACTION.COMMANDS.UPDATED'), type: 'success' });
+            if (updCmdGlobal) e.addField(st.__('MOWUND.INTERACTION.COMMANDS.GLOBAL'), updCmdGlobal, true);
+            if (updCmdGuild) {
+              e.addField(
+                guild
+                  ? st.__('MOWUND.INTERACTION.COMMANDS.SPECIFIED_GUILD', guild.name)
+                  : st.__('MOWUND.INTERACTION.COMMANDS.GUILD'),
+                updCmdGuild,
+                true,
+              );
+            }
+            emb = emb.concat(e);
+          }
+          if (delCmds.length > 0) {
+            const e = embed({ title: `🗑️ ${st.__('MOWUND.INTERACTION.COMMANDS.DELETED')}` }).setColor('FF0000');
+            if (delCmdGlobal) e.addField(st.__('MOWUND.INTERACTION.COMMANDS.GLOBAL'), delCmdGlobal, true);
+            if (delCmdGuild) {
+              e.addField(
+                guild
+                  ? st.__('MOWUND.INTERACTION.COMMANDS.SPECIFIED_GUILD', guild.name)
+                  : st.__('MOWUND.INTERACTION.COMMANDS.GUILD'),
+                delCmdGuild,
+                true,
+              );
+            }
+            emb = emb.concat(e);
+          }
+
+          return interaction.editReply({
+            embeds:
+              emb.length > 0 ? emb : [embed({ type: 'warning' }).setDescription(st.__('MOWUND.INTERACTION.NO_UPDATE'))],
+          });
+        }
+      }
+      if (options?.getSubcommandGroup() === 'shard') {
+        if (options?.getSubcommand() === 'respawnall') {
+          const shardDelayO = options?.getInteger('shardDelay') ?? 5000,
+            respawnDelayO = options?.getInteger('respawnDelay') ?? 500,
+            timeoutO = options?.getInteger('timeout') ?? 30000;
+
+          await interaction.editReply({
+            embeds: [embed({ type: 'warning' }).setDescription(st.__('MOWUND.SHARD.RESPAWNING'))],
+          });
+
+          client.shard.respawnAll({
+            shardDelay: shardDelayO,
+            respawnDelay: respawnDelayO,
+            timeout: timeoutO,
+          });
+        }
+      }
+    }
+  },
+};

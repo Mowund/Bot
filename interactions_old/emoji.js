@@ -1,28 +1,30 @@
+/* eslint-disable */
+
+// Old bullshit
 const { MessageEmbed, Permissions, Util } = require('discord.js');
 const utils = require('../utils.js');
 
 module.exports = {
   name: '',
   async execute(client, interaction) {
-    //TODO: Then check if lowercase match
-    //FIXME: Deleted role if role is not in the same server
+    
     function getTS(path, values) {
       return utils.getTSE(interaction.guild_id, path, values);
     }
-    var guildI = client.guilds.cache.get(interaction.guild_id);
+    const guildI = client.guilds.cache.get(interaction.guild_id);
     if (guildI) {
       var uI = guildI.members.cache.get(interaction.member.user.id);
       var uIF = await client.users.fetch(interaction.member.user.id);
     }
 
     var emjFR = [];
-    var disEdit = false;
+    let disEdit = false;
     if (interaction.data.name) {
-      var command = interaction.data.name.toLowerCase();
-      var args = interaction.data.options;
+      const command = interaction.data.name.toLowerCase();
+      const args = interaction.data.options;
 
       if (command == 'emoji') {
-        if (!guildI)
+        if (!guildI) {
           return utils.iCP(
             client,
             0,
@@ -30,8 +32,9 @@ module.exports = {
             [0, getTS(['ERROR', 'DM'])],
             1,
             0,
-            1
+            1,
           );
+        }
 
         var emj = args
           .find((arg) => arg['options'])
@@ -44,7 +47,7 @@ module.exports = {
           emj = '<:' + emj.name + ':' + emj.id + '>';
         }
 
-        var emjNID = emj.match(/<(a|):.+?:\d+>/g)
+        const emjNID = emj.match(/<(a|):.+?:\d+>/g)
           ? emj.match(/<(a|):.+?:\d+>/g).toString()
           : '';
 
@@ -52,22 +55,23 @@ module.exports = {
           ? emjNID.match(/(?<=:)\d+/g).toString()
           : null;
 
-        var emjName = emjNID.match(/(?<=:).*(?=:)/g)
-          ? emjNID.match(/(?<=:).*(?=:)/g).toString()
+        var emjName = emjNID.match(/(?<=:).+(?=:)/g)
+          ? emjNID.match(/(?<=:).+(?=:)/g).toString()
           : null;
 
-        var onlyID = false;
+        let onlyID = false;
         if (!emjNID && emj.match(/^[0-9]*$/g)) {
           emjID = emj;
           onlyID = true;
         }
 
         emj = client.emojis.cache.find((emj) => emj.id == emjID);
-        var emjVal = true;
-        var emjURL = 'https://cdn.discordapp.com/emojis/' + emjID;
+        let emjVal = true;
+        let emjURL = 'https://cdn.discordapp.com/emojis/' + emjID;
         if (await utils.checkImage(emjURL + '.gif')) {
           emjURL = emjURL + '.gif';
-        } else if (!(await utils.checkImage(emjURL))) {
+        }
+        else if (!(await utils.checkImage(emjURL))) {
           emjVal = false;
         }
 
@@ -80,7 +84,8 @@ module.exports = {
           if (onlyID) {
             emjFN = [];
           }
-        } else {
+        }
+        else {
           return utils.iCP(
             client,
             0,
@@ -88,7 +93,7 @@ module.exports = {
             [0, 'Não contém um emoji válido.'],
             1,
             0,
-            1
+            1,
           );
         }
 
@@ -116,7 +121,8 @@ module.exports = {
             name: getTS(['EMOJI', 'FIELD_ROLES']),
             value: emjRoles,
           };
-        } else {
+        }
+        else {
           disEdit = true;
         }
 
@@ -134,7 +140,7 @@ module.exports = {
                 value: '`' + emjID + '`',
                 inline: true,
               },
-              emjFR
+              emjFR,
             )
             .setThumbnail(emjURL)
             .setColor('ffff00')
@@ -143,7 +149,7 @@ module.exports = {
               getTS(['GENERIC', 'REQUESTED_BY'], {
                 USER: uIF.username,
               }),
-              uIF.avatarURL()
+              uIF.avatarURL(),
             );
 
           if (emj) {
@@ -155,10 +161,11 @@ module.exports = {
                 [0, getTS(['EMOJI', 'UNALLOWED_SERVER'])],
                 1,
                 0,
-                1
+                1,
               );
             }
-          } else {
+          }
+          else {
             utils.iCP(
               client,
               0,
@@ -167,7 +174,7 @@ module.exports = {
               1,
               0,
               1,
-              []
+              [],
             );
           }
           if (!uI.permissions.has(Permissions.FLAGS.MANAGE_EMOJIS)) {
@@ -183,7 +190,7 @@ module.exports = {
               ],
               1,
               0,
-              1
+              1,
             );
           }
           utils.iCP(client, 0, interaction, 0, 0, 0, emb, [
@@ -193,7 +200,7 @@ module.exports = {
                 {
                   type: 'SUB_COMMAND_GROUP',
                   style: 1,
-                  label: getTS(['COMPONENT', 'EMOJI', 'VIEW']),
+                  label: getTS(['EMOJI', 'COMPONENT', 'VIEW']),
                   emoji: {
                     name: '🔎',
                   },
@@ -202,7 +209,7 @@ module.exports = {
                 {
                   type: 'SUB_COMMAND_GROUP',
                   style: 2,
-                  label: getTS(['COMPONENT', 'EMOJI', 'EDIT_NAME']),
+                  label: getTS(['EMOJI', 'COMPONENT', 'EDIT_NAME']),
                   emoji: {
                     name: '✏️',
                   },
@@ -211,7 +218,7 @@ module.exports = {
                 {
                   type: 'SUB_COMMAND_GROUP',
                   style: 2,
-                  label: getTS(['COMPONENT', 'EMOJI', 'EDIT_ROLES']),
+                  label: getTS(['EMOJI', 'COMPONENT', 'EDIT_ROLES']),
                   emoji: {
                     name: '📜',
                   },
@@ -225,7 +232,7 @@ module.exports = {
                 {
                   type: 'SUB_COMMAND_GROUP',
                   style: 4,
-                  label: getTS(['COMPONENT', 'EMOJI', 'EDIT_DELETE']),
+                  label: getTS(['EMOJI', 'COMPONENT', 'EDIT_DELETE']),
                   emoji: {
                     name: '🗑️',
                   },
@@ -234,7 +241,8 @@ module.exports = {
               ],
             },
           ]);
-        } else if (args.find((arg) => arg.name == 'view')) {
+        }
+        else if (args.find((arg) => arg.name == 'view')) {
           var emb = new MessageEmbed()
             .setTitle(getTS(['EMOJI', 'VIEW_VIEWING']))
             .addFields(
@@ -244,7 +252,7 @@ module.exports = {
                 value: '`' + emjID + '`',
                 inline: true,
               },
-              emjFR
+              emjFR,
             )
             .setThumbnail(emjURL)
             .setColor('00ff00')
@@ -253,7 +261,7 @@ module.exports = {
               getTS(['GENERIC', 'REQUESTED_BY'], {
                 USER: uIF.username,
               }),
-              uIF.avatarURL()
+              uIF.avatarURL(),
             );
 
           utils.iCP(client, 0, interaction, 0, 0, 0, emb, [
@@ -263,7 +271,7 @@ module.exports = {
                 {
                   type: 'SUB_COMMAND_GROUP',
                   style: 4,
-                  label: getTS(['GENERIC', 'COMPONENT_MESSAGE_DELETE']),
+                  label: getTS(['GENERIC', 'COMPONENT', 'MESSAGE_DELETE']),
                   emoji: {
                     name: '🧹',
                   },
@@ -272,7 +280,7 @@ module.exports = {
                 {
                   type: 'SUB_COMMAND_GROUP',
                   style: 1,
-                  label: getTS(['COMPONENT', 'EMOJI', 'EDIT']),
+                  label: getTS(['EMOJI', 'COMPONENT', 'EDIT']),
                   emoji: {
                     name: '📝',
                   },
@@ -286,14 +294,14 @@ module.exports = {
       }
     }
     if (interaction.data.custom_id) {
-      var component_id = interaction.data.custom_id;
+      const component_id = interaction.data.custom_id;
       if (!component_id.startsWith('emoji_')) return;
-      var message = interaction.message;
-      var embEID = new URL(message.embeds[0].thumbnail.url).pathname.split(
-        /[\/&\.]/
+      let message = interaction.message;
+      const embEID = new URL(message.embeds[0].thumbnail.url).pathname.split(
+        /[\/&\.]/,
       );
-      var embAURL = new URL(message.embeds[0].footer.icon_url).pathname.split(
-        /[\/&\.]/
+      const embAURL = new URL(message.embeds[0].footer.icon_url).pathname.split(
+        /[\/&\.]/,
       );
 
       if (uIF.id != embAURL[2]) {
@@ -331,7 +339,8 @@ module.exports = {
           name: getTS(['EMOJI', 'FIELD_ROLES']),
           value: emjRoles,
         };
-      } else {
+      }
+      else {
         disEdit = true;
       }
 
@@ -348,7 +357,7 @@ module.exports = {
             value: '`' + emjID + '`',
             inline: true,
           },
-          emjFR
+          emjFR,
         )
         .setThumbnail(message.embeds[0].thumbnail.url)
         .setColor('ffff00')
@@ -357,7 +366,7 @@ module.exports = {
           getTS(['GENERIC', 'INTERACTED_BY'], {
             USER: uIF.username,
           }),
-          uIF.avatarURL()
+          uIF.avatarURL(),
         );
 
       if (
@@ -381,7 +390,7 @@ module.exports = {
                 {
                   type: 'SUB_COMMAND_GROUP',
                   style: 4,
-                  label: getTS(['GENERIC', 'COMPONENT_MESSAGE_DELETE']),
+                  label: getTS(['GENERIC', 'COMPONENT', 'MESSAGE_DELETE']),
                   emoji: {
                     name: '🧹',
                   },
@@ -390,7 +399,7 @@ module.exports = {
                 {
                   type: 'SUB_COMMAND_GROUP',
                   style: 1,
-                  label: getTS(['COMPONENT', 'EMOJI', 'EDIT']),
+                  label: getTS(['EMOJI', 'COMPONENT', 'EDIT']),
                   emoji: {
                     name: '📝',
                   },
@@ -399,7 +408,7 @@ module.exports = {
                 },
               ],
             },
-          ]
+          ],
         );
       }
 
@@ -411,7 +420,7 @@ module.exports = {
               {
                 type: 'SUB_COMMAND_GROUP',
                 style: 1,
-                label: getTS(['COMPONENT', 'EMOJI', 'VIEW']),
+                label: getTS(['EMOJI', 'COMPONENT', 'VIEW']),
                 emoji: {
                   name: '🔎',
                 },
@@ -420,7 +429,7 @@ module.exports = {
               {
                 type: 'SUB_COMMAND_GROUP',
                 style: 2,
-                label: getTS(['COMPONENT', 'EMOJI', 'EDIT_NAME']),
+                label: getTS(['EMOJI', 'COMPONENT', 'EDIT_NAME']),
                 emoji: {
                   name: '✏️',
                 },
@@ -429,7 +438,7 @@ module.exports = {
               {
                 type: 'SUB_COMMAND_GROUP',
                 style: 2,
-                label: getTS(['COMPONENT', 'EMOJI', 'EDIT_ROLES']),
+                label: getTS(['EMOJI', 'COMPONENT', 'EDIT_ROLES']),
                 emoji: {
                   name: '📜',
                 },
@@ -443,7 +452,7 @@ module.exports = {
               {
                 type: 'SUB_COMMAND_GROUP',
                 style: 4,
-                label: getTS(['COMPONENT', 'EMOJI', 'EDIT_DELETE']),
+                label: getTS(['EMOJI', 'COMPONENT', 'EDIT_DELETE']),
                 emoji: {
                   name: '🗑️',
                 },
@@ -452,7 +461,8 @@ module.exports = {
             ],
           },
         ]);
-      } else if (component_id == 'emoji_view') {
+      }
+      else if (component_id == 'emoji_view') {
         utils.iCP(
           client,
           3,
@@ -468,7 +478,7 @@ module.exports = {
                 {
                   type: 'SUB_COMMAND_GROUP',
                   style: 4,
-                  label: getTS(['GENERIC', 'COMPONENT_MESSAGE_DELETE']),
+                  label: getTS(['GENERIC', 'COMPONENT', 'MESSAGE_DELETE']),
                   emoji: {
                     name: '🧹',
                   },
@@ -477,7 +487,7 @@ module.exports = {
                 {
                   type: 'SUB_COMMAND_GROUP',
                   style: 1,
-                  label: getTS(['COMPONENT', 'EMOJI', 'EDIT']),
+                  label: getTS(['EMOJI', 'COMPONENT', 'EDIT']),
                   emoji: {
                     name: '📝',
                   },
@@ -486,9 +496,10 @@ module.exports = {
                 },
               ],
             },
-          ]
+          ],
         );
-      } else if (component_id == 'emoji_edit_name') {
+      }
+      else if (component_id == 'emoji_edit_name') {
         emb().fields[0] = {
           name: getTS(['EMOJI', 'FIELD_NAME']) + ' 📝',
           value: '`' + emj.name + '`',
@@ -502,7 +513,7 @@ module.exports = {
           0,
           0,
           0,
-          emb().setTitle(getTS(['EMOJI', 'EDIT_NAME'])),
+          emb({ title: getTS(['EMOJI', 'EDIT_NAME'])}),
           [
             {
               type: 'SUB_COMMAND',
@@ -510,7 +521,7 @@ module.exports = {
                 {
                   type: 'SUB_COMMAND_GROUP',
                   style: 1,
-                  label: getTS(['GENERIC', 'COMPONENT_BACK']),
+                  label: getTS(['GENERIC', 'COMPONENT', 'BACK']),
                   emoji: {
                     name: '↩️',
                   },
@@ -518,7 +529,7 @@ module.exports = {
                 },
               ],
             },
-          ]
+          ],
         );
 
         var filter = (msg) => msg.author.id == uI.id;
@@ -528,21 +539,24 @@ module.exports = {
             message = await utils.iCP(client, 4, interaction);
             if (message.embeds[0].title == getTS(['EMOJI', 'EDIT_NAME'])) {
               return 1;
-            } else if (
+            }
+            else if (
               message.embeds[0].title == getTS(['EMOJI', 'EDIT_NAME_INVALID'])
             ) {
               return 2;
-            } else if (
+            }
+            else if (
               message.embeds[0].title == getTS(['EMOJI', 'EDITED_NAME_REPEAT'])
             ) {
               return 3;
-            } else {
+            }
+            else {
               return 0;
             }
           }
 
-          var channel = client.channels.cache.find(
-            (c) => c.id == message.channel_id
+          const channel = client.channels.cache.find(
+            (c) => c.id == message.channel_id,
           );
           channel
             .awaitMessages(filter, {
@@ -568,13 +582,14 @@ module.exports = {
                     0,
                     0,
                     0,
-                    emb().setTitle(getTS(['EMOJI', 'EDITED_NAME_REPEAT']))
+                    emb({ title: getTS(['EMOJI', 'EDITED_NAME_REPEAT'])}),
                   );
                 });
                 msg.delete();
 
                 fm1();
-              } else {
+              }
+              else {
                 utils.iCP(
                   client,
                   3,
@@ -582,7 +597,7 @@ module.exports = {
                   0,
                   0,
                   0,
-                  emb().setTitle(getTS(['EMOJI', 'EDIT_NAME_INVALID']))
+                  emb({ title: getTS(['EMOJI', 'EDIT_NAME_INVALID'])}),
                 );
                 msg.delete();
 
@@ -598,7 +613,7 @@ module.exports = {
                 0,
                 0,
                 0,
-                emb().setTitle(getTS(['ERROR', 'TIMED_OUT'])),
+                emb({ title: getTS(['ERROR', 'TIMED_OUT'])}),
                 [
                   {
                     type: 'SUB_COMMAND',
@@ -606,7 +621,7 @@ module.exports = {
                       {
                         type: 'SUB_COMMAND_GROUP',
                         style: 1,
-                        label: getTS(['GENERIC', 'COMPONENT_BACK']),
+                        label: getTS(['GENERIC', 'COMPONENT', 'BACK']),
                         emoji: {
                           name: '↩️',
                         },
@@ -615,7 +630,7 @@ module.exports = {
                       {
                         type: 'SUB_COMMAND_GROUP',
                         style: 1,
-                        label: getTS(['GENERIC', 'COMPONENT_REPEAT']),
+                        label: getTS(['GENERIC', 'COMPONENT', 'REPEAT']),
                         emoji: {
                           name: '🔄',
                         },
@@ -623,7 +638,7 @@ module.exports = {
                       },
                     ],
                   },
-                ]
+                ],
               );
             });
         }
@@ -635,7 +650,7 @@ module.exports = {
               {
                 type: 'SUB_COMMAND_GROUP',
                 style: 1,
-                label: getTS(['GENERIC', 'COMPONENT_BACK']),
+                label: getTS(['GENERIC', 'COMPONENT', 'BACK']),
                 emoji: {
                   name: '↩️',
                 },
@@ -644,7 +659,8 @@ module.exports = {
             ],
           },
         ]);
-      } else if (component_id == 'emoji_edit_role') {
+      }
+      else if (component_id == 'emoji_edit_role') {
         emb().fields[2] = {
           name: getTS(['EMOJI', 'FIELD_ROLES']) + ' 📝',
           value: emjRoles,
@@ -656,7 +672,7 @@ module.exports = {
           0,
           0,
           0,
-          emb().setTitle(getTS(['EMOJI', 'EDITING_ROLES'])),
+          emb({ title: getTS(['EMOJI', 'EDITING_ROLES'])}),
           [
             {
               type: 'SUB_COMMAND',
@@ -664,7 +680,7 @@ module.exports = {
                 {
                   type: 'SUB_COMMAND_GROUP',
                   style: 1,
-                  label: getTS(['GENERIC', 'COMPONENT_BACK']),
+                  label: getTS(['GENERIC', 'COMPONENT', 'BACK']),
                   emoji: {
                     name: '↩️',
                   },
@@ -673,7 +689,7 @@ module.exports = {
                 {
                   type: 'SUB_COMMAND_GROUP',
                   style: 3,
-                  label: getTS(['COMPONENT', 'EMOJI', 'EDIT_ROLES_ADD']),
+                  label: getTS(['EMOJI', 'COMPONENT', 'EDIT_ROLES_ADD']),
                   emoji: {
                     name: '➕',
                   },
@@ -682,7 +698,7 @@ module.exports = {
                 {
                   type: 'SUB_COMMAND_GROUP',
                   style: 4,
-                  label: getTS(['COMPONENT', 'EMOJI', 'EDIT_ROLES_REMOVE']),
+                  label: getTS(['EMOJI', 'COMPONENT', 'EDIT_ROLES_REMOVE']),
                   emoji: {
                     name: '➖',
                   },
@@ -696,7 +712,7 @@ module.exports = {
                 {
                   type: 'SUB_COMMAND_GROUP',
                   style: 2,
-                  label: getTS(['COMPONENT', 'EMOJI', 'EDIT_ROLES_RESET']),
+                  label: getTS(['EMOJI', 'COMPONENT', 'EDIT_ROLES_RESET']),
                   emoji: {
                     name: '🔄',
                   },
@@ -704,9 +720,10 @@ module.exports = {
                 },
               ],
             },
-          ]
+          ],
         );
-      } else if (component_id == 'emoji_edit_roles_add') {
+      }
+      else if (component_id == 'emoji_edit_roles_add') {
         emb().fields[2] = {
           name: getTS(['EMOJI', 'FIELD_ROLES']) + ' 📝',
           value: emjRoles,
@@ -718,7 +735,7 @@ module.exports = {
           0,
           0,
           0,
-          emb().setTitle(getTS(['EMOJI', 'EDIT_ROLES_ADDING'])),
+          emb({ title: getTS(['EMOJI', 'EDIT_ROLES_ADDING'])}),
           [
             {
               type: 'SUB_COMMAND',
@@ -726,7 +743,7 @@ module.exports = {
                 {
                   type: 'SUB_COMMAND_GROUP',
                   style: 1,
-                  label: getTS(['GENERIC', 'COMPONENT_BACK']),
+                  label: getTS(['GENERIC', 'COMPONENT', 'BACK']),
                   emoji: {
                     name: '↩️',
                   },
@@ -735,7 +752,7 @@ module.exports = {
                 {
                   type: 'SUB_COMMAND_GROUP',
                   style: 3,
-                  label: getTS(['COMPONENT', 'EMOJI', 'EDIT_ROLES_ADD']),
+                  label: getTS(['EMOJI', 'COMPONENT', 'EDIT_ROLES_ADD']),
                   emoji: {
                     name: '➕',
                   },
@@ -745,7 +762,7 @@ module.exports = {
                 {
                   type: 'SUB_COMMAND_GROUP',
                   style: 4,
-                  label: getTS(['COMPONENT', 'EMOJI', 'EDIT_ROLES_REMOVE']),
+                  label: getTS(['EMOJI', 'COMPONENT', 'EDIT_ROLES_REMOVE']),
                   emoji: {
                     name: '➖',
                   },
@@ -759,7 +776,7 @@ module.exports = {
                 {
                   type: 'SUB_COMMAND_GROUP',
                   style: 2,
-                  label: getTS(['COMPONENT', 'EMOJI', 'EDIT_ROLES_RESET']),
+                  label: getTS(['EMOJI', 'COMPONENT', 'EDIT_ROLES_RESET']),
                   emoji: {
                     name: '🔄',
                   },
@@ -767,7 +784,7 @@ module.exports = {
                 },
               ],
             },
-          ]
+          ],
         );
 
         var filter = (msg) => msg.author.id == uI.id;
@@ -786,13 +803,14 @@ module.exports = {
                 getTS(['EMOJI', 'EDIT_ROLES_ADDED_ALREADY'])
             ) {
               return 1;
-            } else {
+            }
+            else {
               return 0;
             }
           }
 
-          var channel = client.channels.cache.find(
-            (c) => c.id == message.channel_id
+          const channel = client.channels.cache.find(
+            (c) => c.id == message.channel_id,
           );
           channel
             .awaitMessages(filter, {
@@ -803,8 +821,8 @@ module.exports = {
             .then(async (msg) => {
               if ((await checkV()) == 0) return;
               msg = msg.first();
-              var emjR = guildI.roles.cache.find(
-                (r) => r.id == msg.content.replace(/[\\<>@&]/g, '')
+              const emjR = guildI.roles.cache.find(
+                (r) => r.id == msg.content.replace(/[\\<>@&]/g, ''),
               );
               if (emjR) {
                 if (emj.roles.cache.has(emjR.id)) {
@@ -817,15 +835,15 @@ module.exports = {
                     0,
                     emb()
                       .setTitle(getTS(['EMOJI', 'EDIT_ROLES_ADDED_ALREADY']))
-                      .setColor('ff0000')
+                      .setColor('ff0000'),
                   );
                   msg.delete();
                   return fm1();
                 }
-                var emjRs = emj.roles.cache.set('', emjR.id);
+                const emjRs = emj.roles.cache.set('', emjR.id);
 
                 emj.edit({ roles: emjRs }).then(async (emj) => {
-                  var emjRoles = Util.discordSort(emj.roles.cache)
+                  let emjRoles = Util.discordSort(emj.roles.cache)
                     .map((r) => `${r}`)
                     .reverse()
                     .join(', ');
@@ -844,13 +862,14 @@ module.exports = {
                     0,
                     emb()
                       .setTitle(getTS(['EMOJI', 'EDITED_ROLES_ADD_REPEAT']))
-                      .setColor('ff8000')
+                      .setColor('ff8000'),
                   );
                 });
                 msg.delete();
 
                 fm1();
-              } else {
+              }
+              else {
                 utils.iCP(
                   client,
                   3,
@@ -860,7 +879,7 @@ module.exports = {
                   0,
                   emb()
                     .setTitle(getTS(['EMOJI', 'EDIT_ROLES_ADD_INVALID']))
-                    .setColor('ff0000')
+                    .setColor('ff0000'),
                 );
                 msg.delete();
 
@@ -876,7 +895,7 @@ module.exports = {
                 0,
                 0,
                 0,
-                emb().setTitle(getTS(['ERROR', 'TIMED_OUT'])),
+                emb({ title: getTS(['ERROR', 'TIMED_OUT'])}),
                 [
                   {
                     type: 'SUB_COMMAND',
@@ -884,7 +903,7 @@ module.exports = {
                       {
                         type: 'SUB_COMMAND_GROUP',
                         style: 1,
-                        label: getTS(['GENERIC', 'COMPONENT_BACK']),
+                        label: getTS(['GENERIC', 'COMPONENT', 'BACK']),
                         emoji: {
                           name: '↩️',
                         },
@@ -924,7 +943,7 @@ module.exports = {
                       },
                     ],
                   },
-                ]
+                ],
               );
             });
         }
@@ -936,7 +955,7 @@ module.exports = {
               {
                 type: 'SUB_COMMAND_GROUP',
                 style: 1,
-                label: getTS(['GENERIC', 'COMPONENT_BACK']),
+                label: getTS(['GENERIC', 'COMPONENT', 'BACK']),
                 emoji: {
                   name: '↩️',
                 },
@@ -945,7 +964,7 @@ module.exports = {
               {
                 type: 'SUB_COMMAND_GROUP',
                 style: 3,
-                label: getTS(['COMPONENT', 'EMOJI', 'EDIT_ROLES_ADD']),
+                label: getTS(['EMOJI', 'COMPONENT', 'EDIT_ROLES_ADD']),
                 emoji: {
                   name: '➕',
                 },
@@ -955,7 +974,7 @@ module.exports = {
               {
                 type: 'SUB_COMMAND_GROUP',
                 style: 4,
-                label: getTS(['COMPONENT', 'EMOJI', 'EDIT_ROLES_REMOVE']),
+                label: getTS(['EMOJI', 'COMPONENT', 'EDIT_ROLES_REMOVE']),
                 emoji: {
                   name: '➖',
                 },
@@ -969,7 +988,7 @@ module.exports = {
               {
                 type: 'SUB_COMMAND_GROUP',
                 style: 2,
-                label: getTS(['COMPONENT', 'EMOJI', 'EDIT_ROLES_RESET']),
+                label: getTS(['EMOJI', 'COMPONENT', 'EDIT_ROLES_RESET']),
                 emoji: {
                   name: '🔄',
                 },
@@ -978,7 +997,8 @@ module.exports = {
             ],
           },
         ]);
-      } else if (component_id == 'emoji_edit_roles_remove') {
+      }
+      else if (component_id == 'emoji_edit_roles_remove') {
         emb().fields[2] = {
           name: getTS(['EMOJI', 'FIELD_ROLES']) + ' 📝',
           value: emjRoles,
@@ -990,7 +1010,7 @@ module.exports = {
           0,
           0,
           0,
-          emb().setTitle(getTS(['EMOJI', 'EDIT_ROLES_REMOVING'])),
+          emb({ title: getTS(['EMOJI', 'EDIT_ROLES_REMOVING'])}),
           [
             {
               type: 'SUB_COMMAND',
@@ -998,7 +1018,7 @@ module.exports = {
                 {
                   type: 'SUB_COMMAND_GROUP',
                   style: 1,
-                  label: getTS(['GENERIC', 'COMPONENT_BACK']),
+                  label: getTS(['GENERIC', 'COMPONENT', 'BACK']),
                   emoji: {
                     name: '↩️',
                   },
@@ -1007,7 +1027,7 @@ module.exports = {
                 {
                   type: 'SUB_COMMAND_GROUP',
                   style: 3,
-                  label: getTS(['COMPONENT', 'EMOJI', 'EDIT_ROLES_ADD']),
+                  label: getTS(['EMOJI', 'COMPONENT', 'EDIT_ROLES_ADD']),
                   emoji: {
                     name: '➕',
                   },
@@ -1016,7 +1036,7 @@ module.exports = {
                 {
                   type: 'SUB_COMMAND_GROUP',
                   style: 4,
-                  label: getTS(['COMPONENT', 'EMOJI', 'EDIT_ROLES_REMOVE']),
+                  label: getTS(['EMOJI', 'COMPONENT', 'EDIT_ROLES_REMOVE']),
                   emoji: {
                     name: '➖',
                   },
@@ -1031,7 +1051,7 @@ module.exports = {
                 {
                   type: 'SUB_COMMAND_GROUP',
                   style: 2,
-                  label: getTS(['COMPONENT', 'EMOJI', 'EDIT_ROLES_RESET']),
+                  label: getTS(['EMOJI', 'COMPONENT', 'EDIT_ROLES_RESET']),
                   emoji: {
                     name: '🔄',
                   },
@@ -1039,7 +1059,7 @@ module.exports = {
                 },
               ],
             },
-          ]
+          ],
         );
 
         var filter = (msg) => msg.author.id == uI.id;
@@ -1058,13 +1078,14 @@ module.exports = {
                 getTS(['EMOJI', 'EDIT_ROLES_REMOVED_ALREADY'])
             ) {
               return 1;
-            } else {
+            }
+            else {
               return 0;
             }
           }
 
-          var channel = client.channels.cache.find(
-            (c) => c.id == message.channel_id
+          const channel = client.channels.cache.find(
+            (c) => c.id == message.channel_id,
           );
           channel
             .awaitMessages(filter, {
@@ -1075,8 +1096,8 @@ module.exports = {
             .then(async (msg) => {
               if ((await checkV()) == 0) return;
               msg = msg.first();
-              var emjR = guildI.roles.cache.find(
-                (r) => r.id == msg.content.replace(/[\\<>@&]/g, '')
+              const emjR = guildI.roles.cache.find(
+                (r) => r.id == msg.content.replace(/[\\<>@&]/g, ''),
               );
               if (emjR) {
                 if (!emj.roles.cache.has(emjR.id)) {
@@ -1089,17 +1110,17 @@ module.exports = {
                     0,
                     emb()
                       .setTitle(getTS(['EMOJI', 'EDIT_ROLES_REMOVED_ALREADY']))
-                      .setColor('ff0000')
+                      .setColor('ff0000'),
                   );
                   msg.delete();
                   return fm1();
                 }
 
-                var emjRs = emj.roles.cache;
+                const emjRs = emj.roles.cache;
                 emjRs.delete(emjR.id);
 
                 emj.edit({ roles: emjRs }).then(async (emj) => {
-                  var emjRoles = Util.discordSort(emj.roles.cache)
+                  let emjRoles = Util.discordSort(emj.roles.cache)
                     .map((r) => `${r}`)
                     .reverse()
                     .join(', ');
@@ -1118,13 +1139,14 @@ module.exports = {
                     0,
                     emb()
                       .setTitle(getTS(['EMOJI', 'EDITED_ROLES_REMOVE_REPEAT']))
-                      .setColor('ff8000')
+                      .setColor('ff8000'),
                   );
                 });
                 msg.delete();
 
                 fm1();
-              } else {
+              }
+              else {
                 utils.iCP(
                   client,
                   3,
@@ -1134,7 +1156,7 @@ module.exports = {
                   0,
                   emb()
                     .setTitle(getTS(['EMOJI', 'EDIT_ROLES_REMOVE_INVALID']))
-                    .setColor('ff0000')
+                    .setColor('ff0000'),
                 );
                 msg.delete();
 
@@ -1150,7 +1172,7 @@ module.exports = {
                 0,
                 0,
                 0,
-                emb().setTitle(getTS(['ERROR', 'TIMED_OUT'])),
+                emb({ title: getTS(['ERROR', 'TIMED_OUT'])}),
                 [
                   {
                     type: 'SUB_COMMAND',
@@ -1158,7 +1180,7 @@ module.exports = {
                       {
                         type: 'SUB_COMMAND_GROUP',
                         style: 1,
-                        label: getTS(['GENERIC', 'COMPONENT_BACK']),
+                        label: getTS(['GENERIC', 'COMPONENT', 'BACK']),
                         emoji: {
                           name: '↩️',
                         },
@@ -1198,7 +1220,7 @@ module.exports = {
                       },
                     ],
                   },
-                ]
+                ],
               );
             });
         }
@@ -1210,7 +1232,7 @@ module.exports = {
               {
                 type: 'SUB_COMMAND_GROUP',
                 style: 1,
-                label: getTS(['GENERIC', 'COMPONENT_BACK']),
+                label: getTS(['GENERIC', 'COMPONENT', 'BACK']),
                 emoji: {
                   name: '↩️',
                 },
@@ -1219,7 +1241,7 @@ module.exports = {
               {
                 type: 'SUB_COMMAND_GROUP',
                 style: 3,
-                label: getTS(['COMPONENT', 'EMOJI', 'EDIT_ROLES_ADD']),
+                label: getTS(['EMOJI', 'COMPONENT', 'EDIT_ROLES_ADD']),
                 emoji: {
                   name: '➕',
                 },
@@ -1228,7 +1250,7 @@ module.exports = {
               {
                 type: 'SUB_COMMAND_GROUP',
                 style: 4,
-                label: getTS(['COMPONENT', 'EMOJI', 'EDIT_ROLES_REMOVE']),
+                label: getTS(['EMOJI', 'COMPONENT', 'EDIT_ROLES_REMOVE']),
                 emoji: {
                   name: '➖',
                 },
@@ -1243,7 +1265,7 @@ module.exports = {
               {
                 type: 'SUB_COMMAND_GROUP',
                 style: 2,
-                label: getTS(['COMPONENT', 'EMOJI', 'EDIT_ROLES_RESET']),
+                label: getTS(['EMOJI', 'COMPONENT', 'EDIT_ROLES_RESET']),
                 emoji: {
                   name: '🔄',
                 },
@@ -1252,9 +1274,10 @@ module.exports = {
             ],
           },
         ]);
-      } else if (component_id == 'emoji_edit_roles_reset') {
+      }
+      else if (component_id == 'emoji_edit_roles_reset') {
         emj.edit({ roles: [] }).then(async (emj) => {
-          var emjRoles = Util.discordSort(emj.roles.cache)
+          let emjRoles = Util.discordSort(emj.roles.cache)
             .map((r) => `${r}`)
             .reverse()
             .join(', ');
@@ -1280,7 +1303,7 @@ module.exports = {
                   {
                     type: 'SUB_COMMAND_GROUP',
                     style: 1,
-                    label: getTS(['GENERIC', 'COMPONENT_BACK']),
+                    label: getTS(['GENERIC', 'COMPONENT', 'BACK']),
                     emoji: {
                       name: '↩️',
                     },
@@ -1289,7 +1312,7 @@ module.exports = {
                   {
                     type: 'SUB_COMMAND_GROUP',
                     style: 3,
-                    label: getTS(['COMPONENT', 'EMOJI', 'EDIT_ROLES_ADD']),
+                    label: getTS(['EMOJI', 'COMPONENT', 'EDIT_ROLES_ADD']),
                     emoji: {
                       name: '➕',
                     },
@@ -1320,10 +1343,11 @@ module.exports = {
                   },
                 ],
               },
-            ]
+            ],
           );
         });
-      } else if (component_id == 'emoji_edit_delete') {
+      }
+      else if (component_id == 'emoji_edit_delete') {
         utils.iCP(
           client,
           3,
@@ -1342,7 +1366,7 @@ module.exports = {
                 {
                   type: 'SUB_COMMAND_GROUP',
                   style: 1,
-                  label: getTS(['GENERIC', 'COMPONENT_BACK']),
+                  label: getTS(['GENERIC', 'COMPONENT', 'BACK']),
                   emoji: {
                     name: '↩️',
                   },
@@ -1359,9 +1383,10 @@ module.exports = {
                 },
               ],
             },
-          ]
+          ],
         );
-      } else if (component_id == 'emoji_edit_delete_confirm') {
+      }
+      else if (component_id == 'emoji_edit_delete_confirm') {
         emj.delete();
         utils.iCP(
           client,
@@ -1378,7 +1403,7 @@ module.exports = {
                 {
                   type: 'SUB_COMMAND_GROUP',
                   style: 4,
-                  label: getTS(['GENERIC', 'COMPONENT_MESSAGE_DELETE']),
+                  label: getTS(['GENERIC', 'COMPONENT', 'MESSAGE_DELETE']),
                   emoji: {
                     name: '🧹',
                   },
@@ -1386,9 +1411,10 @@ module.exports = {
                 },
               ],
             },
-          ]
+          ],
         );
-      } else if (component_id == 'emoji_message_delete') {
+      }
+      else if (component_id == 'emoji_message_delete') {
         utils.iCP(client, 5, interaction);
       }
     }

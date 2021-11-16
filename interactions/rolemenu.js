@@ -1,97 +1,87 @@
-const { SlashCommandBuilder } = require('@discordjs/builders');
-const {
-  MessageSelectMenu,
-  Permissions,
-  MessageActionRow,
-  Util,
-  Collection,
-} = require('discord.js');
-const { botOwners } = require('../botdefaults');
+'use strict';
+
+const { MessageSelectMenu, Permissions, MessageActionRow, Collection } = require('discord.js'),
+  { botOwners } = require('../defaults'),
+  { collMap } = require('../utils');
 
 module.exports = {
   data: [
-    new SlashCommandBuilder()
-      .setName('rolemenu')
-      .setDescription('Manage a rolemenu.')
-      .addSubcommand((sub) =>
-        sub
-          .setName('create')
-          .setDescription('Create a rolemenu.')
-          .addChannelOption((opt) =>
-            opt
-              .setName('channel')
-              .setDescription('The channel to create the rolemenu.')
-          )
-          .addBooleanOption((opt) =>
-            opt
-              .setName('ephemeral')
-              .setDescription(
-                'Send reply as an ephemeral message. Defaults to true.'
-              )
-          )
-      )
-      .addSubcommand((sub) =>
-        sub
-          .setName('edit')
-          .setDescription('Edit a rolemenu.')
-          .addChannelOption((opt) =>
-            opt
-              .setName('channel')
-              .setDescription('The channel to create the rolemenu.')
-          )
-          .addBooleanOption((opt) =>
-            opt
-              .setName('ephemeral')
-              .setDescription(
-                'Send reply as an ephemeral message. Defaults to true.'
-              )
-          )
-      ),
+    {
+      name: 'rolemenu',
+      description: 'Manage a rolemenu.',
+      options: [
+        {
+          name: 'create',
+          description: 'Create a rolemenu.',
+          type: 'SUB_COMMAND',
+          options: [
+            {
+              name: 'channel',
+              description: 'The channel to create the rolemenu.',
+              type: 'CHANNEL',
+            },
+            {
+              name: 'ephemeral',
+              description: 'Send reply as an ephemeral message. Defaults to true.',
+              type: 'BOOLEAN',
+            },
+          ],
+        },
+        {
+          name: 'edit',
+          description: 'Edit a rolemenu.',
+          type: 'SUB_COMMAND',
+          options: [
+            {
+              name: 'channel',
+              description: 'The channel to edit the rolemenu.',
+              type: 'CHANNEL',
+              channel_types: [0, 5, 10, 11, 12],
+            },
+            {
+              name: 'ephemeral',
+              description: 'Send reply as an ephemeral message. Defaults to true.',
+              type: 'BOOLEAN',
+            },
+          ],
+        },
+      ],
+    },
   ],
-  guildOnly: '420007989261500418',
-  async execute(client, interaction, getTS, emb) {
-    var { guild, user, values, options } = interaction;
-
-    if (!interaction.inGuild())
-      return interaction.reply({
-        embeds: [emb({ type: 'error' }).setDescription(getTS(['ERROR', 'DM']))],
-        ephemeral: ephemeralO,
-      });
-    if (!botOwners.includes(user.id))
-      return interaction.reply({
-        embeds: [emb({ type: 'wip' })],
-        ephemeral: true,
-      });
-
-    var channelO = options?.getChannel('channel') ?? interaction.channel;
-    var ephemeralO = options?.getBoolean('ephemeral') ?? true;
+  guildOnly: ['420007989261500418'],
+  async execute(client, interaction, st, emb) {
+    const { guild, user, values, options } = interaction,
+      channelO = options?.getChannel('channel') ?? interaction.channel,
+      ephemeralO = options?.getBoolean('ephemeral') ?? true;
 
     if (interaction.isCommand()) {
+      await interaction.deferReply({ ephemeral: ephemeralO });
+      if (!interaction.inGuild()) {
+        return interaction.editReply({
+          embeds: [emb({ type: 'error' }).setDescription(st.__('ERROR.DM'))],
+          ephemeral: ephemeralO,
+        });
+      }
+      if (!botOwners.includes(user.id)) {
+        return interaction.editReply({
+          embeds: [emb({ type: 'wip' })],
+          ephemeral: true,
+        });
+      }
+
       if (options?.getSubcommand() === 'create') {
-        await interaction.deferReply({ ephemeral: ephemeralO });
-
-        if (!channelO.isText())
+        if (!channelO.isText()) {
           return interaction.editReply({
-            embeds: [
-              emb({ type: 'error' }).setDescription(
-                'Not a text based channel.'
-              ),
-            ],
+            embeds: [emb({ type: 'error' }).setDescription('Not a text based channel.')],
           });
-        if (
-          !channelO
-            .permissionsFor(client.user)
-            .has(Permissions.FLAGS.SEND_MESSAGES)
-        )
+        }
+        if (!channelO.permissionsFor(client.user).has(Permissions.FLAGS.SEND_MESSAGES)) {
           return interaction.editReply({
-            embeds: [
-              emb({ type: 'error' }).setDescription(
-                "Can't send messages on this channel."
-              ),
-            ],
+            embeds: [emb({ type: 'error' }).setDescription("Can't send messages on this channel.")],
           });
+        }
 
-        var row = new MessageActionRow().addComponents(
+        const row = new MessageActionRow().addComponents(
           new MessageSelectMenu()
             .setCustomId('rolemenu_giverole')
             .setPlaceholder('Escolha um cargo')
@@ -110,46 +100,33 @@ module.exports = {
                 emoji: '⛔',
                 value: '531313330703433758',
               },
-            ])
+            ]),
         );
         await channelO.send({
-          embeds: [
-            emb()
-              .setTitle('Escolha algum cargo.')
-              .setDescription('🎂 Aniversariantes\n⛔ Mutados'),
-          ],
+          embeds: [emb({ title: 'Escolha Algum Cargo' }).setDescription('🎂 Aniversariantes\n⛔ Mutados')],
           components: [row],
         });
 
-        interaction.editReply({
-          embeds: [
-            emb().setDescription('rolemenu criado em: ' + channelO.toString()),
-          ],
+        return interaction.editReply({
+          embeds: [emb().setDescription(`rolemenu criado em: ${channelO.toString()}`)],
         });
       }
-    } else if (interaction.isSelectMenu()) {
+    }
+    if (interaction.isSelectMenu()) {
       if (interaction.customId === 'rolemenu_giverole') {
         await interaction.deferReply({ ephemeral: true });
-        var roles = new Collection();
+        let roles = new Collection();
         for (let rID of values) {
           rID = rID.split(' ').join('');
-          let role = guild.roles.cache.filter((r) => r.id == rID);
-          if (role) {
-            roles = roles.concat(role);
-          } else {
-            console.error(
-              'Role ' + rID + ' does not exist within guild ' + guild.id
-            );
-            return interaction.reply('Role ' + rID + ' not found');
-          }
-        }
-        roles = Util.discordSort(roles)
-          .map((r) => `${r}`)
-          .reverse()
-          .join(', ');
+          const role = guild.roles.cache.filter(r => r.id === rID);
 
-        interaction.editReply({
-          embeds: [emb().setTitle('Cargos selecionados').setDescription(roles)],
+          if (!role) return interaction.reply(`Role ${rID} not found`);
+          roles = roles.concat(role);
+        }
+        roles = collMap(roles);
+
+        return interaction.editReply({
+          embeds: [emb({ title: 'Cargos Selecionados' }).setDescription(roles)],
         });
       }
     }

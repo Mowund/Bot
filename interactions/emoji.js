@@ -1,364 +1,333 @@
-const { SlashCommandBuilder } = require('@discordjs/builders');
-const {
-  MessageSelectMenu,
-  Permissions,
-  MessageActionRow,
-  Util,
-  Collection,
-  MessageButton,
-} = require('discord.js');
-const { botOwners } = require('../botdefaults');
-const { checkImage } = require('../utils');
+'use strict';
+
+const { Permissions, MessageActionRow, Util, MessageButton, MessageFlags } = require('discord.js'),
+  { botOwners } = require('../defaults'),
+  { checkImage, collMap } = require('../utils');
 
 module.exports = {
   data: [
-    new SlashCommandBuilder()
-      .setName('emoji')
-      .setDescription('View or manage an emoji.')
-      .addStringOption((opt) =>
-        opt
-          .setName('emoji')
-          .setDescription("ID, mention or name (if it's on the same server).")
-          .setRequired(true)
-      )
-      .addBooleanOption((opt) =>
-        opt
-          .setName('ephemeral')
-          .setDescription(
-            'Send reply as an ephemeral message. Defaults to true.'
-          )
-      ),
+    {
+      name: 'emoji',
+      description: 'View or manage an emoji.',
+      options: [
+        {
+          name: 'emoji',
+          description: "ID, mention or name (if it's on the same server).",
+          type: 'STRING',
+          required: true,
+        },
+        {
+          name: 'globalsearch',
+          description:
+            'Search for an emoji through all cached guilds, significantly decreasing speed. Defaults to false.',
+          type: 'BOOLEAN',
+        },
+        {
+          name: 'ephemeral',
+          description: 'Send reply as an ephemeral message. Defaults to true.',
+          type: 'BOOLEAN',
+        },
+      ],
+    },
   ],
-  async execute(client, interaction, getTS, emb) {
-    var { guild, user, member, message, options } = interaction;
-    var emojiO = options?.getString('emoji').match(/^\S*/g).toString();
-    var ephemeralO = options?.getBoolean('ephemeral') ?? true;
+  async execute(client, interaction, st, embed) {
+    const { guild, user, memberPermissions, message, options } = interaction,
+      emojiO = options?.getString('emoji').match(/^.+?(?=[\s<]|(?<=[\s>])|$)/gm)?.[0],
+      ephemeralO = options?.getBoolean('ephemeral') ?? true;
 
-    if (!interaction.inGuild())
-      return interaction.reply({
-        embeds: [emb({ type: 'error' }).setDescription(getTS(['ERROR', 'DM']))],
-        ephemeral: true,
-      });
+    let { customId } = interaction,
+      emjFR,
+      disAdd = false,
+      disEdit = false;
 
-    if (!botOwners.includes(user.id))
-      return interaction.reply({
-        embeds: [emb({ type: 'wip' })],
-        ephemeral: true,
-      });
-
-    var emjFR;
-    var disEdit = false;
     if (interaction.isCommand()) {
-      await interaction.deferReply({ ephemeral: ephemeralO });
-
-      if (guild.emojis.cache.find((q) => q.name == emojiO)) {
-        emojiO = guild.emojis.cache.find((q) => q.name == emojiO);
-        emojiO = '<:' + emojiO.name + ':' + emojiO.id + '>';
-      }
-
-      var emjNID = emojiO.match(/<(a|):.+?:\d+>/g)
-        ? emojiO.match(/<(a|):.+?:\d+>/g).toString()
-        : '';
-
-      var emjID = emjNID.match(/(?<=:)\d+/g)
-        ? emjNID.match(/(?<=:)\d+/g).toString()
-        : null;
-
-      var emjName = emjNID.match(/(?<=:).*(?=:)/g)
-        ? emjNID.match(/(?<=:).*(?=:)/g).toString()
-        : null;
-
-      var onlyID = false;
-      if (!emjNID && emojiO.match(/^[0-9]*$/g)) {
-        emjID = emojiO;
-        onlyID = true;
-      }
-
-      emojiO = client.emojis.cache.find((emj) => emj.id == emjID);
-      var emjVal = true;
-      var emjURL = 'https://cdn.discordapp.com/emojis/' + emjID;
-      if (await checkImage(emjURL + '.gif')) {
-        emjURL = emjURL + '.gif';
-      } else if (!(await checkImage(emjURL))) {
-        emjVal = false;
-      }
-
-      var emjFN;
-      if (!emjVal) {
-        emjFN = {
-          name: getTS(['EMOJI', 'FIELD_NAME']),
-          value: '`' + emjName + '`',
-          inline: true,
-        };
-        return interaction.editReply({
-          embeds: [
-            emb({ type: 'error' }).setDescription(
-              'Não contém um emoji válido.'
-            ),
-          ],
+      if (!emojiO) {
+        return interaction.reply({
+          embeds: [embed({ type: 'error' }).setDescription('Emoji não definido.')],
           ephemeral: true,
         });
       }
+      await interaction.deferReply({ ephemeral: ephemeralO });
 
-      if (emojiO) {
-        if (
-          !member.permissions.has(Permissions.FLAGS.MANAGE_EMOJIS) ||
-          emojiO.guild.id != guild.id
-        ) {
-          disEdit = true;
+      let emjID = emojiO?.match(/^\d+$/g)?.[0] || emojiO?.match(/(?<=:)\d+(?=>)/g)?.[0],
+        emjName = emojiO?.match(/(?<=:).+(?=:)/g)?.[0];
+
+      const emj =
+        client.emojis.cache.find(({ id }) => id === emjID) ||
+        guild?.emojis.cache.find(({ name }) => name === emojiO) ||
+        guild?.emojis.cache.find(({ name }) => name.toLowerCase() === emojiO.toLowerCase());
+
+      if (emj) {
+        if (!memberPermissions.has(Permissions.FLAGS.MANAGE_EMOJIS_AND_STICKERS)) {
+          disAdd = true;
+          if (emj?.guild.id !== guild?.id) {
+            disEdit = true;
+          }
         }
+        const emjRoles = collMap(emj.roles.cache) || '@everyone';
 
-        emjName = emojiO.name;
-        var emjRoles =
-          Util.discordSort(emojiO.roles.cache)
-            .map((r) => `${r}`)
-            .reverse()
-            .join(', ') || '@everyone';
-
-        emjFN = {
-          name: getTS(['EMOJI', 'FIELD_NAME']),
-          value: '`' + emjName + '`',
-          inline: true,
-        };
+        emjID = emj.id;
+        emjName = emj.name;
         emjFR = {
-          name: getTS(['EMOJI', 'FIELD_ROLES']),
+          name: st.__('EMOJI.FIELD_ROLES'),
           value: emjRoles,
         };
       } else {
         disEdit = true;
       }
+      let emjURL = `https://cdn.discordapp.com/emojis/${emjID}`;
+      if (await checkImage(`${emjURL}.gif`)) {
+        emjURL += '.gif';
+      } else if (!(await checkImage(emjURL))) {
+        return interaction.editReply({
+          embeds: [embed({ type: 'error' }).setDescription('Não contém um emoji válido.')],
+          ephemeral: true,
+        });
+      } else {
+        emjURL += '.png?size=4096';
+      }
 
-      if (emjFN) emb = emb().addFields(emjFN);
+      let emb = emjName ? embed().addField(st.__('EMOJI.FIELD_NAME'), `\`${emjName}\``, true) : embed();
       emb = emb
-        .setTitle(getTS(['EMOJI', 'VIEW_VIEWING']))
-        .addField(getTS(['EMOJI', 'FIELD_ID']), '`' + emjID + '`', true)
+        .setTitle(st.__('EMOJI.VIEW_VIEWING'))
+        .addField(st.__('EMOJI.FIELD_ID'), `\`${emjID}\``, true)
         .setThumbnail(emjURL)
         .setColor('00ff00')
         .setTimestamp(Date.now());
       if (emjFR) emb = emb.addFields(emjFR);
 
-      var row = new MessageActionRow();
-      if (!ephemeralO)
-        row = row.addComponents(
+      const row = !ephemeralO || interaction.inGuild() ? new MessageActionRow() : undefined;
+      if (!ephemeralO) {
+        row.addComponents(
           new MessageButton()
-            .setLabel(getTS(['GENERIC', 'COMPONENT_MESSAGE_DELETE']))
+            .setLabel(st.__('GENERIC.COMPONENT.MESSAGE_DELETE'))
             .setEmoji('🧹')
             .setStyle('DANGER')
-            .setCustomId('generic_message_delete')
+            .setCustomId('generic_message_delete'),
         );
-      row.addComponents(
-        new MessageButton()
-          .setLabel(getTS(['COMPONENT', 'EMOJI', 'EDIT']))
-          .setEmoji('📝')
-          .setStyle('PRIMARY')
-          .setCustomId('emoji_edit')
-          .setDisabled(disEdit)
-      );
-
-      interaction.editReply({
-        embeds: [emb],
-        components: [row],
-        ephemeral: ephemeralO,
-      });
-    } else if (interaction.isButton()) {
-      var embEID = new URL(message.embeds[0].thumbnail.url).pathname.split(
-        /[\/&\.]/
-      );
-      var embAURL = new URL(message.embeds[0].footer.icon_url).pathname.split(
-        /[\/&\.]/
-      );
-
-      if (uIF.id != embAURL[2]) {
-        return utils.iCP(client, 0, interaction, 0, 1, 0, 1);
+      }
+      if (interaction.inGuild()) {
+        if (emj?.guild.id !== guild?.id) {
+          row.addComponents(
+            new MessageButton()
+              .setLabel(st.__('EMOJI.COMPONENT.EDIT_ADD'))
+              .setEmoji('➕')
+              .setStyle('SUCCESS')
+              .setCustomId('emoji_edit_add')
+              .setDisabled(disAdd),
+          );
+        }
+        row.addComponents(
+          new MessageButton()
+            .setLabel(st.__('EMOJI.COMPONENT.EDIT'))
+            .setEmoji('📝')
+            .setStyle('PRIMARY')
+            .setCustomId('emoji_edit')
+            .setDisabled(disEdit),
+        );
       }
 
-      var emjName;
-      var emjID;
+      const opts = {
+        embeds: [emb],
+        ephemeral: ephemeralO,
+      };
+      if (row) opts.components = [row];
+      return interaction.editReply(opts);
+    }
+    if (interaction.isButton()) {
+      if (user.id !== message.interaction.user.id) {
+        return interaction.reply({
+          embeds: [embed({ type: 'error' }).setDescription(st.__('ERROR.UNALLOWED.COMMAND'))],
+          ephemeral: true,
+        });
+      }
 
-      var emj = client.emojis.cache.find((emj) => emj.id == embEID[2]);
-      var emjFR = [];
+      if (!memberPermissions.has(Permissions.FLAGS.MANAGE_EMOJIS_AND_STICKERS)) {
+        customId = 'emoji_noPERM';
+      }
+
+      let emjID = new URL(message.embeds[0].thumbnail.url).pathname.split(/[/&.]/)[2],
+        emj = client.emojis.cache.find(e => e.id === emjID),
+        emjName;
+
+      if (message.embeds[0].fields[0].name === st.__('EMOJI.FIELD_NAME')) {
+        emjName = message.embeds[0].fields[0].value.replaceAll('`', '');
+      }
 
       if (emj) {
-        if (
-          !member.permissions.has(Permissions.FLAGS.MANAGE_EMOJIS) ||
-          emj.guild.id != guildI.id
-        ) {
-          disEdit = true;
-        }
-
         emjName = emj.name;
         emjID = emj.id;
-        var emjRoles = Util.discordSort(emj.roles.cache)
-          .map((r) => `${r}`)
-          .reverse()
-          .join(', ');
-        emjRoles ??= '@everyone';
 
-        emjFN = {
-          name: getTS(['EMOJI', 'FIELD_NAME]']),
-          value: '`' + emjName + '`',
-          inline: true,
-        };
+        let emjRoles = Util.discordSort(emj.roles.cache);
+        emjRoles =
+          (emj?.guild.id === guild?.id ? emjRoles.map(r => `${r}`) : emjRoles.map(r => `\`${r.id}\``))
+            .reverse()
+            .join(', ') || '@everyone';
+
         emjFR = {
-          name: getTS(['EMOJI', 'FIELD_ROLES']),
+          name: st.__('EMOJI.FIELD_ROLES'),
           value: emjRoles,
         };
       } else {
         disEdit = true;
       }
 
-      var emb = emb({ interacted: true })
+      let emb = emjName
+        ? embed({ interacted: true }).addField(st.__('EMOJI.FIELD_NAME'), `\`${emjName}\``, true)
+        : embed({ interacted: true });
+      emb = emb
         .setColor('ffff00')
-        .setTitle(getTS(['EMOJI', 'EDIT_EDITING']))
-        .addFields(
-          {
-            name: getTS(['EMOJI', 'FIELD_NAME']),
-            value: '`' + emjName + '`',
-            inline: true,
-          },
-          {
-            name: getTS(['EMOJI', 'FIELD_ID']),
-            value: '`' + emjID + '`',
-            inline: true,
-          },
-          emjFR
-        )
-        .setThumbnail(message.embeds[0].thumbnail.url);
+        .setTitle(st.__('EMOJI.EDIT_EDITING'))
+        .addField(st.__('EMOJI.FIELD_ID'), `\`${emjID}\``, true)
+        .setThumbnail(message.embeds[0].thumbnail.url)
+        .setTimestamp(Date.now());
+      if (emjFR) emb = emb.addFields(emjFR);
 
-      if (
-        !['emoji_view', 'emoji_message_delete'].includes(
-          interaction.customId
-        ) &&
-        !member.permissions.has(Permissions.FLAGS.MANAGE_EMOJIS)
-      ) {
-        var row = new MessageActionRow();
-        if (!ephemeralO)
-          row = row.addComponents(
-            new MessageButton()
-              .setLabel(getTS(['GENERIC', 'COMPONENT_MESSAGE_DELETE']))
-              .setEmoji('🧹')
-              .setStyle('DANGER')
-              .setCustomId('generic_message_delete')
-          );
-        row.addComponents(
-          new MessageButton()
-            .setLabel(getTS(['COMPONENT', 'EMOJI', 'EDIT']))
-            .setEmoji('📝')
-            .setStyle('PRIMARY')
-            .setCustomId('emoji_edit')
-            .setDisabled(disEdit)
-        );
-        return interaction.update({
-          embeds: [
-            emb.setTitle(getTS(['EMOJI', 'VIEW_VIEWING'])).setColor('00ff00'),
-          ],
-          components: [row],
-        });
-      }
-
-      switch (interaction.customId) {
+      switch (customId) {
+        case 'emoji_edit_add':
+        case 'emoji_edit_readd':
         case 'emoji_edit': {
-          let row = new MessageActionRow().addComponents(
-            new MessageButton()
-              .setLabel(getTS(['COMPONENT', 'EMOJI', 'VIEW']))
-              .setEmoji('🔎')
-              .setStyle('PRIMARY')
-              .setCustomId('emoji_view')
-              .setDisabled(disEdit),
-            new MessageButton()
-              .setLabel(getTS(['COMPONENT', 'EMOJI', 'EDIT_NAME']))
-              .setEmoji('✏️')
-              .setStyle('PRIMARY')
-              .setCustomId('emoji_edit_name')
-              .setDisabled(disEdit),
-            new MessageButton()
-              .setLabel(getTS(['COMPONENT', 'EMOJI', 'EDIT_ROLES']))
-              .setEmoji('📜')
-              .setStyle('PRIMARY')
-              .setCustomId('emoji_edit_role')
-              .setDisabled(disEdit)
-          );
-          return interaction.update({
-            embeds: [
-              emb().setTitle('Cargos selecionados').setDescription(roles),
-            ],
-            components: [row],
-          });
-          utils.iCP(client, 3, interaction, 0, 0, 0, emb, [
-            {
-              type: 'SUB_COMMAND',
-              components: [
-                {
-                  type: 'SUB_COMMAND_GROUP',
-                  style: 1,
-                  label: getTS(['COMPONENT', 'EMOJI', 'VIEW']),
-                  emoji: {
-                    name: '🔎',
-                  },
-                  custom_id: 'emoji_view',
-                },
-                {
-                  type: 'SUB_COMMAND_GROUP',
-                  style: 2,
-                  label: getTS(['COMPONENT', 'EMOJI', 'EDIT_NAME']),
-                  emoji: {
-                    name: '✏️',
-                  },
-                  custom_id: 'emoji_edit_name',
-                },
-                {
-                  type: 'SUB_COMMAND_GROUP',
-                  style: 2,
-                  label: getTS(['COMPONENT', 'EMOJI', 'EDIT_ROLES']),
-                  emoji: {
-                    name: '📜',
-                  },
-                  custom_id: 'emoji_edit_role',
-                },
-              ],
-            },
-            {
-              type: 'SUB_COMMAND',
-              components: [
-                {
-                  type: 'SUB_COMMAND_GROUP',
-                  style: 4,
-                  label: getTS(['COMPONENT', 'EMOJI', 'EDIT_DELETE']),
-                  emoji: {
-                    name: '🗑️',
-                  },
-                  custom_id: 'emoji_edit_delete',
-                },
-              ],
-            },
-          ]);
-        }
+          if (['emoji_edit_add', 'emoji_edit_readd'].includes(customId)) {
+            emj = await guild?.emojis.create(message.embeds[0].thumbnail.url, emjName || emjID);
 
+            if (!emb.fields[1]) {
+              emb.fields[0] = {
+                name: 'Name',
+                value: `\`${emj.name}\``,
+                inline: true,
+              };
+            }
+            emb.fields[1] = {
+              name: 'ID',
+              value: `\`${emj.id}\``,
+              inline: true,
+            };
+            emb
+              .setColor('00ff00')
+              .setThumbnail(emj.url)
+              .setTitle(st.__(`EMOJI.${customId === 'emoji_edit_add' ? 'EDIT_ADDED' : 'EDIT_READDED'}`));
+          }
+          return interaction.update({
+            embeds: [emb],
+            components: [
+              new MessageActionRow().addComponents(
+                new MessageButton()
+                  .setLabel(st.__('EMOJI.COMPONENT.VIEW'))
+                  .setEmoji('🔎')
+                  .setStyle('PRIMARY')
+                  .setCustomId('emoji_view'),
+                new MessageButton()
+                  .setLabel(st.__('EMOJI.COMPONENT.EDIT_NAME'))
+                  .setEmoji('✏️')
+                  .setStyle('SECONDARY')
+                  .setCustomId('emoji_edit_name'),
+                new MessageButton()
+                  .setLabel(st.__('EMOJI.COMPONENT.EDIT_ROLES'))
+                  .setEmoji('📜')
+                  .setStyle('SECONDARY')
+                  .setCustomId('emoji_edit_role'),
+              ),
+              new MessageActionRow().addComponents(
+                new MessageButton()
+                  .setLabel(st.__('EMOJI.COMPONENT.EDIT_DELETE'))
+                  .setEmoji('🗑️')
+                  .setStyle('DANGER')
+                  .setCustomId('emoji_edit_delete'),
+              ),
+            ],
+          });
+        }
+        case 'emoji_noPERM':
         case 'emoji_view': {
-          var row = new MessageActionRow();
-          if (!ephemeralO)
-            row = row.addComponents(
+          const row = new MessageActionRow();
+          if (!message.flags.has(MessageFlags.FLAGS.EPHEMERAL)) {
+            row.addComponents(
               new MessageButton()
-                .setLabel(getTS(['GENERIC', 'COMPONENT_MESSAGE_DELETE']))
+                .setLabel(st.__('GENERIC.COMPONENT.MESSAGE_DELETE'))
                 .setEmoji('🧹')
                 .setStyle('DANGER')
-                .setCustomId('generic_message_delete')
+                .setCustomId('generic_message_delete'),
             );
+          }
           row.addComponents(
             new MessageButton()
-              .setLabel(getTS(['COMPONENT', 'EMOJI', 'EDIT']))
+              .setLabel(st.__('EMOJI.COMPONENT.EDIT'))
               .setEmoji('📝')
               .setStyle('PRIMARY')
               .setCustomId('emoji_edit')
-              .setDisabled(disEdit)
+              .setDisabled(disEdit),
+          );
+
+          interaction.update({
+            embeds: [emb.setTitle(st.__('EMOJI.VIEW_VIEWING')).setColor('00ff00')],
+            components: [row],
+          });
+          if (customId === 'emoji_noPERM') {
+            interaction.followUp({
+              embeds: [embed({ type: 'warning' }).setDescription('You no longer has manage emoji permission')],
+              ephemeral: true,
+            });
+          }
+          return;
+        }
+        case 'emoji_edit_delete': {
+          return interaction.update({
+            embeds: [
+              emb
+                .setTitle(st.__('EMOJI.EDIT_DELETING'))
+                .setDescription(st.__('EMOJI.EDIT_DELETING_DESC'))
+                .setColor('ff8000'),
+            ],
+            components: [
+              new MessageActionRow().addComponents(
+                new MessageButton()
+                  .setLabel(st.__('GENERIC.COMPONENT.BACK'))
+                  .setEmoji('↩️')
+                  .setStyle('PRIMARY')
+                  .setCustomId('emoji_edit'),
+                new MessageButton()
+                  .setLabel(st.__('EMOJI.COMPONENT.EDIT_DELETE_CONFIRM'))
+                  .setEmoji('✅')
+                  .setStyle('SUCCESS')
+                  .setCustomId('emoji_edit_delete_confirm'),
+              ),
+            ],
+          });
+        }
+        case 'emoji_edit_delete_confirm': {
+          await emj.delete();
+          const row = new MessageActionRow();
+          if (!message.flags.has(MessageFlags.FLAGS.EPHEMERAL)) {
+            row.addComponents(
+              new MessageButton()
+                .setLabel(st.__('GENERIC.COMPONENT.MESSAGE_DELETE'))
+                .setEmoji('🧹')
+                .setStyle('DANGER')
+                .setCustomId('generic_message_delete'),
+            );
+          }
+          row.addComponents(
+            new MessageButton()
+              .setLabel(st.__('EMOJI.COMPONENT.EDIT_READD'))
+              .setEmoji('➕')
+              .setStyle('SUCCESS')
+              .setCustomId('emoji_edit_readd'),
           );
 
           return interaction.update({
-            embeds: [
-              emb.setTitle(getTS(['EMOJI', 'VIEW_VIEWING'])).setColor('00ff00'),
-            ],
+            embeds: [emb.setTitle(st.__('EMOJI.EDIT_DELETED')).setColor('ff0000')],
             components: [row],
           });
+        }
+        // TODO: Add edit roles and rename emoji
+        case 'emoji_edit_name':
+        case 'emoji_edit_role': {
+          if (!botOwners.includes(user.id)) {
+            return interaction.reply({
+              embeds: [embed({ type: 'wipf' })],
+              ephemeral: true,
+            });
+          }
         }
       }
     }

@@ -1,10 +1,11 @@
+'use strict';
+
 const { MessageActionRow, MessageButton } = require('discord.js');
-const { iCP } = require('../utils');
 module.exports = {
   data: [
     {
       name: 'punish',
-      description: 'Punish or unpunish a member.',
+      description: 'Punish or unpunish a member. (Bot owner only)',
       options: [
         {
           name: 'add',
@@ -39,10 +40,8 @@ module.exports = {
             },
             {
               name: 'ephemeral',
-              description:
-                'Send reply as an ephemeral message. Defaults to true.',
+              description: 'Send reply as an ephemeral message. Defaults to true.',
               type: 'BOOLEAN',
-              required: false,
             },
           ],
         },
@@ -59,55 +58,38 @@ module.exports = {
             },
             {
               name: 'ephemeral',
-              description:
-                'Send reply as an ephemeral message. Defaults to true.',
+              description: 'Send reply as an ephemeral message. Defaults to true.',
               type: 'BOOLEAN',
-              required: false,
             },
           ],
         },
       ],
     },
   ],
-  guildOnly: '420007989261500418',
-  async execute(client, interaction, getTS, emb) {
-    var { user, options } = interaction;
-    var userO = options?.getUser('user') ?? user;
-    var ephemeralO = options?.getBoolean('ephemeral') ?? true;
+  guildOnly: ['420007989261500418'],
+  async execute(client, interaction, st, emb) {
+    const { options } = interaction,
+      ephemeralO = options?.getBoolean('ephemeral') ?? true;
 
     if (interaction.isCommand()) {
-      if (!interaction.inGuild())
-        return interaction.reply({
-          embeds: [
-            emb({ type: 'error' }).setDescription(getTS(['ERROR', 'DM'])),
-          ],
-          ephemeral: true,
+      await interaction.deferReply({ ephemeral: ephemeralO });
+      if (!interaction.inGuild()) {
+        return interaction.editReply({
+          embeds: [emb({ type: 'error' }).setDescription(st.__('ERROR.DM'))],
+          ephemeral: ephemeralO,
         });
+      }
 
-      if (options?.getSubcommand() === 'add') {
-        var row = new MessageActionRow().addComponents(
+      if (['add', 'remove'].includes(options?.getSubcommand())) {
+        const row = new MessageActionRow().addComponents(
           new MessageButton()
-            .setLabel(getTS(['GENERIC', 'WIP']))
+            .setLabel(st.__('GENERIC.WIP'))
             .setEmoji('🔨')
             .setStyle('DANGER')
-            .setCustomId('punish_danger')
+            .setCustomId('punish_danger'),
         );
 
-        interaction.reply({
-          embeds: [emb({ type: 'wip' })],
-          ephemeral: ephemeralO,
-          components: [row],
-        });
-      } else if (options?.getSubcommand() === 'remove') {
-        var row = new MessageActionRow().addComponents(
-          new MessageButton()
-            .setLabel(getTS(['GENERIC', 'WIP']))
-            .setEmoji('⛏️')
-            .setStyle('DANGER')
-            .setCustomId('punish_danger')
-        );
-
-        interaction.reply({
+        return interaction.editReply({
           embeds: [emb({ type: 'wip' })],
           ephemeral: ephemeralO,
           components: [row],
@@ -115,7 +97,7 @@ module.exports = {
       }
     } else if (interaction.isButton()) {
       if (interaction.customId === 'punish_danger') {
-        interaction.update({
+        return interaction.update({
           components: [],
         });
       }

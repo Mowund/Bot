@@ -1,160 +1,105 @@
-const { MessageEmbed } = require('discord.js');
-const tc = require('tinycolor2');
+'use strict';
+
+const urlR = require('url'),
+  { MessageEmbed, Util } = require('discord.js'),
+  tc = require('tinycolor2');
 const XMLHttpRequest = require('xmlhttprequest').XMLHttpRequest;
+const db = require('./database.js'),
+  { emojis } = require('./defaults.js');
+
 const xhr = new XMLHttpRequest();
-const url = require('url');
 
-module.exports.env = (key) => {
-  try {
-    var env = require('./env.json');
-  } catch {
-    var env = process.env;
+/**
+ * @returns {string} The mapped collections
+ * @param {Collection} collections The collections to map
+ * @param {number} [maxValues=40] The maximum amount of mapped collections to return. Defaults to 40
+ */
+module.exports.collMap = (collections, maxValues = 40) => {
+  const cM = Util.discordSort(collections)
+    .map(c => `${c}`)
+    .reverse();
+  let tCM = cM;
+  if (tCM.length > maxValues) (tCM = tCM.slice(0, maxValues)).push(`\`+${cM.length - tCM.length}\``);
+
+  return tCM.join(', ');
+};
+
+/**
+ * @returns {string} Simplify a string by normalizing and lowercasing it
+ * @param {string} string The string to simplify
+ */
+module.exports.smp = string =>
+  string
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase();
+
+/**
+ * @returns {string} The bot invite
+ * @param {number} id The bot id
+ */
+module.exports.botInvite = id =>
+  `https://discord.com/api/oauth2/authorize?client_id=${id}&permissions=536870911991&scope=bot%20applications.commands`;
+
+/**
+ * Converts a flag to an emoji
+ * @returns {string} The emoji
+ * @param {string} flag The user flag
+ */
+module.exports.flagToEmoji = flag => {
+  switch (flag) {
+    case 'DISCORD_EMPLOYEE':
+      return emojis.discordEmployee;
+    case 'PARTNERED_SERVER_OWNER':
+      return emojis.partneredServerOwner;
+    case 'HYPESQUAD_EVENTS':
+      return emojis.hypeSquadEvents;
+    case 'HOUSE_BALANCE':
+      return emojis.balance;
+    case 'HOUSE_BRAVERY':
+      return emojis.bravery;
+    case 'HOUSE_BRILLIANCE':
+      return emojis.brilliance;
+    case 'BUGHUNTER_LEVEL_1':
+      return emojis.bugHunterLvl1;
+    case 'BUGHUNTER_LEVEL_2':
+      return emojis.bugHunterLvl2;
+    case 'EARLY_SUPPORTER':
+      return emojis.earlySupporter;
+    case 'EARLY_VERIFIED_BOT_DEVELOPER':
+      return emojis.earlyVerifiedBotDeveloper;
+    case 'DISCORD_CERTIFIED_MODERATOR':
+      return emojis.certifiedMod;
+    case 'BOT_HTTP_INTERACTIONS':
+      return emojis.httpInteractions;
   }
+};
 
-  if (key) return env[key];
-  return env;
+module.exports.msToTime = ms => {
+  const days = Math.floor(ms / 86400000),
+    hours = Math.floor((ms % 86400000) / 3600000),
+    minutes = Math.floor((ms % 3600000) / 60000),
+    sec = Math.floor((ms % 60000) / 1000);
+
+  let str = '';
+  if (days) str += `${days}d `;
+  if (hours) str += `${hours}h `;
+  if (minutes) str += `${minutes}m `;
+  if (sec) str += `${sec}s`;
+
+  return str ?? '`0s`';
 };
 
 module.exports.search = (object, key) => {
-  for (var key in object) {
-    var value = object[key];
+  let value;
+  for (key in object) {
+    value = object[key];
   }
 
   return value;
 };
 
-module.exports.getTSE = (guild, path, values) => getTSE(guild, path, values);
-
-module.exports.iCP = async (client, opt, itc, cnt, eph, tts, emb, cmps) => {
-  function getTS(path, values) {
-    return getTSE(itc.guild_id, path, values);
-  }
-  var guildI = itc.guild_id;
-
-  if (guildI) {
-    var uI = itc.member.user;
-    var uIF = await client.users.fetch(itc.member.user.id);
-  } else {
-    var uIF = await client.users.fetch(itc.user.id);
-  }
-
-  cnt ||= '';
-  eph ||= 0;
-  eph &&= 64;
-  tts ||= false;
-  tts &&= true;
-
-  var dt = {
-    content: cnt,
-    flags: eph,
-    tts: tts,
-    embeds: [emb],
-    components: cmps,
-  };
-
-  if (!emb) {
-    dt ||= {
-      content: cnt,
-      flags: eph,
-      tts: tts,
-      components: cmps,
-    };
-  } else if (emb === 1) {
-    cnt ||= [];
-
-    if (!cnt[0] || cnt[0] == 0) {
-      cnt[0] = getTS(['GENERIC', 'ERROR']);
-    }
-    if (!cnt[1] || cnt[1] == 0) {
-      cnt[1] = getTS(['ERROR', 'UNALLOWED', 'COMMAND']);
-    }
-    if (!cnt[2] || cnt[2] == 0) {
-      cnt[2] = 'ff0000';
-    }
-
-    var emb = new MessageEmbed()
-      .setTitle(cnt[0])
-      .setDescription(cnt[1])
-      .setColor(cnt[2])
-      .setFooter(
-        getTS(['GENERIC', 'REQUESTED_BY'], {
-          USER: uIF.username,
-        }),
-        uIF.avatarURL()
-      )
-      .setTimestamp(Date.now());
-
-    dt = {
-      flags: eph,
-      tts: tts,
-      embeds: [emb],
-      components: cmps,
-    };
-  }
-
-  switch (opt) {
-    case 1:
-      return client.api
-        .interactions(itc.id, itc.token)
-        .callback.post({ data: { type: 7, data: dt } });
-    case 2:
-      return client.api
-        .interactions(itc.id, itc.token)
-        .callback.post({ data: { type: 6 } });
-    case 3:
-      return client.api
-        .interactions(itc.id, itc.token)
-        .callback.post({ data: { type: 6 } })
-        .then(
-          client.api
-            .webhooks(client.user.id, itc.token)
-            .messages('@original')
-            .patch({ data: dt })
-        );
-    case 4:
-      return client.api
-        .webhooks(client.user.id, itc.token)
-        .messages('@original')
-        .get();
-    case 5:
-      return client.api
-        .interactions(itc.id, itc.token)
-        .callback.post({ data: { type: 6 } })
-        .then(
-          client.api
-            .webhooks(client.user.id, itc.token)
-            .messages('@original')
-            .delete()
-        );
-    case 6:
-      return client.api
-        .interactions(itc.id, itc.token)
-        .callback.post({ data: { type: 5 } });
-    case 7:
-      return client.api
-        .webhooks(client.user.id, itc.token)
-        .messages('@original')
-        .patch({ data: dt });
-    case 8:
-      return client.api.interactions(itc.id, itc.token).callback.post({
-        data: {
-          type: 8,
-          data: {
-            choices: [
-              {
-                name: cnt,
-                value: cnt.toLowerCase().replace(/\s/g, '_'),
-              },
-            ],
-          },
-        },
-      });
-    default:
-      return client.api
-        .interactions(itc.id, itc.token)
-        .callback.post({ data: { type: 4, data: dt } });
-  }
-};
+module.exports.searchKey = (object, value) => Object.keys(object).find(key => object[key] === value);
 
 module.exports.msgEdit = async (chan, id, medit) => {
   try {
@@ -165,7 +110,8 @@ module.exports.msgEdit = async (chan, id, medit) => {
   }
 };
 
-module.exports.diEmb = async (
+// Remove when color command is done
+module.exports.diEmb = (
   client,
   eMsg,
   interaction,
@@ -177,113 +123,78 @@ module.exports.diEmb = async (
   footer,
   description,
   diT,
-  diB,
-  diL
+  diB = '000000',
+  diL = 'ffffff',
 ) => {
-  function getTS(path, values) {
-    return getTSE(interaction.guild_id, path, values);
-  }
-  var guild = msg.guild;
-  if (eMsg === 2) {
-    guild = client.guilds.cache.get(msg.guild_id);
-  }
+  const getTS = (message, options) => db.getString(interaction.guild, message, options);
 
-  var ciCE = '000000';
+  let ciCE = '000000';
 
-  if (eC && eC != 0) {
+  if (eC && eC !== 0) {
     if (!diB || diB === 1) {
-      var diB = eC.replace('000000', '000001');
+      diB = eC.replace('000000', '000001');
     }
 
     ciCE = diB.replace('ffffff', 'fffffe');
 
     if (!diL || diL === 1) {
-      var diL = '000000';
+      diL = '000000';
       if (tc(eC).isDark()) {
         diL = 'ffffff';
       }
     }
     if (!diT || diT === 1) {
-      var diT = eC;
+      diT = eC;
     }
   }
+  diT ||= getTS(['COLOR', 'INVALID_IMG']);
 
-  if (!diB || diB === 0) {
-    var diB = '000000';
-  }
-  if (!diL || diL === 0) {
-    var diL = 'ffffff';
-  }
-  if (!diT || diT === 0) {
-    var diT = getTS('COLOR_INVALID_IMG');
-  }
-
-  if (!diEV || diEV === 0 || diEV === 1) {
+  if (!diEV || diEV === 1) {
     if (eMsg === 2) {
       msg = msg.message;
     }
-    var embIURL = new URL(msg.embeds[0].image.url).pathname.split(/[\/&]/);
-    var diEV = [embIURL[4]];
+    const embIURL = new URL(msg.embeds[0].image.url).pathname.split(/[/&]/);
+    diEV = [embIURL[4]];
   }
 
-  if (!title || title === 0) {
-    var title = getTS('COLOR_INVALID');
-  }
+  title ??= getTS(['COLOR', 'INVALID']);
 
-  if (!footer || footer === 0) {
-    footer = getTS(['GENERIC', 'REQUESTED_BY'], {
-      USER: eU.username,
-    });
-  } else if (footer === 1) {
-    footer = getTS(['GENERIC', 'INTERACTED_BY'], {
-      USER: eU.username,
-    });
-  }
+  footer = getTS(['GENERIC', footer ? 'INTERACTED_BY' : 'REQUESTED_BY'], {
+    USER: eU.username,
+  });
 
-  var emb = new MessageEmbed()
+  let emb = new MessageEmbed()
     .setColor(ciCE)
     .setTitle(title)
-    .setImage(
-      `https://dummyimage.com/300x100/${diB}/${diL}&${diEV[0]}&text=+${
-        url.parse(diT).path
-      }`
-    )
+    .setImage(`https://dummyimage.com/300x100/${diB}/${diL}&${diEV[0]}&text=+${urlR.parse(diT).path}`)
     .setFooter(footer, eU.avatarURL())
     .setTimestamp(Date.now());
 
-  if (description && description != 0) {
+  if (description && description !== 0) {
     emb = emb().setDescription(description);
   }
 
-  if (eMsg === 0 || eMsg === 2) {
+  if (!eMsg || eMsg === 2) {
     return emb;
-  } else if (eMsg === 1) {
-    msg.channel.send(emb);
-  } else {
-    eMsg.edit(emb);
   }
+  if (eMsg === 1) {
+    return msg.channel.send(emb);
+  }
+  return eMsg.edit(emb);
 };
 
-module.exports.toUTS = (time, style) => {
-  if (!time) {
-    var time = 0;
-  }
-  if (!style) {
-    var style = 'f';
-  }
-  return `<t:${new Date(time).getTime().toString().slice(0, -3)}:${style}>`;
-};
+module.exports.toUTS = (time = Date.now(), style = 'R') =>
+  `<t:${new Date(time).getTime().toString().slice(0, -3)}:${style}>`;
 
-module.exports.checkImage = (url) => {
-  return new Promise(function (resolve) {
+module.exports.checkImage = url =>
+  new Promise(resolve => {
     xhr.open('GET', url, true);
     xhr.send();
-    xhr.onload = function () {
-      if (xhr.status == 200) {
+    xhr.onload = function onload() {
+      if (xhr.status === 200) {
         resolve(true);
       } else {
         resolve(false);
       }
     };
   });
-};

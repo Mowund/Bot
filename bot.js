@@ -1,15 +1,30 @@
-const { Client, Collection, Intents } = require('discord.js');
+'use strict';
+
+const { Client, Collection, Intents, Constants } = require('discord.js');
 const client = new Client({
   allowedMentions: { parse: [] },
   intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES],
   partials: ['MESSAGE', 'CHANNEL', 'REACTION'],
 });
 client.commands = new Collection();
-const fs = require('node:fs');
-const { env } = require('./utils');
+const i18n = require('i18n'),
+  fs = require('node:fs'),
+  { botLanguage } = require('./defaults');
 require('colors');
 
-client.on('ready', async () => {
+const staticCatalog = {};
+botLanguage.supported.forEach(l => (staticCatalog[l] = require(`mowund-i18n/locale/${l}/bot.json`)));
+i18n.configure({
+  locales: botLanguage.supported,
+  defaultLocale: botLanguage.default,
+  staticCatalog,
+  objectNotation: true,
+});
+
+process.on('uncaughtException', err => {
+  if (err.code !== Constants.APIErrors.UNKNOWN_INTERACTION) console.error(err);
+});
+client.on('ready', () => {
   client.user.setPresence({
     activities: [{ name: 'in development' }],
     status: 'dnd',
@@ -17,41 +32,27 @@ client.on('ready', async () => {
   console.log('Bot started.'.green);
 
   try {
-    const interactionFiles = fs
-      .readdirSync('./interactions')
-      .filter((file) => file.endsWith('.js'));
+    const interactionFiles = fs.readdirSync('./interactions').filter(file => file.endsWith('.js'));
 
     for (const file of interactionFiles) {
-      const event = require('./interactions/' + file);
-      client.commands.set(file.match(/.+?(?=\.js)/g).toString(), event);
+      const event = require(`./interactions/${file}`);
+      client.commands.set(file.match(/.+?(?=\.js)/g)?.[0], event);
     }
     console.log('Successfully set application commands to collection.'.green);
   } catch (err) {
-    console.error(
-      'An error occured while setting application commands to collection:\n'
-        .red,
-      err
-    );
+    console.error('An error occured while setting application commands to collection:\n'.red, err);
   }
 });
 
-// Events
-const eventFiles = fs
-  .readdirSync('./events')
-  .filter((file) => file.endsWith('.js'));
+const eventFiles = fs.readdirSync('./events').filter(file => file.endsWith('.js'));
 for (const file of eventFiles) {
   const event = require(`./events/${file}`);
 
-  event.once
-    ? client.once(event.name, (...args) => event.execute(client, ...args))
-    : client.on(event.name, (...args) => event.execute(client, ...args));
-}
-const oldInteractionFiles = fs
-  .readdirSync('./interactions_old')
-  .filter((file) => file.endsWith('.js'));
-for (const file of oldInteractionFiles) {
-  const itc = require(`./interactions_old/${file}`);
-  client.ws.on(itc.name, (...args) => itc.execute(client, ...args));
+  if (event.once) {
+    client.once(event.name, (...args) => event.execute(client, i18n, ...args));
+  } else {
+    client.on(event.name, (...args) => event.execute(client, i18n, ...args));
+  }
 }
 
-client.login(env('TOKEN'));
+client.login(process.env.TOKEN);

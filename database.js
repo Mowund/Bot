@@ -1,16 +1,15 @@
-const admin = require('firebase-admin');
-const messages = require('./messages.json');
-const { defaultLanguage, supportedLanguages } = require('./botdefaults');
-const { env } = require('./utils');
+'use strict';
+
+const admin = require('firebase-admin'),
+  { botLanguage } = require('./defaults');
 
 admin.initializeApp({
-  credential: admin.credential.cert(JSON.parse(env('FIREBASE'))),
+  credential: admin.credential.cert(JSON.parse(process.env.FIREBASE)),
 });
 
-const db = admin.firestore();
-
-const guilds = db.collection('guilds');
-const users = db.collection('users');
+const db = admin.firestore(),
+  guilds = db.collection('guilds'),
+  users = db.collection('users');
 
 module.exports = {
   guilds: guilds,
@@ -19,81 +18,42 @@ module.exports = {
 
 /**
  * Sets the bot language for a guild
- * @param {(object|string)} guild The guild's object or id. Defaults to global
+ * @returns {string} The language set
+ * @param {Object} guild The guild's object
  * @param {string} language The language to set. Defaults to en-US
  */
-async function setLanguage(guild, language) {
-  guild = guild?.id ?? guild ?? 'global';
-  language = supportedLanguages.includes(language) ? language : defaultLanguage;
-  return await guilds
-    .doc(guild)
+module.exports.setLanguage = (guild, language) => {
+  if (!guild) return botLanguage.default;
+  return guilds
+    .doc(guild.id)
     .set(
       {
-        language: language,
+        language: botLanguage.supported.includes(language) ? language : botLanguage.default,
       },
-      { merge: true }
+      { merge: true },
     )
-    .catch((e) =>
-      console.error('Something went wrong when setting a language:', e)
-    );
-}
-module.exports.setLanguage = setLanguage;
+    .catch(err => console.error('Something went wrong when setting a language:', err));
+};
 
 /**
  * Gets the bot language on a guild
- * @param {(object|string)} guild The guild's object or id. Defaults to global
- * @return {string} The language of the bot on the server
+ * @returns {string} The language of the bot on the server. Defaults to en-US
+ * @param {Object} guild The guild's object
  */
-async function getLanguage(guild) {
-  guild = guild?.id ?? guild ?? 'global';
-  var doc = await guilds.doc(guild).get();
+module.exports.getLanguage = async guild => {
+  if (!guild) return botLanguage.default;
+  let doc = await guilds.doc(guild.id).get();
   if (!doc.exists) {
     doc = await guilds
-      .doc(guild)
+      .doc(guild.id)
       .set(
         {
-          language: defaultLanguage,
+          language: botLanguage.supported.includes(guild.preferredLocale) ? guild.preferredLocale : botLanguage.default,
         },
-        { merge: true }
+        { merge: true },
       )
-      .catch((e) =>
-        console.error('Something went wrong when getting a language:', e)
-      );
+      .catch(err => console.error('Something went wrong when getting a language:', err));
     return doc.language;
   }
   return doc.data().language;
-}
-module.exports.getLanguage = getLanguage;
-
-/**
- * Gets the translated string
- * @param {string} language The language to translate to
- * @param {(string|string[])} message The message that will get translated
- * @param {object} [options] Defines the options
- * @param {object} [options.stringKeys] Defines the values for the keys on the string
- * @param {boolean} [options.returnLanguage] Returns the defined language instead
- * @return {string} The translated string
- */
-module.exports.getString = (language, message, options = {}) => {
-  if (options['returnLanguage'] === true) return language;
-
-  let translate = messages;
-
-  while (message.constructor === Array && message.length) {
-    const shifted = message.shift();
-    translate = translate[shifted];
-  }
-
-  if (!translate) throw new Error('Could not find the correct message');
-
-  let result = translate[language] ?? translate[defaultLanguage];
-
-  if ('stringKeys' in options) {
-    for (const k in options['stringKeys']) {
-      const exp = new RegExp(`{${k}}`, 'g');
-      result = result.replace(exp, options['stringKeys'][k]);
-    }
-  }
-
-  return result;
 };

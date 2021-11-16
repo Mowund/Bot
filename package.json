@@ -1,40 +1,47 @@
 {
-  "name": "mowund",
+  "name": "mowund-bot",
+  "displayName": "Mowund Bot",
+  "description": "A moderation and utils discord bot.",
+  "keywords": [
+    "bot",
+    "discord",
+    "mowund"
+  ],
+  "homepage": "https://github.com/Mowund/bot#readme",
+  "bugs": {
+    "url": "https://github.com/Mowund/bot/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Mowund/bot.git"
+  },
+  "license": "MIT",
+  "author": "Smidul",
   "main": "index.js",
   "dependencies": {
-    "@discordjs/builders": "^0.6.0",
     "canvas": "^2.8.0",
     "chalk": "^4.1.2",
     "color-thief-node": "^1.0.4",
-    "discord.js": "^13.3.0-dev.1633608187.d32956c",
-    "firebase-admin": "^9.11.1",
+    "discord.js": "^13.4.0-dev.1636675518.5e0a7d5",
+    "firebase-admin": "^10.0.0",
     "git": "^0.1.5",
-    "keyv": "^4.0.3",
+    "i18n": "^0.13.3",
     "log-timestamp": "^0.3.0",
+    "mowund-i18n": "github:Mowund/i18n",
     "node-fetch": "^3.0.0",
-    "pm2": "^5.1.2",
-    "sequelize": "^6.6.5",
-    "sqlite": "^4.0.23",
-    "sqlite3": "^5.0.2",
     "tinycolor2": "^1.4.2",
     "winston": "^3.3.3",
     "xmlhttprequest": "^1.8.0"
   },
-  "scripts": {
-    "start": "node index.js"
+  "devDependencies": {
+    "eslint": "^8.0.1",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-import": "^2.25.2",
+    "eslint-plugin-json": "^3.1.0",
+    "eslint-plugin-json-format": "^2.0.1",
+    "eslint-plugin-prettier": "^4.0.0",
+    "prettier": "^2.4.1"
   },
-  "author": "Smidul",
-  "license": "ISC",
-  "description": "",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/Smidul/Mowund-Bot.git"
-  },
-  "keywords": [],
-  "bugs": {
-    "url": "https://github.com/Smidul/Mowund-Bot/issues"
-  },
-  "homepage": "https://github.com/Smidul/Mowund-Bot#readme",
   "engines": {
     "node": "16.x"
   }
