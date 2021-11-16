@@ -18,6 +18,9 @@
   "license": "MIT",
   "author": "Smidul",
   "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
   "dependencies": {
     "canvas": "^2.8.0",
     "chalk": "^4.1.2",
