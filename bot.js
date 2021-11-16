@@ -8,6 +8,7 @@ const client = new Client({
 });
 client.commands = new Collection();
 const i18n = require('i18n'),
+  // eslint-disable-next-line import/order
   fs = require('node:fs'),
   { botLanguage } = require('./defaults');
 require('colors');

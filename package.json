@@ -19,6 +19,7 @@
   "author": "Smidul",
   "main": "index.js",
   "scripts": {
+    "lint": "eslint ./",
     "start": "node index.js"
   },
   "dependencies": {
