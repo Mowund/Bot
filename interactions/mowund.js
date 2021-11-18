@@ -11,18 +11,23 @@ module.exports = {
       options: [
         {
           name: 'eval',
-          description: 'Return a result of a code (Bot owner only).',
+          description: 'Execute a script (Bot owner only).',
           type: 'SUB_COMMAND',
           options: [
             {
-              name: 'code',
-              description: 'The code to execute.',
+              name: 'script',
+              description: 'The script to execute.',
               type: 'STRING',
               required: true,
             },
             {
+              name: 'async',
+              description: 'Makes the script asynchronous. Defaults to true.',
+              type: 'BOOLEAN',
+            },
+            {
               name: 'await',
-              description: 'Await the code. Defaults to true.',
+              description: 'Await the script. Defaults to true.',
               type: 'BOOLEAN',
             },
             {
@@ -130,11 +135,13 @@ module.exports = {
       let emb = [];
 
       if (options?.getSubcommand() === 'eval') {
-        const codeO = options?.getString('code'),
-          awaitO = options?.getBoolean('await') ?? true;
+        const scriptO = options?.getString('script'),
+          asyncO = options?.getBoolean('async') ?? true,
+          awaitO = options?.getBoolean('await') ?? true,
+          script = asyncO ? `(async () => {${scriptO}})()` : scriptO;
 
         try {
-          let evaled = awaitO ? await eval(codeO) : eval(codeO);
+          let evaled = awaitO ? await eval(script) : eval(script);
 
           if (typeof evaled !== 'string') evaled = require('node:util').inspect(evaled);
 
