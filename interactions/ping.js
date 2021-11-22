@@ -10,12 +10,12 @@ module.exports = {
       options: [
         {
           name: 'defer',
-          description: 'Defers the interaction. Defaults to false.',
+          description: 'Defers the interaction. (Default: False)',
           type: 'BOOLEAN',
         },
         {
           name: 'ephemeral',
-          description: 'Send reply as an ephemeral message. Defaults to true.',
+          description: 'Send reply as an ephemeral message. (Default: True)',
           type: 'BOOLEAN',
         },
       ],

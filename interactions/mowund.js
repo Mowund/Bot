@@ -12,7 +12,7 @@ module.exports = {
       options: [
         {
           name: 'eval',
-          description: 'Executes a script (Bot owner only).',
+          description: 'Executes a script. (Bot owner only)',
           type: 'SUB_COMMAND',
           options: [
             {
@@ -23,17 +23,17 @@ module.exports = {
             },
             {
               name: 'async',
-              description: 'Makes the script asynchronous. Defaults to true.',
+              description: 'Makes the script asynchronous. (Default: True)',
               type: 'BOOLEAN',
             },
             {
               name: 'await',
-              description: 'Await the script. Defaults to true.',
+              description: 'Await the script. (Default: True)',
               type: 'BOOLEAN',
             },
             {
               name: 'ephemeral',
-              description: 'Send reply as an ephemeral message. Defaults to true.',
+              description: 'Send reply as an ephemeral message. (Default: True)',
               type: 'BOOLEAN',
             },
           ],
@@ -50,17 +50,17 @@ module.exports = {
               options: [
                 {
                   name: 'id',
-                  description: 'Id of a specific command. Defaults to all commands.',
+                  description: 'Id of a specific command. (Default: All commands)',
                   type: 'STRING',
                 },
                 {
                   name: 'guild',
-                  description: 'The guild the command is at. Defaults to same-guild.',
+                  description: 'The guild the command is at. (Default: Trigger guild)',
                   type: 'STRING',
                 },
                 {
                   name: 'ephemeral',
-                  description: 'Send reply as an ephemeral message. Defaults to true.',
+                  description: 'Send reply as an ephemeral message. (Default: True)',
                   type: 'BOOLEAN',
                 },
               ],
@@ -94,7 +94,7 @@ module.exports = {
                 },
                 {
                   name: 'ephemeral',
-                  description: 'Send reply as an ephemeral message. Defaults to true.',
+                  description: 'Send reply as an ephemeral message. (Default: True)',
                   type: 'BOOLEAN',
                 },
               ],

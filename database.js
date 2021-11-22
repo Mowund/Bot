@@ -20,7 +20,7 @@ module.exports = {
  * Sets the bot language for a guild
  * @returns {string} The language set
  * @param {Object} guild The guild's object
- * @param {string} language The language to set. Defaults to en-US
+ * @param {string} language The language to set. (Default: en-US)
  */
 module.exports.setLanguage = (guild, language) => {
   if (!guild) return botLanguage.default;
@@ -37,7 +37,7 @@ module.exports.setLanguage = (guild, language) => {
 
 /**
  * Gets the bot language on a guild
- * @returns {string} The language of the bot on the server. Defaults to en-US
+ * @returns {string} The language of the bot on the server. (Default: en-US)
  * @param {Object} guild The guild's object
  */
 module.exports.getLanguage = async guild => {

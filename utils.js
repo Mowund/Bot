@@ -13,7 +13,7 @@ const xhr = new XMLHttpRequest();
  * Truncates a string with ellipsis
  * @returns {string} The string truncated with ellipsis
  * @param {string} input The string to truncate
- * @param {number} [limit=1020] The limit of characters to be displayed until truncated. Defaults to 1020
+ * @param {number} [limit=1020] The limit of characters to be displayed until truncated. (Default: 1020)
  */
 module.exports.truncate = (input, limit = 1020) => (input.length > limit ? `${input.substring(0, limit)}...` : input);
 
@@ -22,7 +22,7 @@ module.exports.truncate = (input, limit = 1020) => (input.length > limit ? `${in
  * @param {Collection} collections The collections to map
  * @param {Object} [options] The options for mapping
  * @param {string} [options.mapId] Map something else instead of the mention
- * @param {number} [options.maxValues=40] The maximum amount of mapped collections to return. Defaults to 40
+ * @param {number} [options.maxValues=40] The maximum amount of mapped collections to return. (Default: 40)
  */
 module.exports.collMap = (collections, options = { maxValues: 40 }) => {
   const cM = Util.discordSort(collections)

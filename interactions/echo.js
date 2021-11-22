@@ -32,7 +32,7 @@ module.exports = {
         },
         {
           name: 'color',
-          description: "The color of the embed. Defaults to author's display color.",
+          description: "The color of the embed. (Default: Author's display color)",
           type: 'STRING',
         },
         {
@@ -47,7 +47,7 @@ module.exports = {
         },
         {
           name: 'timestamp',
-          description: 'Enables or disabled the timestamp on the embed. Disabled by default.',
+          description: 'Enables or disabled the timestamp on the embed. (Default: Disabled)',
           type: 'BOOLEAN',
         },
         {
@@ -62,17 +62,17 @@ module.exports = {
         },
         {
           name: 'tts',
-          description: 'Echoes the message in TTS. Defaults to false.',
+          description: 'Echoes the message in TTS. (Default: False)',
           type: 'BOOLEAN',
         },
         {
           name: 'channel',
-          description: 'Echoes at a channel as a message. Defaults to interaction channel as a reply.',
+          description: 'Echoes at a channel as a message. (Default: Interaction channel as a reply)',
           type: 'STRING',
         },
         {
           name: 'ephemeral',
-          description: 'Send reply as an ephemeral message. Defaults to true.',
+          description: 'Send reply as an ephemeral message. (Default: True)',
           type: 'BOOLEAN',
         },
       ],

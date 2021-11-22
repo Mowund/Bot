@@ -19,12 +19,12 @@ module.exports = {
         {
           name: 'globalsearch',
           description:
-            'Search for an emoji through all cached guilds, significantly decreasing speed. Defaults to false.',
+            'Search for an emoji through all cached guilds, significantly decreasing speed. (Default: False)',
           type: 'BOOLEAN',
         },
         {
           name: 'ephemeral',
-          description: 'Send reply as an ephemeral message. Defaults to true.',
+          description: 'Send reply as an ephemeral message. (Default: True)',
           type: 'BOOLEAN',
         },
       ],

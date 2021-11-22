@@ -19,7 +19,7 @@ module.exports = {
         },
         {
           name: 'ephemeral',
-          description: 'Send reply as an ephemeral message. Defaults to true.',
+          description: 'Send reply as an ephemeral message. (Default: True)',
           type: 'BOOLEAN',
         },
       ],
