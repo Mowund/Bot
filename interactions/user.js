@@ -143,8 +143,8 @@ module.exports = {
             embeds: [
               embed({ type: 'warning' }).setDescription(
                 st.__('PERM.ROLE_REQUIRES', {
-                  ROLE: '@everyone',
-                  PERM: st.__('PERM.USE_EXTERNAL_EMOJIS'),
+                  role: '@everyone',
+                  perm: st.__('PERM.USE_EXTERNAL_EMOJIS'),
                 }),
               ),
             ],

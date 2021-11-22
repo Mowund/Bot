@@ -28,8 +28,7 @@ module.exports = {
 
     if (interaction.isCommand()) {
       if (deferO) {
-        await interaction.deferReply({ ephemeral: ephemeralO });
-        const itc = await interaction.fetchReply(),
+        const itc = await interaction.deferReply({ ephemeral: ephemeralO, fetchReply: true }),
           timeNow = Date.now();
 
         emb = emb({ title: `🏓 ${st.__('PING.TITLE')} (${st.__('PING.DEFERRED')})` })

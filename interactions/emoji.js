@@ -58,13 +58,12 @@ module.exports = {
         guild?.emojis.cache.find(({ name }) => name.toLowerCase() === emojiO.toLowerCase());
 
       if (emj) {
+        if (emj?.guild.id !== guild?.id) disEdit = true;
         if (!memberPermissions.has(Permissions.FLAGS.MANAGE_EMOJIS_AND_STICKERS)) {
           disAdd = true;
-          if (emj?.guild.id !== guild?.id) {
-            disEdit = true;
-          }
+          disEdit = true;
         }
-        const emjRoles = collMap(emj.roles.cache) || '@everyone';
+        const emjRoles = collMap(emj.roles.cache, emj?.guild.id !== guild?.id ? { mapId: 'id' } : {}) || '@everyone';
 
         emjID = emj.id;
         emjName = emj.name;
@@ -143,7 +142,8 @@ module.exports = {
       }
 
       if (!memberPermissions.has(Permissions.FLAGS.MANAGE_EMOJIS_AND_STICKERS)) {
-        customId = 'emoji_noPERM';
+        customId = 'emoji_noperm';
+        disEdit = true;
       }
 
       let emjID = new URL(message.embeds[0].thumbnail.url).pathname.split(/[/&.]/)[2],
@@ -192,15 +192,19 @@ module.exports = {
 
             if (!emb.fields[1]) {
               emb.fields[0] = {
-                name: 'Name',
+                name: st.__('EMOJI.FIELD_NAME'),
                 value: `\`${emj.name}\``,
                 inline: true,
               };
             }
             emb.fields[1] = {
-              name: 'ID',
+              name: st.__('EMOJI.FIELD_ID'),
               value: `\`${emj.id}\``,
               inline: true,
+            };
+            emb.fields[2] = {
+              name: st.__('EMOJI.FIELD_ROLES'),
+              value: '@everyone',
             };
             emb
               .setColor('00ff00')
@@ -237,7 +241,7 @@ module.exports = {
             ],
           });
         }
-        case 'emoji_noPERM':
+        case 'emoji_noperm':
         case 'emoji_view': {
           const row = new MessageActionRow();
           if (!message.flags.has(MessageFlags.FLAGS.EPHEMERAL)) {
@@ -262,9 +266,13 @@ module.exports = {
             embeds: [emb.setTitle(st.__('EMOJI.VIEW_VIEWING')).setColor('00ff00')],
             components: [row],
           });
-          if (customId === 'emoji_noPERM') {
+          if (customId === 'emoji_noperm') {
             interaction.followUp({
-              embeds: [embed({ type: 'warning' }).setDescription('You no longer has manage emoji permission')],
+              embeds: [
+                embed({ type: 'warning' }).setDescription(
+                  st.__('PERM.NO_LONGER', st.__('PERM.MANAGE_EMOJIS_AND_STICKERS')),
+                ),
+              ],
               ephemeral: true,
             });
           }
@@ -324,7 +332,7 @@ module.exports = {
         case 'emoji_edit_role': {
           if (!botOwners.includes(user.id)) {
             return interaction.reply({
-              embeds: [embed({ type: 'wipf' })],
+              embeds: [embed({ type: 'wip' }).setDescription(st.__('GENERIC.WIP_FUNCTION'))],
               ephemeral: true,
             });
           }

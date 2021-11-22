@@ -42,7 +42,7 @@ module.exports = {
      * @param {Object} [options] Defines the options
      * @param {boolean} [options.interacted=false] Set footer as interacted instead of requested
      * @param {string} [options.title] Change the title but still including the type's emoji
-     * @param {('error'|'success'|'warning'|'wip'|'wipf')} [options.type] The type of the embed
+     * @param {('error'|'success'|'warning'|'wip')} [options.type] The type of the embed
      */
     const embed = (options = {}) => {
       const emb = new MessageEmbed()
@@ -60,11 +60,10 @@ module.exports = {
         case 'warning':
           return emb.setColor('ffff00').setTitle(`⚠️ ${options.title || i18n.__('GENERIC.WARNING')}`);
         case 'wip':
-        case 'wipf':
           return emb
             .setColor('ff8000')
             .setTitle(`🔨 ${options.title || i18n.__('GENERIC.WIP')}`)
-            .setDescription(i18n.__(`GENERIC.WIP_${options.type === 'wipf' ? 'FUNCTION' : 'COMMAND'}`));
+            .setDescription(i18n.__('GENERIC.WIP_COMMAND'));
         default:
           return options.title ? emb.setTitle(options.title) : emb;
       }

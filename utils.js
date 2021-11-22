@@ -10,16 +10,26 @@ const db = require('./database.js'),
 const xhr = new XMLHttpRequest();
 
 /**
+ * Truncates a string with ellipsis
+ * @returns {string} The string truncated with ellipsis
+ * @param {string} input The string to truncate
+ * @param {number} [limit=1020] The limit of characters to be displayed until truncated. Defaults to 1020
+ */
+module.exports.truncate = (input, limit = 1020) => (input.length > limit ? `${input.substring(0, limit)}...` : input);
+
+/**
  * @returns {string} The mapped collections
  * @param {Collection} collections The collections to map
- * @param {number} [maxValues=40] The maximum amount of mapped collections to return. Defaults to 40
+ * @param {Object} [options] The options for mapping
+ * @param {string} [options.mapId] Map something else instead of the mention
+ * @param {number} [options.maxValues=40] The maximum amount of mapped collections to return. Defaults to 40
  */
-module.exports.collMap = (collections, maxValues = 40) => {
+module.exports.collMap = (collections, options = { maxValues: 40 }) => {
   const cM = Util.discordSort(collections)
-    .map(c => `${c}`)
+    .map(c => (options.mapId ? `\`${c[options.mapId]}\`` : `${c}`))
     .reverse();
   let tCM = cM;
-  if (tCM.length > maxValues) (tCM = tCM.slice(0, maxValues)).push(`\`+${cM.length - tCM.length}\``);
+  if (tCM.length > options.maxValues) (tCM = tCM.slice(0, options.maxValues)).push(`\`+${cM.length - tCM.length}\``);
 
   return tCM.join(', ');
 };

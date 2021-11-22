@@ -1,7 +1,8 @@
 'use strict';
 
 const fs = require('node:fs'),
-  { botOwners } = require('../defaults');
+  { botOwners } = require('../defaults'),
+  { truncate } = require('../utils');
 
 module.exports = {
   data: [
@@ -11,7 +12,7 @@ module.exports = {
       options: [
         {
           name: 'eval',
-          description: 'Execute a script (Bot owner only).',
+          description: 'Executes a script (Bot owner only).',
           type: 'SUB_COMMAND',
           options: [
             {
@@ -145,10 +146,12 @@ module.exports = {
 
           if (typeof evaled !== 'string') evaled = require('node:util').inspect(evaled);
 
-          emb = embed({ type: 'success' }).setDescription(`\`\`\`js\n${evaled}\`\`\``);
+          emb = embed({ type: 'success' })
+            .addField(st.__('GENERIC.OUTPUT'), `\`\`\`js\n${truncate(evaled, 1012)}\`\`\``)
+            .addField(st.__('GENERIC.TYPE'), `\`\`\`js\n${typeof evaled}\`\`\``);
           return interaction.editReply({ embeds: [emb] });
         } catch (err) {
-          emb = embed({ type: 'error' }).setDescription(`\`\`\`js\n${err}\`\`\``);
+          emb = embed({ type: 'error' }).addField(st.__('GENERIC.OUTPUT'), `\`\`\`js\n${err}\`\`\``);
           return interaction.editReply({ embeds: [emb] });
         }
       }
@@ -212,7 +215,7 @@ module.exports = {
             return interaction.editReply({
               embeds: [
                 embed({ type: 'error' }).setDescription(
-                  `${st.__('MOWUND.INTERACTION.ERROR_RELOADING')}\n\`\`\`js\n${err}\`\`\``,
+                  `${st.__('MOWUND.ERROR.RELOADING_APPLICATION_COMMAND')}\n\`\`\`js\n${err}\`\`\``,
                 ),
               ],
             });

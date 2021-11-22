@@ -1,6 +1,6 @@
 'use strict';
 
-const { Client, Collection, Intents, Constants } = require('discord.js');
+const { Client, Collection, Intents } = require('discord.js');
 const client = new Client({
   allowedMentions: { parse: [] },
   intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES],
@@ -22,9 +22,7 @@ i18n.configure({
   objectNotation: true,
 });
 
-process.on('uncaughtException', err => {
-  if (err.code !== Constants.APIErrors.UNKNOWN_INTERACTION) console.error(err);
-});
+process.on('uncaughtException', console.error);
 client.on('ready', () => {
   client.user.setPresence({
     activities: [{ name: 'in development' }],
