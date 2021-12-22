@@ -1,7 +1,7 @@
 'use strict';
 
 module.exports = {
-  botColor: '6622aa',
+  botColor: '5865f2',
   botLanguage: {
     default: 'en-US',
     supported: ['en-US', 'es-ES', 'pt-BR'],
