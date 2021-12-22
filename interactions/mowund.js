@@ -143,12 +143,13 @@ module.exports = {
 
         try {
           let evaled = awaitO ? await eval(script) : eval(script);
+          const evaledType = typeof evaled;
 
-          if (typeof evaled !== 'string') evaled = require('node:util').inspect(evaled);
+          if (evaledType !== 'string') evaled = require('node:util').inspect(evaled);
 
           emb = embed({ type: 'success' })
             .addField(st.__('GENERIC.OUTPUT'), `\`\`\`js\n${truncate(evaled, 1012)}\`\`\``)
-            .addField(st.__('GENERIC.TYPE'), `\`\`\`js\n${typeof evaled}\`\`\``);
+            .addField(st.__('GENERIC.TYPE'), `\`\`\`js\n${evaledType}\`\`\``);
           return interaction.editReply({ embeds: [emb] });
         } catch (err) {
           emb = embed({ type: 'error' }).addField(st.__('GENERIC.OUTPUT'), `\`\`\`js\n${err}\`\`\``);
