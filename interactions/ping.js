@@ -1,7 +1,7 @@
 'use strict';
 
 const { ShardClientUtil } = require('discord.js'),
-  { msToTime } = require('../utils');
+  { msToTime, toUTS } = require('../utils');
 module.exports = {
   data: [
     {
@@ -40,7 +40,11 @@ module.exports = {
           .addField(`📝 ${st.__('PING.TIME.EDITING')}`, `\`${timeNow - itc.createdTimestamp}ms\``, true)
           .addField(`⌛ ${st.__('PING.TIME.RESPONSE')}`, `\`${timeNow - interaction.createdTimestamp}ms\``, true)
           .addField(`💓 ${st.__('PING.API_LATENCY')}`, `\`${Math.round(client.ws.ping)}ms\``, true)
-          .addField(`🕑 ${st.__('PING.UPTIME')}`, `\`${msToTime(client.uptime)}\``, true);
+          .addField(
+            `🕑 ${st.__('PING.UPTIME')}`,
+            `\`${msToTime(client.uptime)}\` | ${toUTS(Date.now() - client.uptime)}`,
+            true,
+          );
 
         if (interaction.inGuild()) {
           emb = emb.addField(
@@ -60,7 +64,11 @@ module.exports = {
       emb = emb({ title: `🏓 ${st.__('PING.TITLE')}` })
         .addField(`⌛ ${st.__('PING.TIME.RESPONSE')}`, `\`${Date.now() - interaction.createdTimestamp}ms\``, true)
         .addField(`💓 ${st.__('PING.API_LATENCY')}`, `\`${Math.round(client.ws.ping)}ms\``, true)
-        .addField(`🕑 ${st.__('PING.UPTIME')}`, `\`${msToTime(client.uptime)}\` `, false);
+        .addField(
+          `🕑 ${st.__('PING.UPTIME')}`,
+          `\`${msToTime(client.uptime)}\` | ${toUTS(Date.now() - client.uptime)}`,
+          false,
+        );
 
       if (interaction.inGuild()) {
         emb = emb.addField(
