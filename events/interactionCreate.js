@@ -2,7 +2,8 @@
 
 const { MessageEmbed } = require('discord.js'),
   db = require('../database.js'),
-  { botColor, debugMode, botLanguage, imgOpts } = require('../defaults.js');
+  { botColor, debugMode, botLanguage, imgOpts } = require('../defaults.js'),
+  { linkAttr } = require('../utils.js');
 require('colors');
 require('log-timestamp');
 
@@ -21,7 +22,7 @@ module.exports = {
         options: opts,
         user,
         member,
-        message: msg,
+        message,
       } = interaction,
       intName = customId?.match(/^[^_]*/g)?.[0] ?? commandName,
       hasCommand =
@@ -30,7 +31,7 @@ module.exports = {
     if (!hasCommand) return console.error(`${(customId ?? commandName).red} interaction not found as ${intName.red}`);
 
     const fUser = await user.fetch(),
-      urlLanguage = msg?.embeds[0]?.footer?.iconURL?.match(/(?<=mowlang=).+?(?=(?:&|$))/g)?.[0],
+      urlLanguage = linkAttr(message?.embeds[0]?.footer?.iconURL, 'mowlang='),
       language = botLanguage.supported.includes(urlLanguage) ? urlLanguage : await db.getLanguage(guild);
 
     i18n.setLocale(language);
@@ -40,6 +41,7 @@ module.exports = {
      * Configure a predefined embed
      * @returns {string} A predefined embed
      * @param {Object} [options] Defines the options
+     * @param {string[]} [options.extraAttributes] Adds more attributes to the embed's footer image link
      * @param {boolean} [options.interacted=false] Set footer as interacted instead of requested
      * @param {string} [options.title] Change the title but still including the type's emoji
      * @param {('error'|'success'|'warning'|'wip')} [options.type] The type of the embed
@@ -49,7 +51,9 @@ module.exports = {
         .setColor(member?.displayColor || fUser.accentColor || botColor)
         .setFooter(
           i18n.__(`GENERIC.${options.interacted ? 'INTERACTED_BY' : 'REQUESTED_BY'}`, user.username),
-          `${member?.displayAvatarURL(imgOpts) ?? user.displayAvatarURL(imgOpts)}?mowlang=${language}`,
+          `${member?.displayAvatarURL(imgOpts) ?? user.displayAvatarURL(imgOpts)}?mowlang=${language}${
+            options.extraAttributes ? `&${options.extraAttributes.join('&')}` : ''
+          }`,
         )
         .setTimestamp(Date.now());
       switch (options.type) {
@@ -71,37 +75,29 @@ module.exports = {
     try {
       switch (customId) {
         case 'generic_message_delete': {
-          if (user.id === msg.interaction.user.id) return msg.delete();
+          if (message.interaction.user.id !== user.id) {
+            return interaction.reply({
+              embeds: [embed({ type: 'error' }).setDescription(i18n.__('ERROR.UNALLOWED.COMMAND'))],
+              ephemeral: true,
+            });
+          }
 
-          return interaction.reply({
-            embeds: [embed({ type: 'error' }).setDescription(i18n.__('ERROR.UNALLOWED.COMMAND'))],
-            ephemeral: true,
-          });
+          return message.delete();
         }
         default:
           await hasCommand.execute(client, interaction, i18n, embed);
       }
     } catch (err) {
       if (interaction.isAutocomplete()) return;
-
       console.error(err);
-      if (interaction.deferred || interaction.replied) {
-        return interaction.followUp({
-          embeds: [
-            embed({ type: 'error' }).setDescription(
-              `${i18n.__('ERROR.EXECUTING_INTERACTION')}\n\`\`\`js\n${err}\`\`\``,
-            ),
-          ],
-          ephemeral: true,
-        });
-      }
 
-      return interaction.reply({
+      const eOpts = {
         embeds: [
           embed({ type: 'error' }).setDescription(`${i18n.__('ERROR.EXECUTING_INTERACTION')}\n\`\`\`js\n${err}\`\`\``),
         ],
         ephemeral: true,
-      });
+      };
+      return interaction.deferred || interaction.replied ? interaction.followUp(eOpts) : interaction.reply(eOpts);
     } finally {
       if (debugMode && !interaction.isAutocomplete()) {
         console.log(
@@ -122,8 +118,8 @@ module.exports = {
             ':'.gray +
             (opts?._group?.yellow.concat(':'.gray) ?? '') +
             (opts?._subcommand?.yellow.concat(':'.gray) ?? '') +
-            // JSON.stringify(interaction).brightRed +
-            // ':'.gray +
+            JSON.stringify(interaction, (_, v) => (typeof v === 'bigint' ? v.toString() : v)).brightRed +
+            ':'.gray +
             (opts ? JSON.stringify(opts) : ''),
         );
       }

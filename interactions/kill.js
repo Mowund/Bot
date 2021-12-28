@@ -27,7 +27,10 @@ module.exports = {
     if (interaction.isCommand()) {
       return interaction.reply({
         embeds: [
-          embed().setColor('ff0000').setAuthor(userO.username, userO.avatarURL()).setDescription(st.__('KILL.DIED')),
+          embed()
+            .setColor('ff0000')
+            .setAuthor({ name: userO.username, iconURL: userO.avatarURL() })
+            .setDescription(st.__('KILL.DIED')),
         ],
         ephemeral: ephemeralO,
       });

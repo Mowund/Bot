@@ -61,7 +61,7 @@ module.exports = {
             botLanguage.supported.find(l => l.toLowerCase() === languageO.toLowerCase()) ??
             searchKey(st.__('SETTINGS.LANGUAGE.NAME'), languageO.match(/(?:(?! \|).)*/)?.[0] || languageO);
 
-          if (!memberPermissions.has(Permissions.FLAGS.MANAGE_GUILD) && !botOwners.includes(user.id)) {
+          if (!memberPermissions?.has(Permissions.FLAGS.MANAGE_GUILD) && !botOwners.includes(user.id)) {
             return interaction.editReply({
               embeds: [embed({ type: 'error' }).setDescription(st.__('PERM.REQUIRES', st.__('PERM.MANAGE_GUILD')))],
             });

@@ -18,6 +18,7 @@ botLanguage.supported.forEach(l => (staticCatalog[l] = require(`mowund-i18n/loca
 i18n.configure({
   locales: botLanguage.supported,
   defaultLocale: botLanguage.default,
+  retryInDefaultLocale: true,
   staticCatalog,
   objectNotation: true,
 });

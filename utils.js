@@ -10,6 +10,23 @@ const db = require('./database.js'),
 const xhr = new XMLHttpRequest();
 
 /**
+ * Get value after a specific link attribute
+ * @returns {string} The value after the specified link attribute
+ * @param {string} link The link to search for the attribute
+ * @param {string} attribute The attribute that will be used to search for its value
+ */
+module.exports.linkAttr = (link, attribute) => link?.match(new RegExp(`(?<=${attribute}).+?(?=(?:&|$))`, 'g'))?.[0];
+
+/**
+ * Differences in months two dates
+ * @returns {number} How much months between the two dates
+ * @param {Date} dateFrom The first date
+ * @param {Date} [dateTo=Current] The second date. (Default: Current date)
+ */
+module.exports.monthDiff = (dateFrom, dateTo = new Date()) =>
+  dateTo.getMonth() - dateFrom.getMonth() + 12 * (dateTo.getFullYear() - dateFrom.getFullYear());
+
+/**
  * Truncates a string with ellipsis
  * @returns {string} The string truncated with ellipsis
  * @param {string} input The string to truncate
@@ -21,12 +38,12 @@ module.exports.truncate = (input, limit = 1020) => (input.length > limit ? `${in
  * @returns {string} The mapped collections
  * @param {Collection} collections The collections to map
  * @param {Object} [options] The options for mapping
- * @param {string} [options.mapId] Map something else instead of the mention
+ * @param {string} [options.mapValue] Map something else instead of the mention
  * @param {number} [options.maxValues=40] The maximum amount of mapped collections to return. (Default: 40)
  */
 module.exports.collMap = (collections, options = { maxValues: 40 }) => {
   const cM = Util.discordSort(collections)
-    .map(c => (options.mapId ? `\`${c[options.mapId]}\`` : `${c}`))
+    .map(c => (options.mapValue ? `\`${c[options.mapValue]}\`` : `${c}`))
     .reverse();
   let tCM = cM;
   if (tCM.length > options.maxValues) (tCM = tCM.slice(0, options.maxValues)).push(`\`+${cM.length - tCM.length}\``);
@@ -78,6 +95,8 @@ module.exports.flagToEmoji = flag => {
       return emojis.earlySupporter;
     case 'EARLY_VERIFIED_BOT_DEVELOPER':
       return emojis.earlyVerifiedBotDeveloper;
+    case 'TEAM_USER':
+      return emojis.teamUser;
     case 'DISCORD_CERTIFIED_MODERATOR':
       return emojis.certifiedMod;
     case 'BOT_HTTP_INTERACTIONS':

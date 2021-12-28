@@ -2,7 +2,7 @@
 
 const { UserFlags, Permissions, MessageActionRow, MessageButton } = require('discord.js'),
   { emojis, botColor, imgOpts } = require('../defaults'),
-  { toUTS, flagToEmoji, collMap } = require('../utils');
+  { toUTS, flagToEmoji, collMap, monthDiff } = require('../utils');
 
 module.exports = {
   data: [
@@ -45,13 +45,35 @@ module.exports = {
 
       if (commandName === 'User Info' || options?.getSubcommand(true) === 'info') {
         const fUser = await userO.fetch(),
-          flags = userO.bot
+          flags = userO.system
+            ? [emojis.verifiedSystem]
+            : userO.bot
             ? userO.flags.has(UserFlags.FLAGS.VERIFIED_BOT)
               ? [emojis.verifiedBot]
               : [emojis.bot]
             : [];
 
         if (userO.id === guild?.ownerId) flags.push(emojis.serverOwner);
+        if (memberO?.premiumSince) {
+          const pMonths = monthDiff(memberO.premiumSince);
+
+          flags.push(
+            pMonths <= 1
+              ? emojis.boosting1Month
+              : pMonths === 2
+              ? emojis.boosting2Months
+              : pMonths >= 3 && pMonths < 6
+              ? emojis.boosting3Months
+              : pMonths >= 6 && pMonths < 12
+              ? emojis.boosting6Months
+              : pMonths >= 12 && pMonths < 15
+              ? emojis.boosting12Months
+              : pMonths >= 15 && pMonths < 18
+              ? emojis.boosting15Months
+              : emojis.boosting18Months,
+          );
+        }
+
         for (const flag of userO.flags.toArray()) {
           flags.push(flagToEmoji(flag));
         }
@@ -60,11 +82,11 @@ module.exports = {
           embs = [
             embed({ title: st.__('USER.INFO.TITLE') })
               .setColor(color)
-              .setAuthor(userO.tag, userO.displayAvatarURL(imgOpts))
+              .setAuthor({ name: userO.tag, iconURL: userO.displayAvatarURL(imgOpts) })
               .setThumbnail(memberO?.displayAvatarURL(imgOpts) ?? userO.displayAvatarURL(imgOpts))
               .setDescription(`${userO} ${flags.join(' ')}`)
-              .addField(st.__('USER.INFO.USER.ID'), `\`${userO.id}\``, true)
-              .addField(st.__('USER.INFO.USER.CREATED'), toUTS(userO.createdTimestamp), true),
+              .addField(st.__('GENERIC.ID'), `\`${userO.id}\``, true)
+              .addField(st.__('GENERIC.CREATION_DATE'), toUTS(userO.createdTimestamp), true),
           ],
           rows = [
             new MessageActionRow().addComponents(
@@ -78,7 +100,7 @@ module.exports = {
         if (memberO) {
           embs[0]
             .addField(st.__('USER.INFO.MEMBER.JOINED'), toUTS(memberO.joinedTimestamp), true)
-            .addField(st.__('USER.INFO.MEMBER.ROLES'), collMap(memberO.roles.cache));
+            .addField(st.__('GENERIC.ROLES'), collMap(memberO.roles.cache));
         }
 
         if (memberO?.avatar) {
@@ -142,7 +164,7 @@ module.exports = {
           return interaction.followUp({
             embeds: [
               embed({ type: 'warning' }).setDescription(
-                st.__('PERM.ROLE_REQUIRES', {
+                st.__mf('PERM.ROLE_REQUIRES', {
                   role: '@everyone',
                   perm: st.__('PERM.USE_EXTERNAL_EMOJIS'),
                 }),

@@ -42,7 +42,7 @@ module.exports = {
         });
       }
 
-      if (!memberPermissions.has(Permissions.FLAGS.MANAGE_MESSAGES) && !botOwners.includes(user.id)) {
+      if (!memberPermissions?.has(Permissions.FLAGS.MANAGE_MESSAGES) && !botOwners.includes(user.id)) {
         return interaction.editReply({
           embeds: [embed({ type: 'error' }).setDescription(st.__('PERM.REQUIRES', st.__('PERM.MANAGE_MESSAGES')))],
         });

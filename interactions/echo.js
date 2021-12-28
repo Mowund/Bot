@@ -85,7 +85,7 @@ module.exports = {
       titleO = options?.getString('title'),
       urlO = options?.getString('url'),
       authorO = options?.getUser('author'),
-      memberO = guild?.members.cache.get(authorO?.id) ?? member,
+      memberO = options?.getMember('author') ?? member,
       footerO = options?.getString('footer'),
       timestampO = options?.getBoolean('timestamp'),
       imageO = options?.getString('image'),
@@ -98,7 +98,7 @@ module.exports = {
       ephemeralO = options?.getBoolean('ephemeral') ?? true;
 
     if (
-      !memberPermissions.has(Permissions.FLAGS.MANAGE_MESSAGES) &&
+      !memberPermissions?.has(Permissions.FLAGS.MANAGE_MESSAGES) &&
       !botOwners.includes(user.id) &&
       (ephemeralO === false || channelO) &&
       interaction.inGuild()
@@ -132,7 +132,7 @@ module.exports = {
 
       if (titleO) eEmb.setTitle(titleO);
       if (urlO) eEmb.setURL(urlO);
-      if (authorO) eEmb.setAuthor(authorO.username, authorO.avatarURL());
+      if (authorO) eEmb.setAuthor({ name: authorO.username, iconURL: authorO.avatarURL() });
       if (footerO) eEmb.setFooter(footerO);
       if (timestampO) eEmb.setTimestamp(Date.now());
       if (imageO) eEmb.setImage(imageO);

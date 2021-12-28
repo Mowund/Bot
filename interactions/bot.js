@@ -27,7 +27,7 @@ module.exports = {
   ],
   async execute(client, interaction, st, emb) {
     const { guild, options } = interaction,
-      botMember = guild?.members.cache.get(client.user.id) ?? client.user,
+      botMember = guild?.members.cache.get(client.user.id),
       ephemeralO = options?.getBoolean('ephemeral') ?? true;
 
     if (interaction.isCommand()) {
@@ -52,7 +52,7 @@ module.exports = {
           );
 
         emb = emb({ title: st.__('BOT.INFO.TITLE') })
-          .setColor(botMember.displayColor ?? botColor)
+          .setColor(botMember?.displayColor || botColor)
           .setThumbnail(client.user.avatarURL())
           .addField(st.__('BOT.INFO.NAME_FIELD'), client.user.username, true)
           .addField(st.__('BOT.INFO.CREATION_FIELD'), toUTS(client.user.createdAt))
