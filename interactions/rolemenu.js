@@ -1,6 +1,6 @@
 'use strict';
 
-const { MessageSelectMenu, Permissions, MessageActionRow, Collection } = require('discord.js'),
+const { MessageSelectMenu, Permissions, MessageActionRow, Collection, MessageButton } = require('discord.js'),
   { botOwners } = require('../defaults'),
   { collMap } = require('../utils');
 
@@ -58,25 +58,67 @@ module.exports = {
       await interaction.deferReply({ ephemeral: ephemeralO });
       if (!interaction.inGuild()) {
         return interaction.editReply({
+          components: !ephemeralO
+            ? [
+                new MessageActionRow().addComponents(
+                  new MessageButton()
+                    .setLabel(st.__('GENERIC.COMPONENT.MESSAGE_DELETE'))
+                    .setEmoji('🧹')
+                    .setStyle('DANGER')
+                    .setCustomId('generic_message_delete'),
+                ),
+              ]
+            : [],
           embeds: [emb({ type: 'error' }).setDescription(st.__('ERROR.DM'))],
-          ephemeral: ephemeralO,
         });
       }
       if (!botOwners.includes(user.id)) {
         return interaction.editReply({
+          components: !ephemeralO
+            ? [
+                new MessageActionRow().addComponents(
+                  new MessageButton()
+                    .setLabel(st.__('GENERIC.COMPONENT.MESSAGE_DELETE'))
+                    .setEmoji('🧹')
+                    .setStyle('DANGER')
+                    .setCustomId('generic_message_delete'),
+                ),
+              ]
+            : [],
           embeds: [emb({ type: 'wip' })],
-          ephemeral: true,
         });
       }
 
       if (options?.getSubcommand() === 'create') {
         if (!channelO.isText()) {
           return interaction.editReply({
+            components: !ephemeralO
+              ? [
+                  new MessageActionRow().addComponents(
+                    new MessageButton()
+                      .setLabel(st.__('GENERIC.COMPONENT.MESSAGE_DELETE'))
+                      .setEmoji('🧹')
+                      .setStyle('DANGER')
+                      .setCustomId('generic_message_delete'),
+                  ),
+                ]
+              : [],
             embeds: [emb({ type: 'error' }).setDescription('Not a text based channel.')],
           });
         }
         if (!channelO.permissionsFor(client.user).has(Permissions.FLAGS.SEND_MESSAGES)) {
           return interaction.editReply({
+            components: !ephemeralO
+              ? [
+                  new MessageActionRow().addComponents(
+                    new MessageButton()
+                      .setLabel(st.__('GENERIC.COMPONENT.MESSAGE_DELETE'))
+                      .setEmoji('🧹')
+                      .setStyle('DANGER')
+                      .setCustomId('generic_message_delete'),
+                  ),
+                ]
+              : [],
             embeds: [emb({ type: 'error' }).setDescription("Can't send messages on this channel.")],
           });
         }
@@ -108,6 +150,17 @@ module.exports = {
         });
 
         return interaction.editReply({
+          components: !ephemeralO
+            ? [
+                new MessageActionRow().addComponents(
+                  new MessageButton()
+                    .setLabel(st.__('GENERIC.COMPONENT.MESSAGE_DELETE'))
+                    .setEmoji('🧹')
+                    .setStyle('DANGER')
+                    .setCustomId('generic_message_delete'),
+                ),
+              ]
+            : [],
           embeds: [emb().setDescription(`rolemenu criado em: ${channelO.toString()}`)],
         });
       }

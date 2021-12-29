@@ -1,6 +1,6 @@
 'use strict';
 
-const { Permissions } = require('discord.js'),
+const { Permissions, MessageActionRow, MessageButton } = require('discord.js'),
   { botOwners } = require('../defaults');
 
 module.exports = {
@@ -37,21 +37,52 @@ module.exports = {
       await interaction.deferReply({ ephemeral: ephemeralO });
       if (!interaction.inGuild()) {
         return interaction.editReply({
+          components: !ephemeralO
+            ? [
+                new MessageActionRow().addComponents(
+                  new MessageButton()
+                    .setLabel(st.__('GENERIC.COMPONENT.MESSAGE_DELETE'))
+                    .setEmoji('🧹')
+                    .setStyle('DANGER')
+                    .setCustomId('generic_message_delete'),
+                ),
+              ]
+            : [],
           embeds: [embed({ type: 'error' }).setDescription(st.__('ERROR.DM'))],
-          ephemeral: true,
         });
       }
 
       if (!memberPermissions?.has(Permissions.FLAGS.MANAGE_MESSAGES) && !botOwners.includes(user.id)) {
         return interaction.editReply({
+          components: !ephemeralO
+            ? [
+                new MessageActionRow().addComponents(
+                  new MessageButton()
+                    .setLabel(st.__('GENERIC.COMPONENT.MESSAGE_DELETE'))
+                    .setEmoji('🧹')
+                    .setStyle('DANGER')
+                    .setCustomId('generic_message_delete'),
+                ),
+              ]
+            : [],
           embeds: [embed({ type: 'error' }).setDescription(st.__('PERM.REQUIRES', st.__('PERM.MANAGE_MESSAGES')))],
         });
       }
 
       const q = (await channel.bulkDelete(countO, true)).size;
       return interaction.editReply({
+        components: !ephemeralO
+          ? [
+              new MessageActionRow().addComponents(
+                new MessageButton()
+                  .setLabel(st.__('GENERIC.COMPONENT.MESSAGE_DELETE'))
+                  .setEmoji('🧹')
+                  .setStyle('DANGER')
+                  .setCustomId('generic_message_delete'),
+              ),
+            ]
+          : [],
         embeds: [embed({ type: q > 0 ? 'success' : 'warning' }).setDescription(st.__mf('CLEAR.DELETED', { count: q }))],
-        ephemeral: ephemeralO,
       });
     }
   },

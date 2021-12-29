@@ -1,6 +1,6 @@
 'use strict';
 
-const { MessageActionRow, MessageButton } = require('discord.js');
+const { MessageActionRow, MessageButton, MessageFlags } = require('discord.js');
 module.exports = {
   data: [
     {
@@ -68,7 +68,7 @@ module.exports = {
   ],
   guildOnly: ['420007989261500418'],
   async execute(client, interaction, st, emb) {
-    const { options } = interaction,
+    const { message, options } = interaction,
       ephemeralO = options?.getBoolean('ephemeral') ?? true;
 
     if (interaction.isCommand()) {
@@ -81,7 +81,17 @@ module.exports = {
       }
 
       if (['add', 'remove'].includes(options?.getSubcommand())) {
-        const row = new MessageActionRow().addComponents(
+        const row = new MessageActionRow();
+        if (!ephemeralO) {
+          row.addComponents(
+            new MessageButton()
+              .setLabel(st.__('GENERIC.COMPONENT.MESSAGE_DELETE'))
+              .setEmoji('🧹')
+              .setStyle('DANGER')
+              .setCustomId('generic_message_delete'),
+          );
+        }
+        row.addComponents(
           new MessageButton()
             .setLabel(st.__('GENERIC.WIP'))
             .setEmoji('🔨')
@@ -98,7 +108,17 @@ module.exports = {
     } else if (interaction.isButton()) {
       if (interaction.customId === 'punish_danger') {
         return interaction.update({
-          components: [],
+          components: !message.flags.has(MessageFlags.FLAGS.EPHEMERAL)
+            ? [
+                new MessageActionRow().addComponents(
+                  new MessageButton()
+                    .setLabel(st.__('GENERIC.COMPONENT.MESSAGE_DELETE'))
+                    .setEmoji('🧹')
+                    .setStyle('DANGER')
+                    .setCustomId('generic_message_delete'),
+                ),
+              ]
+            : [],
         });
       }
     }

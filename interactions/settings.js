@@ -97,8 +97,8 @@ module.exports = {
                   `\`${st.__(m(`SETTINGS.LANGUAGE.NAME.${fLanguage}`))}\` - \`${fLanguage}\``,
                 )
                 .setFooter(
-                  st.__(m('GENERIC.REQUESTED_BY'), user.username),
-                  `${member?.avatarURL(imgOpts) ?? user.displayAvatarURL(imgOpts)}?mowlang=${language}`,
+                  st.__(m('GENERIC.REQUESTED_BY'), member?.displayName ?? user.username),
+                  `${(member ?? user).displayAvatarURL(imgOpts)}?mowlang=${language}`,
                 ),
             ],
             components: [

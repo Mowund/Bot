@@ -83,7 +83,7 @@ module.exports = {
             embed({ title: st.__('USER.INFO.TITLE') })
               .setColor(color)
               .setAuthor({ name: userO.tag, iconURL: userO.displayAvatarURL(imgOpts) })
-              .setThumbnail(memberO?.displayAvatarURL(imgOpts) ?? userO.displayAvatarURL(imgOpts))
+              .setThumbnail((memberO ?? userO).displayAvatarURL(imgOpts))
               .setDescription(`${userO} ${flags.join(' ')}`)
               .addField(st.__('GENERIC.ID'), `\`${userO.id}\``, true)
               .addField(st.__('GENERIC.CREATION_DATE'), toUTS(userO.createdTimestamp), true),
@@ -98,9 +98,9 @@ module.exports = {
           ];
 
         if (memberO) {
-          embs[0]
-            .addField(st.__('USER.INFO.MEMBER.JOINED'), toUTS(memberO.joinedTimestamp), true)
-            .addField(st.__('GENERIC.ROLES'), collMap(memberO.roles.cache));
+          const mRoles = memberO.roles.cache.filter(({ id }) => id !== guild.id);
+          embs[0].addField(st.__('USER.INFO.MEMBER.JOINED'), toUTS(memberO.joinedTimestamp), true);
+          if (mRoles.size > 0) embs[0].addField(`${st.__('GENERIC.ROLES')} [${mRoles.size}]`, collMap(mRoles));
         }
 
         if (memberO?.avatar) {

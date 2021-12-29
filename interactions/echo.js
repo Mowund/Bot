@@ -1,8 +1,8 @@
 'use strict';
 
-const { MessageEmbed, Permissions } = require('discord.js'),
+const { MessageEmbed, Permissions, MessageActionRow, MessageButton } = require('discord.js'),
   tc = require('tinycolor2'),
-  { botColor, botOwners } = require('../defaults');
+  { botColor, botOwners, imgOpts } = require('../defaults');
 
 module.exports = {
   data: [
@@ -85,14 +85,14 @@ module.exports = {
       titleO = options?.getString('title'),
       urlO = options?.getString('url'),
       authorO = options?.getUser('author'),
-      memberO = options?.getMember('author') ?? member,
+      memberO = options?.getMember('author'),
       footerO = options?.getString('footer'),
       timestampO = options?.getBoolean('timestamp'),
       imageO = options?.getString('image'),
       thumbnailO = options?.getString('thumbnail'),
       colorO = tc(options?.getString('color')).isValid()
         ? tc(options?.getString('color')).toHex()
-        : memberO?.displayColor ?? botColor,
+        : (memberO ?? member)?.displayColor ?? botColor,
       ttsO = options?.getBoolean('tts') ?? false,
       channelO = options?.getString('channel')?.replace(/[<#>]/g, ''),
       ephemeralO = options?.getBoolean('ephemeral') ?? true;
@@ -128,11 +128,27 @@ module.exports = {
       await interaction.deferReply({ ephemeral: ephemeralO });
 
       const eEmb = new MessageEmbed().setColor(colorO),
-        eMsg = {};
+        eMsg = {},
+        mdBtn = !ephemeralO
+          ? [
+              new MessageActionRow().addComponents(
+                new MessageButton()
+                  .setLabel(st.__('GENERIC.COMPONENT.MESSAGE_DELETE'))
+                  .setEmoji('🧹')
+                  .setStyle('DANGER')
+                  .setCustomId('generic_message_delete'),
+              ),
+            ]
+          : [];
 
       if (titleO) eEmb.setTitle(titleO);
       if (urlO) eEmb.setURL(urlO);
-      if (authorO) eEmb.setAuthor({ name: authorO.username, iconURL: authorO.avatarURL() });
+      if (authorO) {
+        eEmb.setAuthor({
+          name: memberO?.displayName ?? authorO.username,
+          iconURL: (memberO ?? authorO).displayAvatarURL(imgOpts),
+        });
+      }
       if (footerO) eEmb.setFooter(footerO);
       if (timestampO) eEmb.setTimestamp(Date.now());
       if (imageO) eEmb.setImage(imageO);
@@ -176,6 +192,7 @@ module.exports = {
         } else {
           if (!interaction.inGuild()) {
             return interaction.editReply({
+              components: mdBtn,
               embeds: [embed({ type: 'error' }).setDescription("Can't find channels using DM without `globalsearch`.")],
             });
           }
@@ -192,24 +209,29 @@ module.exports = {
         switch (result?.find(e => e) || result) {
           case 1:
             return interaction.editReply({
+              components: mdBtn,
               embeds: [
                 embed({ type: 'error' }).setDescription('Only bot owners send messages to a channel on another guild.'),
               ],
             });
           case 2:
             return interaction.editReply({
+              components: mdBtn,
               embeds: [embed({ type: 'error' }).setDescription('Not a text based channel.')],
             });
           case 3:
             return interaction.editReply({
+              components: mdBtn,
               embeds: [embed({ type: 'error' }).setDescription('Cannot send messages on specified channel.')],
             });
           case 4:
             return interaction.editReply({
+              components: mdBtn,
               embeds: [embed({ type: 'error' }).setDescription('Cannot access the specified channel.')],
             });
           case 5:
             return interaction.editReply({
+              components: mdBtn,
               embeds: [
                 embed({ title: 'Message Sent', type: 'success' }).addField(
                   'Channel',
@@ -219,6 +241,7 @@ module.exports = {
             });
           case 6:
             return interaction.editReply({
+              components: mdBtn,
               embeds: [embed({ type: 'error' }).setDescription('Channel not found accross any cached guilds')],
             });
         }

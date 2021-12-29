@@ -1,6 +1,6 @@
 'use strict';
 
-const { ShardClientUtil } = require('discord.js'),
+const { ShardClientUtil, MessageActionRow, MessageButton } = require('discord.js'),
   { msToTime, toUTS } = require('../utils');
 module.exports = {
   data: [
@@ -21,7 +21,7 @@ module.exports = {
       ],
     },
   ],
-  async execute(client, interaction, st, emb) {
+  async execute(client, interaction, st, embed) {
     const { guild, options } = interaction,
       deferO = options?.getBoolean('defer') ?? false,
       ephemeralO = options?.getBoolean('ephemeral') ?? true;
@@ -31,7 +31,7 @@ module.exports = {
         const itc = await interaction.deferReply({ ephemeral: ephemeralO, fetchReply: true }),
           timeNow = Date.now();
 
-        emb = emb({ title: `🏓 ${st.__('PING.TITLE')} (${st.__('PING.DEFERRED')})` })
+        embed = embed({ title: `🏓 ${st.__('PING.TITLE')} (${st.__('PING.DEFERRED')})` })
           .addField(
             `⏱️ ${st.__('PING.TIME.DEFERMENT')}`,
             `\`${itc.createdTimestamp - interaction.createdTimestamp}ms\``,
@@ -47,7 +47,7 @@ module.exports = {
           );
 
         if (interaction.inGuild()) {
-          emb = emb.addField(
+          embed = embed.addField(
             `💎 ${st.__('PING.SHARD')}`,
             `**${st.__('GENERIC.CURRENT')}:** \`${ShardClientUtil.shardIdForGuildId(
               guild.id,
@@ -58,10 +58,21 @@ module.exports = {
         }
 
         return interaction.editReply({
-          embeds: [emb],
+          components: !ephemeralO
+            ? [
+                new MessageActionRow().addComponents(
+                  new MessageButton()
+                    .setLabel(st.__('GENERIC.COMPONENT.MESSAGE_DELETE'))
+                    .setEmoji('🧹')
+                    .setStyle('DANGER')
+                    .setCustomId('generic_message_delete'),
+                ),
+              ]
+            : [],
+          embeds: [embed],
         });
       }
-      emb = emb({ title: `🏓 ${st.__('PING.TITLE')}` })
+      embed = embed({ title: `🏓 ${st.__('PING.TITLE')}` })
         .addField(`⌛ ${st.__('PING.TIME.RESPONSE')}`, `\`${Date.now() - interaction.createdTimestamp}ms\``, true)
         .addField(`💓 ${st.__('PING.API_LATENCY')}`, `\`${Math.round(client.ws.ping)}ms\``, true)
         .addField(
@@ -71,7 +82,7 @@ module.exports = {
         );
 
       if (interaction.inGuild()) {
-        emb = emb.addField(
+        embed = embed.addField(
           `💎 ${st.__('PING.SHARD')}`,
           `**${st.__('GENERIC.CURRENT')}:** \`${ShardClientUtil.shardIdForGuildId(
             guild.id,
@@ -82,7 +93,18 @@ module.exports = {
       }
 
       return interaction.reply({
-        embeds: [emb],
+        components: !ephemeralO
+          ? [
+              new MessageActionRow().addComponents(
+                new MessageButton()
+                  .setLabel(st.__('GENERIC.COMPONENT.MESSAGE_DELETE'))
+                  .setEmoji('🧹')
+                  .setStyle('DANGER')
+                  .setCustomId('generic_message_delete'),
+              ),
+            ]
+          : [],
+        embeds: [embed],
         ephemeral: ephemeralO,
       });
     }

@@ -50,8 +50,11 @@ module.exports = {
       const emb = new MessageEmbed()
         .setColor(member?.displayColor || fUser.accentColor || botColor)
         .setFooter(
-          i18n.__(`GENERIC.${options.interacted ? 'INTERACTED_BY' : 'REQUESTED_BY'}`, user.username),
-          `${member?.displayAvatarURL(imgOpts) ?? user.displayAvatarURL(imgOpts)}?mowlang=${language}${
+          i18n.__(
+            `GENERIC.${options.interacted ? 'INTERACTED_BY' : 'REQUESTED_BY'}`,
+            member?.displayName ?? user.username,
+          ),
+          `${(member ?? user).displayAvatarURL(imgOpts)}?mowlang=${language}${
             options.extraAttributes ? `&${options.extraAttributes.join('&')}` : ''
           }`,
         )
