@@ -56,35 +56,28 @@ module.exports = {
 
     if (interaction.isCommand()) {
       await interaction.deferReply({ ephemeral: ephemeralO });
+
+      const respRows = !ephemeralO
+        ? [
+            new MessageActionRow().addComponents(
+              new MessageButton()
+                .setLabel(st.__('GENERIC.COMPONENT.MESSAGE_DELETE'))
+                .setEmoji('🧹')
+                .setStyle('DANGER')
+                .setCustomId('generic_message_delete'),
+            ),
+          ]
+        : [];
+
       if (!interaction.inGuild()) {
         return interaction.editReply({
-          components: !ephemeralO
-            ? [
-                new MessageActionRow().addComponents(
-                  new MessageButton()
-                    .setLabel(st.__('GENERIC.COMPONENT.MESSAGE_DELETE'))
-                    .setEmoji('🧹')
-                    .setStyle('DANGER')
-                    .setCustomId('generic_message_delete'),
-                ),
-              ]
-            : [],
+          components: respRows,
           embeds: [emb({ type: 'error' }).setDescription(st.__('ERROR.DM'))],
         });
       }
       if (!botOwners.includes(user.id)) {
         return interaction.editReply({
-          components: !ephemeralO
-            ? [
-                new MessageActionRow().addComponents(
-                  new MessageButton()
-                    .setLabel(st.__('GENERIC.COMPONENT.MESSAGE_DELETE'))
-                    .setEmoji('🧹')
-                    .setStyle('DANGER')
-                    .setCustomId('generic_message_delete'),
-                ),
-              ]
-            : [],
+          components: respRows,
           embeds: [emb({ type: 'wip' })],
         });
       }
@@ -92,75 +85,48 @@ module.exports = {
       if (options?.getSubcommand() === 'create') {
         if (!channelO.isText()) {
           return interaction.editReply({
-            components: !ephemeralO
-              ? [
-                  new MessageActionRow().addComponents(
-                    new MessageButton()
-                      .setLabel(st.__('GENERIC.COMPONENT.MESSAGE_DELETE'))
-                      .setEmoji('🧹')
-                      .setStyle('DANGER')
-                      .setCustomId('generic_message_delete'),
-                  ),
-                ]
-              : [],
+            components: respRows,
             embeds: [emb({ type: 'error' }).setDescription('Not a text based channel.')],
           });
         }
         if (!channelO.permissionsFor(client.user).has(Permissions.FLAGS.SEND_MESSAGES)) {
           return interaction.editReply({
-            components: !ephemeralO
-              ? [
-                  new MessageActionRow().addComponents(
-                    new MessageButton()
-                      .setLabel(st.__('GENERIC.COMPONENT.MESSAGE_DELETE'))
-                      .setEmoji('🧹')
-                      .setStyle('DANGER')
-                      .setCustomId('generic_message_delete'),
-                  ),
-                ]
-              : [],
+            components: respRows,
             embeds: [emb({ type: 'error' }).setDescription("Can't send messages on this channel.")],
           });
         }
 
-        const row = new MessageActionRow().addComponents(
-          new MessageSelectMenu()
-            .setCustomId('rolemenu_giverole')
-            .setPlaceholder('Escolha um cargo')
-            .setMinValues(1)
-            .setMaxValues(2)
-            .addOptions([
-              {
-                label: 'Aniversariantes',
-                description: 'Cargo de aniversariantes',
-                emoji: '🎂',
-                value: '503219168007421971',
-              },
-              {
-                label: 'Mutados',
-                description: 'Cargo de mutados',
-                emoji: '⛔',
-                value: '531313330703433758',
-              },
-            ]),
-        );
+        const menuRows = [
+          new MessageActionRow().addComponents(
+            new MessageSelectMenu()
+              .setCustomId('rolemenu_giverole')
+              .setPlaceholder('Escolha um cargo')
+              .setMinValues(1)
+              .setMaxValues(2)
+              .addOptions([
+                {
+                  label: 'Aniversariantes',
+                  description: 'Cargo de aniversariantes',
+                  emoji: '🎂',
+                  value: '503219168007421971',
+                },
+                {
+                  label: 'Mutados',
+                  description: 'Cargo de mutados',
+                  emoji: '⛔',
+                  value: '531313330703433758',
+                },
+              ]),
+          ),
+        ];
+
         await channelO.send({
           embeds: [emb({ title: 'Escolha Algum Cargo' }).setDescription('🎂 Aniversariantes\n⛔ Mutados')],
-          components: [row],
+          components: menuRows,
         });
 
         return interaction.editReply({
-          components: !ephemeralO
-            ? [
-                new MessageActionRow().addComponents(
-                  new MessageButton()
-                    .setLabel(st.__('GENERIC.COMPONENT.MESSAGE_DELETE'))
-                    .setEmoji('🧹')
-                    .setStyle('DANGER')
-                    .setCustomId('generic_message_delete'),
-                ),
-              ]
-            : [],
+          components: respRows,
           embeds: [emb().setDescription(`rolemenu criado em: ${channelO.toString()}`)],
         });
       }

@@ -10,14 +10,6 @@ const db = require('./database.js'),
 const xhr = new XMLHttpRequest();
 
 /**
- * Get value after a specific link attribute
- * @returns {string} The value after the specified link attribute
- * @param {string} link The link to search for the attribute
- * @param {string} attribute The attribute that will be used to search for its value
- */
-module.exports.linkAttr = (link, attribute) => link?.match(new RegExp(`(?<=${attribute}).+?(?=(?:&|$))`, 'g'))?.[0];
-
-/**
  * Differences in months two dates
  * @returns {number} How much months between the two dates
  * @param {Date} dateFrom The first date

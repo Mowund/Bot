@@ -2,8 +2,7 @@
 
 const { MessageEmbed } = require('discord.js'),
   db = require('../database.js'),
-  { botColor, debugMode, botLanguage, imgOpts } = require('../defaults.js'),
-  { linkAttr } = require('../utils.js');
+  { botColor, debugMode, botLanguage, imgOpts } = require('../defaults.js');
 require('colors');
 require('log-timestamp');
 
@@ -31,7 +30,7 @@ module.exports = {
     if (!hasCommand) return console.error(`${(customId ?? commandName).red} interaction not found as ${intName.red}`);
 
     const fUser = await user.fetch(),
-      urlLanguage = linkAttr(message?.embeds[0]?.footer?.iconURL, 'mowlang='),
+      urlLanguage = new URLSearchParams(message?.embeds[0]?.footer?.iconURL).get('mowlang'),
       language = botLanguage.supported.includes(urlLanguage) ? urlLanguage : await db.getLanguage(guild);
 
     i18n.setLocale(language);
@@ -41,7 +40,7 @@ module.exports = {
      * Configure a predefined embed
      * @returns {string} A predefined embed
      * @param {Object} [options] Defines the options
-     * @param {string[]} [options.extraAttributes] Adds more attributes to the embed's footer image link
+     * @param {Object} [options.addParams] Adds extra parameters to the embed's footer image url
      * @param {boolean} [options.interacted=false] Set footer as interacted instead of requested
      * @param {string} [options.title] Change the title but still including the type's emoji
      * @param {('error'|'success'|'warning'|'wip')} [options.type] The type of the embed
@@ -54,8 +53,8 @@ module.exports = {
             `GENERIC.${options.interacted ? 'INTERACTED_BY' : 'REQUESTED_BY'}`,
             member?.displayName ?? user.username,
           ),
-          `${(member ?? user).displayAvatarURL(imgOpts)}?mowlang=${language}${
-            options.extraAttributes ? `&${options.extraAttributes.join('&')}` : ''
+          `${(member ?? user).displayAvatarURL(imgOpts)}&mowlang=${language}${
+            options.addParams ? `&${new URLSearchParams(options.addParams).toString()}` : ''
           }`,
         )
         .setTimestamp(Date.now());

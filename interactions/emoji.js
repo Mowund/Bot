@@ -42,7 +42,7 @@ module.exports = {
     const { guild, user, memberPermissions, message, options } = interaction,
       emojiO = options?.getString('emoji').match(/^.+?(?=[\s<]|(?<=[\s>])|$)/gm)?.[0],
       globalsearchO = options?.getBoolean('globalsearch') ?? false,
-      ephemeralO = options?.getBoolean('ephemeral') ?? true,
+      ephemeralO = options?.getBoolean('ephemeral') ?? message?.flags.has(MessageFlags.FLAGS.EPHEMERAL) ?? true,
       mdBtn = new MessageButton()
         .setLabel(st.__('GENERIC.COMPONENT.MESSAGE_DELETE'))
         .setEmoji('🧹')
@@ -51,8 +51,8 @@ module.exports = {
 
     let { customId } = interaction,
       emjFR,
-      disAdd = false,
-      disEdit = false;
+      addBtnVsby = 0,
+      editBtnVsby = 2;
 
     if (interaction.isCommand()) {
       await interaction.deferReply({ ephemeral: ephemeralO });
@@ -79,7 +79,7 @@ module.exports = {
                       },
                       bE = c.emojis.cache.get(d);
 
-                    return bE ? [bE, bE.guild, cM(bE.roles.cache)] : false;
+                    return bE ? [bE, bE.guild, cM(bE.roles.cache), bE.roles.cache.size] : false;
                   },
                   {
                     context: {
@@ -101,22 +101,24 @@ module.exports = {
             : '';
 
       if (emj) {
-        if ((emj.guild?.id || emj[1].id) !== guild?.id) disEdit = true;
-        if (!memberPermissions?.has(Permissions.FLAGS.MANAGE_EMOJIS_AND_STICKERS)) {
-          disAdd = true;
-          disEdit = true;
-        }
         const emjRoles =
           (emj[2] ?? collMap(emj.roles.cache, emj.guild?.id !== guild?.id ? { mapValue: 'id' } : {})) || '@everyone';
 
         emjID = (emj[0] ?? emj).id;
         emjName = (emj[0] ?? emj).name;
         emjFR = {
-          name: st.__('GENERIC.ROLES'),
+          name: `${st.__('GENERIC.ROLES')} [${emj[3] ?? emj.roles?.cache.size}]`,
           value: emjRoles,
         };
-      } else {
-        disEdit = true;
+      }
+
+      if ((emj?.guild || emj?.[1])?.id !== guild?.id) {
+        addBtnVsby = 2;
+        editBtnVsby = 0;
+      }
+
+      if (!memberPermissions?.has(Permissions.FLAGS.MANAGE_EMOJIS_AND_STICKERS)) {
+        addBtnVsby = editBtnVsby = 0;
       }
 
       let emjURL = `https://cdn.discordapp.com/emojis/${emjID}`;
@@ -142,13 +144,6 @@ module.exports = {
       if (emjFR) emb.addFields(emjFR);
 
       const rows = [new MessageActionRow()];
-      if (!ephemeralO) {
-        if (interaction.inGuild()) {
-          rows.push(new MessageActionRow().addComponents(mdBtn));
-        } else {
-          rows[0].addComponents(mdBtn);
-        }
-      }
       rows[0].addComponents(
         new MessageButton()
           .setLabel(st.__('EMOJI.COMPONENT.LINK'))
@@ -157,25 +152,33 @@ module.exports = {
           .setURL(`${emjURL.split('?')[0]}?size=4096`),
       );
 
-      if (interaction.inGuild()) {
-        if ((emj?.guild?.id || emj?.[1].id) !== guild?.id) {
-          rows[0].addComponents(
-            new MessageButton()
-              .setLabel(st.__('EMOJI.COMPONENT.EDIT_ADD'))
-              .setEmoji('➕')
-              .setStyle('SUCCESS')
-              .setCustomId('emoji_edit_add')
-              .setDisabled(disAdd),
-          );
-        }
+      if (addBtnVsby > 0) {
+        rows[0].addComponents(
+          new MessageButton()
+            .setLabel(st.__('EMOJI.COMPONENT.EDIT_ADD'))
+            .setEmoji('➕')
+            .setStyle('SUCCESS')
+            .setCustomId('emoji_edit_add')
+            .setDisabled(addBtnVsby < 2),
+        );
+      }
+      if (editBtnVsby > 0) {
         rows[0].addComponents(
           new MessageButton()
             .setLabel(st.__('EMOJI.COMPONENT.EDIT'))
             .setEmoji('📝')
             .setStyle('PRIMARY')
             .setCustomId('emoji_edit')
-            .setDisabled(disEdit),
+            .setDisabled(editBtnVsby < 2),
         );
+      }
+
+      if (!ephemeralO) {
+        if (rows[0].components.length > 1) {
+          rows.push(new MessageActionRow().addComponents(mdBtn));
+        } else {
+          rows[0].addComponents(mdBtn);
+        }
       }
 
       return interaction.editReply({
@@ -191,12 +194,6 @@ module.exports = {
           ephemeral: true,
         });
       }
-
-      if (!memberPermissions?.has(Permissions.FLAGS.MANAGE_EMOJIS_AND_STICKERS)) {
-        customId = 'emoji_noperm';
-        disEdit = true;
-      }
-
       const emjURL = message.embeds[0].thumbnail.url;
       let emjID = new URL(emjURL).pathname.split(/[/&.]/)[2],
         emj = guild?.emojis.cache.get(emjID),
@@ -216,12 +213,19 @@ module.exports = {
         emjName = emj.name;
         emjID = emj.id;
         emjFR = {
-          name: st.__('GENERIC.ROLES'),
+          name: `${st.__('GENERIC.ROLES')} [${emj.roles.cache.size}]`,
           value: emjRoles,
         };
       } else {
         if (!['emoji_edit_add', 'emoji_edit_readd'].includes(customId)) customId = 'emoji_nonexistent';
-        disEdit = true;
+        addBtnVsby = 2;
+        editBtnVsby = 1;
+      }
+
+      if (!memberPermissions?.has(Permissions.FLAGS.MANAGE_EMOJIS_AND_STICKERS)) {
+        customId = 'emoji_noperm';
+        addBtnVsby = emj ? 0 : 1;
+        editBtnVsby = 1;
       }
 
       const emb = (
@@ -263,13 +267,13 @@ module.exports = {
               inline: true,
             };
             emb.fields[3] = {
-              name: st.__('GENERIC.ROLES'),
+              name: `${st.__('GENERIC.ROLES')} [0]`,
               value: '@everyone',
             };
             emb
               .setColor('00ff00')
               .setThumbnail(emj.url)
-              .setTitle(`${emj} ${st.__(`EMOJI.${customId === 'emoji_edit_add' ? 'EDIT_ADDED' : 'EDIT_READDED'}`)}`);
+              .setTitle(`${emj} ${st.__(`EMOJI.EDIT_${customId === 'emoji_edit_add' ? 'ADDED' : 'READDED'}`)}`);
           }
           return interaction.update({
             embeds: [emb],
@@ -314,28 +318,34 @@ module.exports = {
             ),
           ];
 
-          if (!message.flags.has(MessageFlags.FLAGS.EPHEMERAL)) {
-            rows.push(new MessageActionRow().addComponents(mdBtn));
-          }
-
-          if ((emj?.guild?.id || emj?.[1].id) !== guild?.id) {
+          if (addBtnVsby > 0 && (emj?.guild || emj?.[1])?.id !== guild?.id) {
             rows[0].addComponents(
               new MessageButton()
                 .setLabel(st.__('EMOJI.COMPONENT.EDIT_ADD'))
                 .setEmoji('➕')
                 .setStyle('SUCCESS')
                 .setCustomId('emoji_edit_add')
-                .setDisabled(disAdd),
+                .setDisabled(addBtnVsby < 2),
             );
           }
-          rows[0].addComponents(
-            new MessageButton()
-              .setLabel(st.__('EMOJI.COMPONENT.EDIT'))
-              .setEmoji('📝')
-              .setStyle('PRIMARY')
-              .setCustomId('emoji_edit')
-              .setDisabled(disEdit),
-          );
+          if (editBtnVsby > 0) {
+            rows[0].addComponents(
+              new MessageButton()
+                .setLabel(st.__('EMOJI.COMPONENT.EDIT'))
+                .setEmoji('📝')
+                .setStyle('PRIMARY')
+                .setCustomId('emoji_edit')
+                .setDisabled(editBtnVsby < 2),
+            );
+          }
+
+          if (!ephemeralO) {
+            if (rows[0].components.length > 1) {
+              rows.push(new MessageActionRow().addComponents(mdBtn));
+            } else {
+              rows[0].addComponents(mdBtn);
+            }
+          }
 
           await interaction.update({
             embeds: [emb.setTitle(`${displayEmj}${st.__('EMOJI.VIEW_VIEWING')}`).setColor('00ff00')],
@@ -391,16 +401,26 @@ module.exports = {
                 .setEmoji('🖼️')
                 .setStyle('LINK')
                 .setURL(`${emjURL.split('?')[0]}?size=4096`),
+            ),
+          ];
+
+          if (addBtnVsby > 0) {
+            rows[0].addComponents(
               new MessageButton()
                 .setLabel(st.__('EMOJI.COMPONENT.EDIT_READD'))
                 .setEmoji('➕')
                 .setStyle('SUCCESS')
-                .setCustomId('emoji_edit_readd'),
-            ),
-          ];
+                .setCustomId('emoji_edit_readd')
+                .setDisabled(addBtnVsby < 2),
+            );
+          }
 
-          if (!message.flags.has(MessageFlags.FLAGS.EPHEMERAL)) {
-            rows.push(new MessageActionRow().addComponents(mdBtn));
+          if (!ephemeralO) {
+            if (rows[0].components.length > 1) {
+              rows.push(new MessageActionRow().addComponents(mdBtn));
+            } else {
+              rows[0].addComponents(mdBtn);
+            }
           }
 
           return interaction.update({

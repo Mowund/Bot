@@ -29,59 +29,41 @@ module.exports = {
     const { options, channel, user, memberPermissions } = interaction,
       countO = options?.getInteger('count'),
       ephemeralO = options?.getBoolean('ephemeral') ?? true;
-
     // TODO: Create a confirmation menu
     // TODO: Delete user-specific messages
     // TODO: Let users delete their own messages without manage messages permission
     if (interaction.isCommand()) {
       await interaction.deferReply({ ephemeral: ephemeralO });
+
+      const rows = !ephemeralO
+        ? [
+            new MessageActionRow().addComponents(
+              new MessageButton()
+                .setLabel(st.__('GENERIC.COMPONENT.MESSAGE_DELETE'))
+                .setEmoji('🧹')
+                .setStyle('DANGER')
+                .setCustomId('generic_message_delete'),
+            ),
+          ]
+        : [];
+
       if (!interaction.inGuild()) {
         return interaction.editReply({
-          components: !ephemeralO
-            ? [
-                new MessageActionRow().addComponents(
-                  new MessageButton()
-                    .setLabel(st.__('GENERIC.COMPONENT.MESSAGE_DELETE'))
-                    .setEmoji('🧹')
-                    .setStyle('DANGER')
-                    .setCustomId('generic_message_delete'),
-                ),
-              ]
-            : [],
+          components: rows,
           embeds: [embed({ type: 'error' }).setDescription(st.__('ERROR.DM'))],
         });
       }
 
       if (!memberPermissions?.has(Permissions.FLAGS.MANAGE_MESSAGES) && !botOwners.includes(user.id)) {
         return interaction.editReply({
-          components: !ephemeralO
-            ? [
-                new MessageActionRow().addComponents(
-                  new MessageButton()
-                    .setLabel(st.__('GENERIC.COMPONENT.MESSAGE_DELETE'))
-                    .setEmoji('🧹')
-                    .setStyle('DANGER')
-                    .setCustomId('generic_message_delete'),
-                ),
-              ]
-            : [],
+          components: rows,
           embeds: [embed({ type: 'error' }).setDescription(st.__('PERM.REQUIRES', st.__('PERM.MANAGE_MESSAGES')))],
         });
       }
 
       const q = (await channel.bulkDelete(countO, true)).size;
       return interaction.editReply({
-        components: !ephemeralO
-          ? [
-              new MessageActionRow().addComponents(
-                new MessageButton()
-                  .setLabel(st.__('GENERIC.COMPONENT.MESSAGE_DELETE'))
-                  .setEmoji('🧹')
-                  .setStyle('DANGER')
-                  .setCustomId('generic_message_delete'),
-              ),
-            ]
-          : [],
+        components: rows,
         embeds: [embed({ type: q > 0 ? 'success' : 'warning' }).setDescription(st.__mf('CLEAR.DELETED', { count: q }))],
       });
     }

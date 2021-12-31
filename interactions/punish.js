@@ -69,7 +69,12 @@ module.exports = {
   guildOnly: ['420007989261500418'],
   async execute(client, interaction, st, emb) {
     const { message, options } = interaction,
-      ephemeralO = options?.getBoolean('ephemeral') ?? true;
+      ephemeralO = options?.getBoolean('ephemeral') ?? true,
+      mdBtn = new MessageButton()
+        .setLabel(st.__('GENERIC.COMPONENT.MESSAGE_DELETE'))
+        .setEmoji('🧹')
+        .setStyle('DANGER')
+        .setCustomId('generic_message_delete');
 
     if (interaction.isCommand()) {
       await interaction.deferReply({ ephemeral: ephemeralO });
@@ -81,43 +86,30 @@ module.exports = {
       }
 
       if (['add', 'remove'].includes(options?.getSubcommand())) {
-        const row = new MessageActionRow();
-        if (!ephemeralO) {
-          row.addComponents(
+        const rows = [
+          new MessageActionRow().addComponents(
             new MessageButton()
-              .setLabel(st.__('GENERIC.COMPONENT.MESSAGE_DELETE'))
-              .setEmoji('🧹')
+              .setLabel(st.__('GENERIC.WIP'))
+              .setEmoji('🔨')
               .setStyle('DANGER')
-              .setCustomId('generic_message_delete'),
-          );
+              .setCustomId('punish_danger'),
+          ),
+        ];
+        if (!ephemeralO) {
+          rows[0].addComponents(mdBtn);
         }
-        row.addComponents(
-          new MessageButton()
-            .setLabel(st.__('GENERIC.WIP'))
-            .setEmoji('🔨')
-            .setStyle('DANGER')
-            .setCustomId('punish_danger'),
-        );
 
         return interaction.editReply({
           embeds: [emb({ type: 'wip' })],
           ephemeral: ephemeralO,
-          components: [row],
+          components: rows,
         });
       }
     } else if (interaction.isButton()) {
       if (interaction.customId === 'punish_danger') {
         return interaction.update({
           components: !message.flags.has(MessageFlags.FLAGS.EPHEMERAL)
-            ? [
-                new MessageActionRow().addComponents(
-                  new MessageButton()
-                    .setLabel(st.__('GENERIC.COMPONENT.MESSAGE_DELETE'))
-                    .setEmoji('🧹')
-                    .setStyle('DANGER')
-                    .setCustomId('generic_message_delete'),
-                ),
-              ]
+            ? [new MessageActionRow().addComponents(mdBtn)]
             : [],
         });
       }

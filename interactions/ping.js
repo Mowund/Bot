@@ -27,6 +27,18 @@ module.exports = {
       ephemeralO = options?.getBoolean('ephemeral') ?? true;
 
     if (interaction.isCommand()) {
+      const rows = !ephemeralO
+        ? [
+            new MessageActionRow().addComponents(
+              new MessageButton()
+                .setLabel(st.__('GENERIC.COMPONENT.MESSAGE_DELETE'))
+                .setEmoji('🧹')
+                .setStyle('DANGER')
+                .setCustomId('generic_message_delete'),
+            ),
+          ]
+        : [];
+
       if (deferO) {
         const itc = await interaction.deferReply({ ephemeral: ephemeralO, fetchReply: true }),
           timeNow = Date.now();
@@ -58,17 +70,7 @@ module.exports = {
         }
 
         return interaction.editReply({
-          components: !ephemeralO
-            ? [
-                new MessageActionRow().addComponents(
-                  new MessageButton()
-                    .setLabel(st.__('GENERIC.COMPONENT.MESSAGE_DELETE'))
-                    .setEmoji('🧹')
-                    .setStyle('DANGER')
-                    .setCustomId('generic_message_delete'),
-                ),
-              ]
-            : [],
+          components: rows,
           embeds: [embed],
         });
       }
@@ -93,17 +95,7 @@ module.exports = {
       }
 
       return interaction.reply({
-        components: !ephemeralO
-          ? [
-              new MessageActionRow().addComponents(
-                new MessageButton()
-                  .setLabel(st.__('GENERIC.COMPONENT.MESSAGE_DELETE'))
-                  .setEmoji('🧹')
-                  .setStyle('DANGER')
-                  .setCustomId('generic_message_delete'),
-              ),
-            ]
-          : [],
+        components: rows,
         embeds: [embed],
         ephemeral: ephemeralO,
       });

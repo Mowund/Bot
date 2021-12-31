@@ -114,19 +114,21 @@ module.exports = {
     if (interaction.isCommand()) {
       await interaction.deferReply({ ephemeral: ephemeralO });
 
+      const rows = !ephemeralO
+        ? [
+            new MessageActionRow().addComponents(
+              new MessageButton()
+                .setLabel(st.__('GENERIC.COMPONENT.MESSAGE_DELETE'))
+                .setEmoji('🧹')
+                .setStyle('DANGER')
+                .setCustomId('generic_message_delete'),
+            ),
+          ]
+        : [];
+
       if (!botOwners.includes(user.id)) {
         return interaction.editReply({
-          components: !ephemeralO
-            ? [
-                new MessageActionRow().addComponents(
-                  new MessageButton()
-                    .setLabel(st.__('GENERIC.COMPONENT.MESSAGE_DELETE'))
-                    .setEmoji('🧹')
-                    .setStyle('DANGER')
-                    .setCustomId('generic_message_delete'),
-                ),
-              ]
-            : [],
+          components: rows,
           embeds: [embed({ type: 'error' }).setDescription(st.__('ERROR.DEVELOPERS_ONLY'))],
         });
       }
@@ -141,17 +143,7 @@ module.exports = {
 
       if (guildO && !guild) {
         return interaction.editReply({
-          components: !ephemeralO
-            ? [
-                new MessageActionRow().addComponents(
-                  new MessageButton()
-                    .setLabel(st.__('GENERIC.COMPONENT.MESSAGE_DELETE'))
-                    .setEmoji('🧹')
-                    .setStyle('DANGER')
-                    .setCustomId('generic_message_delete'),
-                ),
-              ]
-            : [],
+          components: rows,
           embeds: [embed({ type: 'error' }).setDescription(st.__('ERROR.GUILD_NOT_FOUND'))],
         });
       }
@@ -174,33 +166,13 @@ module.exports = {
             .addField(st.__('GENERIC.OUTPUT'), `\`\`\`js\n${truncate(evaled, 1012)}\`\`\``)
             .addField(st.__('GENERIC.TYPE'), `\`\`\`js\n${evaledType}\`\`\``);
           return interaction.editReply({
-            components: !ephemeralO
-              ? [
-                  new MessageActionRow().addComponents(
-                    new MessageButton()
-                      .setLabel(st.__('GENERIC.COMPONENT.MESSAGE_DELETE'))
-                      .setEmoji('🧹')
-                      .setStyle('DANGER')
-                      .setCustomId('generic_message_delete'),
-                  ),
-                ]
-              : [],
+            components: rows,
             embeds: [emb],
           });
         } catch (err) {
           emb = embed({ type: 'error' }).addField(st.__('GENERIC.OUTPUT'), `\`\`\`js\n${err}\`\`\``);
           return interaction.editReply({
-            components: !ephemeralO
-              ? [
-                  new MessageActionRow().addComponents(
-                    new MessageButton()
-                      .setLabel(st.__('GENERIC.COMPONENT.MESSAGE_DELETE'))
-                      .setEmoji('🧹')
-                      .setStyle('DANGER')
-                      .setCustomId('generic_message_delete'),
-                  ),
-                ]
-              : [],
+            components: rows,
             embeds: [emb],
           });
         }
@@ -330,17 +302,7 @@ module.exports = {
           }
 
           return interaction.editReply({
-            components: !ephemeralO
-              ? [
-                  new MessageActionRow().addComponents(
-                    new MessageButton()
-                      .setLabel(st.__('GENERIC.COMPONENT.MESSAGE_DELETE'))
-                      .setEmoji('🧹')
-                      .setStyle('DANGER')
-                      .setCustomId('generic_message_delete'),
-                  ),
-                ]
-              : [],
+            components: rows,
             embeds:
               emb.length > 0 ? emb : [embed({ type: 'warning' }).setDescription(st.__('MOWUND.INTERACTION.NO_UPDATE'))],
           });
@@ -353,17 +315,7 @@ module.exports = {
             timeoutO = options?.getInteger('timeout') ?? 30000;
 
           await interaction.editReply({
-            components: !ephemeralO
-              ? [
-                  new MessageActionRow().addComponents(
-                    new MessageButton()
-                      .setLabel(st.__('GENERIC.COMPONENT.MESSAGE_DELETE'))
-                      .setEmoji('🧹')
-                      .setStyle('DANGER')
-                      .setCustomId('generic_message_delete'),
-                  ),
-                ]
-              : [],
+            components: rows,
             embeds: [embed({ type: 'warning' }).setDescription(st.__('MOWUND.SHARD.RESPAWNING'))],
           });
 

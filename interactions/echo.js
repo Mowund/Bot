@@ -129,7 +129,7 @@ module.exports = {
 
       const eEmb = new MessageEmbed().setColor(colorO),
         eMsg = {},
-        mdBtn = !ephemeralO
+        rows = !ephemeralO
           ? [
               new MessageActionRow().addComponents(
                 new MessageButton()
@@ -192,7 +192,7 @@ module.exports = {
         } else {
           if (!interaction.inGuild()) {
             return interaction.editReply({
-              components: mdBtn,
+              components: rows,
               embeds: [embed({ type: 'error' }).setDescription("Can't find channels using DM without `globalsearch`.")],
             });
           }
@@ -209,29 +209,29 @@ module.exports = {
         switch (result?.find(e => e) || result) {
           case 1:
             return interaction.editReply({
-              components: mdBtn,
+              components: rows,
               embeds: [
                 embed({ type: 'error' }).setDescription('Only bot owners send messages to a channel on another guild.'),
               ],
             });
           case 2:
             return interaction.editReply({
-              components: mdBtn,
+              components: rows,
               embeds: [embed({ type: 'error' }).setDescription('Not a text based channel.')],
             });
           case 3:
             return interaction.editReply({
-              components: mdBtn,
+              components: rows,
               embeds: [embed({ type: 'error' }).setDescription('Cannot send messages on specified channel.')],
             });
           case 4:
             return interaction.editReply({
-              components: mdBtn,
+              components: rows,
               embeds: [embed({ type: 'error' }).setDescription('Cannot access the specified channel.')],
             });
           case 5:
             return interaction.editReply({
-              components: mdBtn,
+              components: rows,
               embeds: [
                 embed({ title: 'Message Sent', type: 'success' }).addField(
                   'Channel',
@@ -241,7 +241,7 @@ module.exports = {
             });
           case 6:
             return interaction.editReply({
-              components: mdBtn,
+              components: rows,
               embeds: [embed({ type: 'error' }).setDescription('Channel not found accross any cached guilds')],
             });
         }

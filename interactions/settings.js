@@ -55,7 +55,8 @@ module.exports = {
         }
 
         const languageO = options?.getString('language'),
-          row = new MessageActionRow();
+          rows = [new MessageActionRow()];
+
         if (languageO) {
           const fLanguage =
             botLanguage.supported.find(l => l.toLowerCase() === languageO.toLowerCase()) ??
@@ -75,8 +76,15 @@ module.exports = {
           await db.setLanguage(guild, fLanguage);
           const m = p => ({ phrase: p, locale: fLanguage });
 
+          rows[0].addComponents(
+            new MessageButton()
+              .setLabel(st.__(m('SETTINGS.LANGUAGE.CROWDIN')))
+              .setEmoji(emojis.crowdin)
+              .setStyle('LINK')
+              .setURL('https://crowdin.com/project/mowund'),
+          );
           if (!ephemeralO) {
-            row.addComponents(
+            rows[0].addComponents(
               new MessageButton()
                 .setLabel(st.__(m('GENERIC.COMPONENT.MESSAGE_DELETE')))
                 .setEmoji('🧹')
@@ -101,21 +109,20 @@ module.exports = {
                   `${(member ?? user).displayAvatarURL(imgOpts)}?mowlang=${language}`,
                 ),
             ],
-            components: [
-              row.addComponents(
-                new MessageButton()
-                  .setLabel(st.__(m('SETTINGS.LANGUAGE.CROWDIN')))
-                  .setEmoji(emojis.crowdin)
-                  .setStyle('LINK')
-                  .setURL('https://crowdin.com/project/mowund'),
-              ),
-            ],
+            components: rows,
             ephemeral: ephemeralO,
           });
         }
 
+        rows[0].addComponents(
+          new MessageButton()
+            .setLabel(st.__('SETTINGS.LANGUAGE.CROWDIN'))
+            .setEmoji(emojis.crowdin)
+            .setStyle('LINK')
+            .setURL('https://crowdin.com/project/mowund'),
+        );
         if (!ephemeralO) {
-          row.addComponents(
+          rows[0].addComponents(
             new MessageButton()
               .setLabel(st.__('GENERIC.COMPONENT.MESSAGE_DELETE'))
               .setEmoji('🧹')
@@ -135,15 +142,7 @@ module.exports = {
                 ),
               ),
           ],
-          components: [
-            row.addComponents(
-              new MessageButton()
-                .setLabel(st.__('SETTINGS.LANGUAGE.CROWDIN'))
-                .setEmoji(emojis.crowdin)
-                .setStyle('LINK')
-                .setURL('https://crowdin.com/project/mowund'),
-            ),
-          ],
+          components: rows,
           ephemeral: ephemeralO,
         });
       }
