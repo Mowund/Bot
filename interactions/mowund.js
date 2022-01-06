@@ -51,7 +51,7 @@ module.exports = {
               options: [
                 {
                   name: 'id',
-                  description: 'Id of a specific command. (Default: All commands)',
+                  description: 'ID of a specific command. (Default: All commands)',
                   type: 'STRING',
                 },
                 {

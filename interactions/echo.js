@@ -149,7 +149,7 @@ module.exports = {
           iconURL: (memberO ?? authorO).displayAvatarURL(imgOpts),
         });
       }
-      if (footerO) eEmb.setFooter(footerO);
+      if (footerO) eEmb.setFooter({ name: footerO });
       if (timestampO) eEmb.setTimestamp(Date.now());
       if (imageO) eEmb.setImage(imageO);
       if (thumbnailO) eEmb.setThumbnail(thumbnailO);

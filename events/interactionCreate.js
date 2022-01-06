@@ -2,7 +2,8 @@
 
 const { MessageEmbed } = require('discord.js'),
   db = require('../database.js'),
-  { botColor, debugMode, botLanguage, imgOpts } = require('../defaults.js');
+  { botColor, debugMode, botLanguage, imgOpts } = require('../defaults.js'),
+  { getParam } = require('../utils.js');
 require('colors');
 require('log-timestamp');
 
@@ -30,8 +31,8 @@ module.exports = {
     if (!hasCommand) return console.error(`${(customId ?? commandName).red} interaction not found as ${intName.red}`);
 
     const fUser = await user.fetch(),
-      urlLanguage = new URLSearchParams(message?.embeds[0]?.footer?.iconURL).get('mowlang'),
-      language = botLanguage.supported.includes(urlLanguage) ? urlLanguage : await db.getLanguage(guild);
+      urlLanguage = getParam(message?.embeds[0], 'mowLang'),
+      language = botLanguage.supported.includes(urlLanguage) ? urlLanguage : (await db.guildGet(guild)).language;
 
     i18n.setLocale(language);
     interaction.language = language;
@@ -48,15 +49,15 @@ module.exports = {
     const embed = (options = {}) => {
       const emb = new MessageEmbed()
         .setColor(member?.displayColor || fUser.accentColor || botColor)
-        .setFooter(
-          i18n.__(
+        .setFooter({
+          text: i18n.__(
             `GENERIC.${options.interacted ? 'INTERACTED_BY' : 'REQUESTED_BY'}`,
             member?.displayName ?? user.username,
           ),
-          `${(member ?? user).displayAvatarURL(imgOpts)}&mowlang=${language}${
+          iconURL: `${(member ?? user).displayAvatarURL(imgOpts)}&mowLang=${language}${
             options.addParams ? `&${new URLSearchParams(options.addParams).toString()}` : ''
           }`,
-        )
+        })
         .setTimestamp(Date.now());
       switch (options.type) {
         case 'error':
@@ -121,8 +122,7 @@ module.exports = {
             (opts?._group?.yellow.concat(':'.gray) ?? '') +
             (opts?._subcommand?.yellow.concat(':'.gray) ?? '') +
             JSON.stringify(interaction, (_, v) => (typeof v === 'bigint' ? v.toString() : v)).brightRed +
-            ':'.gray +
-            (opts ? JSON.stringify(opts) : ''),
+            (opts ? ':'.gray + JSON.stringify(opts) : ''),
         );
       }
     }

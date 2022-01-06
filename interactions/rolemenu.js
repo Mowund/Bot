@@ -49,7 +49,7 @@ module.exports = {
     },
   ],
   guildOnly: ['420007989261500418'],
-  async execute(client, interaction, st, emb) {
+  async execute(client, interaction, st, embed) {
     const { guild, user, values, options } = interaction,
       channelO = options?.getChannel('channel') ?? interaction.channel,
       ephemeralO = options?.getBoolean('ephemeral') ?? true;
@@ -72,13 +72,13 @@ module.exports = {
       if (!interaction.inGuild()) {
         return interaction.editReply({
           components: respRows,
-          embeds: [emb({ type: 'error' }).setDescription(st.__('ERROR.DM'))],
+          embeds: [embed({ type: 'error' }).setDescription(st.__('ERROR.DM'))],
         });
       }
       if (!botOwners.includes(user.id)) {
         return interaction.editReply({
           components: respRows,
-          embeds: [emb({ type: 'wip' })],
+          embeds: [embed({ type: 'wip' })],
         });
       }
 
@@ -86,13 +86,13 @@ module.exports = {
         if (!channelO.isText()) {
           return interaction.editReply({
             components: respRows,
-            embeds: [emb({ type: 'error' }).setDescription('Not a text based channel.')],
+            embeds: [embed({ type: 'error' }).setDescription('Not a text based channel.')],
           });
         }
         if (!channelO.permissionsFor(client.user).has(Permissions.FLAGS.SEND_MESSAGES)) {
           return interaction.editReply({
             components: respRows,
-            embeds: [emb({ type: 'error' }).setDescription("Can't send messages on this channel.")],
+            embeds: [embed({ type: 'error' }).setDescription("Can't send messages on this channel.")],
           });
         }
 
@@ -121,13 +121,13 @@ module.exports = {
         ];
 
         await channelO.send({
-          embeds: [emb({ title: 'Escolha Algum Cargo' }).setDescription('🎂 Aniversariantes\n⛔ Mutados')],
+          embeds: [embed({ title: 'Escolha Algum Cargo' }).setDescription('🎂 Aniversariantes\n⛔ Mutados')],
           components: menuRows,
         });
 
         return interaction.editReply({
           components: respRows,
-          embeds: [emb().setDescription(`rolemenu criado em: ${channelO.toString()}`)],
+          embeds: [embed().setDescription(`rolemenu criado em: ${channelO.toString()}`)],
         });
       }
     }
@@ -135,17 +135,17 @@ module.exports = {
       if (interaction.customId === 'rolemenu_giverole') {
         await interaction.deferReply({ ephemeral: true });
         let roles = new Collection();
-        for (let rID of values) {
-          rID = rID.split(' ').join('');
-          const role = guild.roles.cache.filter(r => r.id === rID);
+        for (let rId of values) {
+          rId = rId.split(' ').join('');
+          const role = guild.roles.cache.filter(r => r.id === rId);
 
-          if (!role) return interaction.reply(`Role ${rID} not found`);
+          if (!role) return interaction.reply(`Role ${rId} not found`);
           roles = roles.concat(role);
         }
         roles = collMap(roles);
 
         return interaction.editReply({
-          embeds: [emb({ title: 'Cargos Selecionados' }).setDescription(roles)],
+          embeds: [embed({ title: 'Cargos Selecionados' }).setDescription(roles)],
         });
       }
     }

@@ -73,7 +73,7 @@ module.exports = {
             });
           }
 
-          await db.setLanguage(guild, fLanguage);
+          await db.guildSet(guild, { language: fLanguage });
           const m = p => ({ phrase: p, locale: fLanguage });
 
           rows[0].addComponents(
@@ -104,10 +104,10 @@ module.exports = {
                   st.__(m('GENERIC.TO')),
                   `\`${st.__(m(`SETTINGS.LANGUAGE.NAME.${fLanguage}`))}\` - \`${fLanguage}\``,
                 )
-                .setFooter(
-                  st.__(m('GENERIC.REQUESTED_BY'), member?.displayName ?? user.username),
-                  `${(member ?? user).displayAvatarURL(imgOpts)}?mowlang=${language}`,
-                ),
+                .setFooter({
+                  text: st.__(m('GENERIC.REQUESTED_BY'), member?.displayName ?? user.username),
+                  iconURL: `${(member ?? user).displayAvatarURL(imgOpts)}&mowLang=${language}`,
+                }),
             ],
             components: rows,
             ephemeral: ephemeralO,

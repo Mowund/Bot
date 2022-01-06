@@ -17,43 +17,33 @@ module.exports = {
 };
 
 /**
- * Sets the bot language for a guild
- * @returns {string} The language set
+ * Update the settings of a guild
+ * @returns {Object} The new guild settings
  * @param {Object} guild The guild's object
- * @param {string} language The language to set. (Default: en-US)
+ * @param {Object} options The options to set
+ * @param {string} options.language The guild's language
+ * @param {boolean} options.logBadDomains Whether to log messages containing bad domains
+ * @param {string} options.logChannel The id of the channel used to send log messages from the bot
+ * @param {boolean} merge Whether to merge the new settings with the old ones (Default: True)
  */
-module.exports.setLanguage = (guild, language) => {
-  if (!guild) return botLanguage.default;
-  return guilds
+const guildSet = (guild, options = {}, merge = true) =>
+  guilds
     .doc(guild.id)
-    .set(
-      {
-        language: botLanguage.supported.includes(language) ? language : botLanguage.default,
-      },
-      { merge: true },
-    )
-    .catch(err => console.error('Something went wrong when setting a language:', err));
-};
+    .set(options, { merge: merge })
+    .catch(err => console.error('Something went wrong when setting guild settings:', err));
+module.exports.guildSet = guildSet;
 
 /**
- * Gets the bot language on a guild
- * @returns {string} The language of the bot on the server. (Default: en-US)
+ * Gets the bot settings on a guild
+ * @returns {Object} The guild's settings
  * @param {Object} guild The guild's object
  */
-module.exports.getLanguage = async guild => {
-  if (!guild) return botLanguage.default;
-  let doc = await guilds.doc(guild.id).get();
+module.exports.guildGet = async guild => {
+  const doc = await guilds.doc(guild.id).get();
   if (!doc.exists) {
-    doc = await guilds
-      .doc(guild.id)
-      .set(
-        {
-          language: botLanguage.supported.includes(guild.preferredLocale) ? guild.preferredLocale : botLanguage.default,
-        },
-        { merge: true },
-      )
-      .catch(err => console.error('Something went wrong when getting a language:', err));
-    return doc.language;
+    return guildSet(guild, {
+      language: botLanguage.supported.includes(guild.preferredLocale) ? guild.preferredLocale : botLanguage.default,
+    });
   }
-  return doc.data().language;
+  return doc.data();
 };

@@ -10,10 +10,27 @@ const db = require('./database.js'),
 const xhr = new XMLHttpRequest();
 
 /**
+ * Search for an embed field with its name and return its value
+ * @returns {string} The value of the field
+ * @param {Object} embed The embed that will be used to search for its fields
+ * @param {string} fieldName The name of the field that will be searched for
+ */
+module.exports.getFieldValue = (embed, fieldName) =>
+  embed?.fields?.find(({ name }) => name === fieldName || name.includes(fieldName))?.value ?? null;
+
+/**
+ * Search for a parameter and get the first value associated to it
+ * @returns {string} The first value associated to the parameter
+ * @param {Object} embed The object of the embed the parameter will be searched for
+ * @param {string} param The parameter that will be used to search for its value
+ */
+module.exports.getParam = (embed, param) => new URLSearchParams(embed?.footer?.iconURL).get(param);
+
+/**
  * Differences in months two dates
  * @returns {number} How much months between the two dates
  * @param {Date} dateFrom The first date
- * @param {Date} [dateTo=Current] The second date. (Default: Current date)
+ * @param {Date} [dateTo=Current] The second date (Default: Current date)
  */
 module.exports.monthDiff = (dateFrom, dateTo = new Date()) =>
   dateTo.getMonth() - dateFrom.getMonth() + 12 * (dateTo.getFullYear() - dateFrom.getFullYear());
@@ -22,7 +39,7 @@ module.exports.monthDiff = (dateFrom, dateTo = new Date()) =>
  * Truncates a string with ellipsis
  * @returns {string} The string truncated with ellipsis
  * @param {string} input The string to truncate
- * @param {number} [limit=1020] The limit of characters to be displayed until truncated. (Default: 1020)
+ * @param {number} [limit=1020] The limit of characters to be displayed until truncated (Default: 1020)
  */
 module.exports.truncate = (input, limit = 1020) => (input.length > limit ? `${input.substring(0, limit)}...` : input);
 
@@ -31,7 +48,7 @@ module.exports.truncate = (input, limit = 1020) => (input.length > limit ? `${in
  * @param {Collection} collections The collections to map
  * @param {Object} [options] The options for mapping
  * @param {string} [options.mapValue] Map something else instead of the mention
- * @param {number} [options.maxValues=40] The maximum amount of mapped collections to return. (Default: 40)
+ * @param {number} [options.maxValues=40] The maximum amount of mapped collections to return (Default: 40)
  */
 module.exports.collMap = (collections, options = { maxValues: 40 }) => {
   const cM = Util.discordSort(collections)
@@ -188,7 +205,7 @@ module.exports.diEmb = (
     .setColor(ciCE)
     .setTitle(title)
     .setImage(`https://dummyimage.com/300x100/${diB}/${diL}&${diEV[0]}&text=+${urlR.parse(diT).path}`)
-    .setFooter(footer, eU.avatarURL())
+    .setFooter({ name: footer, iconURL: eU.avatarURL() })
     .setTimestamp(Date.now());
 
   if (description && description !== 0) {
@@ -211,11 +228,5 @@ module.exports.checkImage = url =>
   new Promise(resolve => {
     xhr.open('GET', url, true);
     xhr.send();
-    xhr.onload = function onload() {
-      if (xhr.status === 200) {
-        resolve(true);
-      } else {
-        resolve(false);
-      }
-    };
+    xhr.onload = () => resolve(xhr.status === 200);
   });

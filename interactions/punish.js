@@ -67,7 +67,7 @@ module.exports = {
     },
   ],
   guildOnly: ['420007989261500418'],
-  async execute(client, interaction, st, emb) {
+  async execute(client, interaction, st, embed) {
     const { message, options } = interaction,
       ephemeralO = options?.getBoolean('ephemeral') ?? true,
       mdBtn = new MessageButton()
@@ -80,7 +80,7 @@ module.exports = {
       await interaction.deferReply({ ephemeral: ephemeralO });
       if (!interaction.inGuild()) {
         return interaction.editReply({
-          embeds: [emb({ type: 'error' }).setDescription(st.__('ERROR.DM'))],
+          embeds: [embed({ type: 'error' }).setDescription(st.__('ERROR.DM'))],
           ephemeral: ephemeralO,
         });
       }
@@ -100,7 +100,7 @@ module.exports = {
         }
 
         return interaction.editReply({
-          embeds: [emb({ type: 'wip' })],
+          embeds: [embed({ type: 'wip' })],
           ephemeral: ephemeralO,
           components: rows,
         });

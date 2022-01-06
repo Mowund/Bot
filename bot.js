@@ -3,7 +3,12 @@
 const { Client, Collection, Intents, Constants } = require('discord.js');
 const client = new Client({
   allowedMentions: { parse: [] },
-  intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES],
+  intents: [
+    Intents.FLAGS.DIRECT_MESSAGES,
+    Intents.FLAGS.GUILDS,
+    Intents.FLAGS.GUILD_MESSAGES,
+    Intents.FLAGS.GUILD_EMOJIS_AND_STICKERS,
+  ],
   partials: ['MESSAGE', 'CHANNEL', 'REACTION'],
 });
 client.commands = new Collection();
@@ -29,7 +34,7 @@ process.on('uncaughtException', err => {
 client.on('ready', () => {
   client.user.setPresence({
     activities: [{ name: 'in development' }],
-    status: 'dnd',
+    status: 'online',
   });
   console.log('Bot started.'.green);
 
@@ -49,7 +54,6 @@ client.on('ready', () => {
 const eventFiles = fs.readdirSync('./events').filter(file => file.endsWith('.js'));
 for (const file of eventFiles) {
   const event = require(`./events/${file}`);
-
   if (event.once) {
     client.once(event.name, (...args) => event.execute(client, i18n, ...args));
   } else {

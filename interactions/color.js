@@ -77,7 +77,7 @@ module.exports = {
     },
   ],
   guildOnly: ['420007989261500418'],
-  async execute(client, interaction, st, emb) {
+  async execute(client, interaction, st, embed) {
     const { user, guild, options } = interaction,
       userO = options?.getUser('user') ?? user,
       tRoleN = userO ? `USER-${userO.id}` : '',
@@ -86,14 +86,14 @@ module.exports = {
 
     if (!interaction.inGuild()) {
       return interaction.reply({
-        embeds: [emb({ type: 'error' }).setDescription(st.__('ERROR.DM'))],
+        embeds: [embed({ type: 'error' }).setDescription(st.__('ERROR.DM'))],
         ephemeral: true,
       });
     }
 
     if (!botOwners.includes(user.id)) {
       return interaction.reply({
-        embeds: [emb({ type: 'wip' })],
+        embeds: [embed({ type: 'wip' })],
         ephemeral: true,
       });
     }

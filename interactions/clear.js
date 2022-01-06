@@ -29,6 +29,7 @@ module.exports = {
     const { options, channel, user, memberPermissions } = interaction,
       countO = options?.getInteger('count'),
       ephemeralO = options?.getBoolean('ephemeral') ?? true;
+
     // TODO: Create a confirmation menu
     // TODO: Delete user-specific messages
     // TODO: Let users delete their own messages without manage messages permission
