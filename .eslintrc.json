@@ -15,22 +15,7 @@
     "ecmaVersion": 2021
   },
   "rules": {
-    "import/order": [
-      "error",
-      {
-        "groups": [
-          "builtin",
-          "external",
-          "internal",
-          "index",
-          "sibling",
-          "parent"
-        ],
-        "alphabetize": {
-          "order": "asc"
-        }
-      }
-    ],
+    "import/order": "error",
     "prettier/prettier": [
       2,
       {
@@ -240,7 +225,15 @@
     "no-duplicate-imports": "error",
     "no-useless-computed-key": "error",
     "no-useless-constructor": "error",
-    "one-var": ["error", {"separateRequires": true, "var": "consecutive", "let": "consecutive", "const": "consecutive"}],
+    "one-var": [
+      "error",
+      {
+        "separateRequires": true,
+        "var": "consecutive",
+        "let": "consecutive",
+        "const": "consecutive"
+      }
+    ],
     "prefer-arrow-callback": "error",
     "prefer-const": "error",
     "prefer-numeric-literals": "error",

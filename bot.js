@@ -1,6 +1,7 @@
 'use strict';
 
-const { Client, Collection, Intents, Constants } = require('discord.js');
+const fs = require('node:fs'),
+  { Client, Collection, Intents, Constants } = require('discord.js');
 const client = new Client({
   allowedMentions: { parse: [] },
   intents: [
@@ -13,8 +14,6 @@ const client = new Client({
 });
 client.commands = new Collection();
 const i18n = require('i18n'),
-  // eslint-disable-next-line import/order
-  fs = require('node:fs'),
   { botLanguage } = require('./defaults');
 require('colors');
 

@@ -1,7 +1,7 @@
 'use strict';
 
-const { MessageActionRow, MessageButton } = require('discord.js'),
-  fs = require('node:fs'),
+const fs = require('node:fs'),
+  { MessageActionRow, MessageButton } = require('discord.js'),
   { botOwners } = require('../defaults'),
   { truncate } = require('../utils');
 
