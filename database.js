@@ -39,7 +39,10 @@ module.exports.guildSet = guildSet;
  * @param {Object} guild The guild's object
  */
 module.exports.guildGet = async guild => {
-  const doc = await guilds.doc(guild.id).get();
+  const doc = await guilds
+    .doc(guild.id)
+    .get()
+    .catch(err => console.error('Something went wrong when getting guild settings:', err));
   if (!doc.exists) {
     return guildSet(guild, {
       language: botLanguage.supported.includes(guild.preferredLocale) ? guild.preferredLocale : botLanguage.default,

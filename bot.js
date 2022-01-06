@@ -36,7 +36,7 @@ client.on('ready', () => {
     activities: [{ name: 'in development' }],
     status: 'online',
   });
-  console.log('Bot started.'.green);
+  console.log('Bot started'.green);
 
   try {
     const interactionFiles = fs.readdirSync('./interactions').filter(file => file.endsWith('.js'));
@@ -45,7 +45,7 @@ client.on('ready', () => {
       const event = require(`./interactions/${file}`);
       client.commands.set(file.match(/.+?(?=\.js)/g)?.[0], event);
     }
-    console.log('Successfully set application commands to collection.'.green);
+    console.log('Successfully set application commands to collection'.green);
   } catch (err) {
     console.error('An error occured while setting application commands to collection:\n'.red, err);
   }

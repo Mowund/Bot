@@ -32,7 +32,10 @@ module.exports = {
 
     const fUser = await user.fetch(),
       urlLanguage = getParam(message?.embeds[0], 'mowLang'),
-      language = botLanguage.supported.includes(urlLanguage) ? urlLanguage : (await db.guildGet(guild)).language;
+      language =
+        (botLanguage.supported.includes(urlLanguage)
+          ? urlLanguage
+          : interaction.inGuild() && (await db.guildGet(guild)).language) || botLanguage.default;
 
     i18n.setLocale(language);
     interaction.language = language;
