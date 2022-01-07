@@ -12,7 +12,7 @@ module.exports = {
     },
     {
       name: 'user',
-      description: 'User related commands.',
+      description: 'User related commands',
       options: [
         {
           name: 'info',
@@ -21,12 +21,12 @@ module.exports = {
           options: [
             {
               name: 'user',
-              description: 'The user to get information from.',
+              description: 'The user to get information from',
               type: 'USER',
             },
             {
               name: 'ephemeral',
-              description: 'Send reply as an ephemeral message. (Default: True)',
+              description: 'Send reply as an ephemeral message (Default: True)',
               type: 'BOOLEAN',
             },
           ],

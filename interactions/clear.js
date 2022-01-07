@@ -7,11 +7,11 @@ module.exports = {
   data: [
     {
       name: 'clear',
-      description: 'Deletes chat messages from the last 2 weeks.',
+      description: 'Deletes chat messages from the last 2 weeks',
       options: [
         {
           name: 'count',
-          description: 'How many messages to delete. (Range: 1 - 100)',
+          description: 'How many messages to delete (Range: 1 - 100)',
           type: 'INTEGER',
           min_value: 1,
           max_value: 100,
@@ -19,7 +19,7 @@ module.exports = {
         },
         {
           name: 'ephemeral',
-          description: 'Send reply as an ephemeral message. (Default: True)',
+          description: 'Send reply as an ephemeral message (Default: True)',
           type: 'BOOLEAN',
         },
       ],

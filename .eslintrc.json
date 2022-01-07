@@ -69,7 +69,10 @@
       "property"
     ],
     "dot-notation": "error",
-    "eqeqeq": "error",
+    "eqeqeq": [
+      "error",
+      "smart"
+    ],
     "no-else-return": [
       "error",
       {

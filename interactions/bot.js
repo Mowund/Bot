@@ -8,16 +8,16 @@ module.exports = {
   data: [
     {
       name: 'bot',
-      description: 'Bot related commands.',
+      description: 'Bot related commands',
       options: [
         {
           name: 'info',
-          description: "Send bot's information.",
+          description: "Send bot's information",
           type: 'SUB_COMMAND',
           options: [
             {
               name: 'ephemeral',
-              description: 'Send reply as an ephemeral message. (Default: True)',
+              description: 'Send reply as an ephemeral message (Default: True)',
               type: 'BOOLEAN',
             },
           ],

@@ -1,6 +1,7 @@
 'use strict';
 
-const {
+const { parse } = require('twemoji-parser'),
+  {
     Permissions,
     MessageActionRow,
     MessageButton,
@@ -9,25 +10,24 @@ const {
     ModalInputText,
     SnowflakeUtil,
   } = require('discord.js'),
-  twemoji = require('twemoji'),
   { botOwners } = require('../defaults'),
-  { checkImage, collMap, toUTS, getFieldValue } = require('../utils');
+  { checkURL, collMap, toUTS, getFieldValue } = require('../utils');
 
 module.exports = {
   data: [
     {
       name: 'emoji',
-      description: 'View or manage an emoji.',
+      description: 'View or manage an emoji',
       options: [
         {
           name: 'emoji',
-          description: "ID, mention or name (if it's on the same server).",
+          description: "ID, mention or name (if it's on the same server)",
           type: 'STRING',
           required: true,
         },
         {
           name: 'ephemeral',
-          description: 'Send reply as an ephemeral message. (Default: True)',
+          description: 'Send reply as an ephemeral message (Default: True)',
           type: 'BOOLEAN',
         },
       ],
@@ -35,7 +35,7 @@ module.exports = {
   ],
   async execute(client, interaction, st, embed) {
     const { guild, user, memberPermissions, message, options } = interaction,
-      emojiO = options?.getString('emoji').match(/^.+?(?=[\s<]|(?<=[\s>]|\p{Emoji_Presentation}{3})|$)/gu)?.[0],
+      emojiO = options?.getString('emoji').match(/^.+?(?=[\s<]|(?<=[\s>])|$)/g)?.[0],
       ephemeralO = options?.getBoolean('ephemeral') ?? message?.flags.has(MessageFlags.FLAGS.EPHEMERAL) ?? true,
       mdBtn = new MessageButton()
         .setLabel(st.__('GENERIC.COMPONENT.MESSAGE_DELETE'))
@@ -44,7 +44,6 @@ module.exports = {
         .setCustomId('generic_message_delete');
 
     let { customId } = interaction,
-      emjFR,
       addBtnVsby = 0,
       editBtnVsby = 2;
 
@@ -55,7 +54,7 @@ module.exports = {
         emjName = emojiO.match(/(?<=:).+(?=:)/g)?.[0];
 
       const emj =
-          guild?.emojis.cache.get(emjId) ||
+          client.emojis.cache.get(emjId) ||
           guild?.emojis.cache.find(({ name }) => name === emojiO) ||
           guild?.emojis.cache.find(({ name }) => name.toLowerCase() === emojiO.toLowerCase()) ||
           (await client.shard
@@ -85,19 +84,19 @@ module.exports = {
               },
             )
             .then(eA => eA.find(e => e))),
-        emjCodePoint = r => twemoji.convert.toCodePoint(r ? emojiO.replaceAll(/\uFE0F/g, '') : emojiO),
+        emjFR = emj
+          ? {
+              name: `${st.__('GENERIC.ROLES')} [${emj[3] ?? emj.roles?.cache.size}]`,
+              value:
+                (emj[2] ?? collMap(emj.roles.cache, emj.guild?.id !== guild?.id ? { mapValue: 'id' } : {})) ||
+                '@everyone',
+            }
+          : null,
         emjUnicodeURL = `https://twemoji.maxcdn.com/v/latest/72x72/`;
 
       if (emj) {
-        const emjRoles =
-          (emj[2] ?? collMap(emj.roles.cache, emj.guild?.id !== guild?.id ? { mapValue: 'id' } : {})) || '@everyone';
-
         emjId = (emj[0] ?? emj).id;
         emjName = (emj[0] ?? emj).name;
-        emjFR = {
-          name: `${st.__('GENERIC.ROLES')} [${emj[3] ?? emj.roles?.cache.size}]`,
-          value: emjRoles,
-        };
       }
 
       if ((emj?.guild || emj?.[1])?.id !== guild?.id) {
@@ -109,68 +108,60 @@ module.exports = {
         addBtnVsby = editBtnVsby = 0;
       }
 
-      let displayEmj =
+      let emjDisplay =
           (!interaction.inGuild() || guild?.roles.everyone.permissions.has(Permissions.FLAGS.USE_EXTERNAL_EMOJIS)) &&
           emj
             ? (emj[0] ?? emj).animated
               ? `<${(emj[0] ?? emj).identifier}> `
               : `<:${(emj[0] ?? emj).identifier}> `
             : '',
-        emjURL = `https://cdn.discordapp.com/emojis/${emjId}`,
-        emjIsUnicode = false;
+        emjCodePoint,
+        emjURL = `https://cdn.discordapp.com/emojis/${emjId}`;
 
-      const checkedImage = (await checkImage(`${emjURL}.gif`))
-        ? 1
-        : (await checkImage(`${emjUnicodeURL}${emjCodePoint()}.png`))
-        ? 2
-        : (await checkImage(`${emjUnicodeURL}${emjCodePoint(true)}.png`))
-        ? 3
-        : (await checkImage(emjURL))
-        ? 4
-        : 0;
+      const parsedTwemoji = parse(emojiO)[0],
+        checkedImage = (await checkURL(`${emjURL}.gif`)) ? 1 : parsedTwemoji ? 2 : (await checkURL(emjURL)) ? 3 : 0;
 
       switch (checkedImage) {
         case 1:
           emjURL += '.gif';
           break;
         case 2:
-        case 3:
-          emjURL = `${emjUnicodeURL}${emjCodePoint(checkedImage === 3)}.png`;
-          emjIsUnicode = true;
-          displayEmj = `${emojiO} `;
+          emjDisplay = `${parsedTwemoji.text} `;
+          emjCodePoint = new URL(parsedTwemoji.url).pathname.split(/[/&.]/)[4];
+          emjURL = `${emjUnicodeURL}${emjCodePoint}.png`;
           break;
-        case 0:
+        case 3:
+          emjURL += '.png?size=4096';
+          break;
+        default:
           return interaction.editReply({
             components: !ephemeralO ? [new MessageActionRow().addComponents(mdBtn)] : [],
             embeds: [embed({ type: 'error' }).setDescription(st.__('ERROR.EMOJI.NOT_FOUND', emojiO))],
           });
-        default: {
-          emjURL += '.png?size=4096';
-        }
       }
 
       const emb = embed();
       if (emjName) emb.addField(st.__('GENERIC.NAME'), `\`${emjName}\``, true);
 
       emb
-        .setTitle(`${displayEmj}${st.__(`EMOJI.${emjIsUnicode ? 'VIEWING_UNICODE' : 'VIEWING'}`)}`)
+        .setTitle(`${emjDisplay}${st.__(`EMOJI.${emjCodePoint ? 'VIEWING_UNICODE' : 'VIEWING'}`)}`)
         .addField(
-          st.__(`GENERIC.${emjIsUnicode ? 'CODEPOINT' : 'ID'}`),
-          `\`${emjIsUnicode ? emjCodePoint() : emjId}\``,
+          st.__(`GENERIC.${emjCodePoint ? 'CODEPOINT' : 'ID'}`),
+          `\`${emjCodePoint ? emjCodePoint : emjId}\``,
           true,
         )
         .setThumbnail(emjURL)
         .setColor('00ff00')
         .setTimestamp(Date.now());
 
-      if (emjIsUnicode || (emjName && emjId)) {
+      if (emjCodePoint || (emjName && emjId)) {
         emb.addField(
           st.__('GENERIC.MENTION'),
-          `\`${emjIsUnicode ? emojiO : `<${checkedImage === 1 ? 'a' : ''}:${emjName}:${emjId}>`}\``,
+          `\`${emjDisplay || `<${checkedImage === 1 ? 'a' : ''}:${emjName}:${emjId}>`}\``,
           true,
         );
       }
-      if (!emjIsUnicode) {
+      if (!emjCodePoint) {
         emb.addField(st.__('GENERIC.CREATION_DATE'), toUTS(SnowflakeUtil.deconstruct(emjId).timestamp), true);
       }
       if (emjFR) emb.addFields(emjFR);
@@ -181,7 +172,7 @@ module.exports = {
           .setLabel(st.__('EMOJI.COMPONENT.LINK'))
           .setEmoji('🖼️')
           .setStyle('LINK')
-          .setURL(emjIsUnicode ? emjURL : `${emjURL.split('?')[0]}?size=4096`),
+          .setURL(emjCodePoint ? emjURL : `${emjURL.split('?')[0]}?size=4096`),
       );
 
       if (addBtnVsby > 0) {
@@ -227,26 +218,24 @@ module.exports = {
         });
       }
       const emjURL = message.embeds[0].thumbnail.url,
-        emjCodePoint = getFieldValue(message?.embeds[0], st.__('GENERIC.CODEPOINT'))?.replaceAll('`', '');
+        emjCodePoint = getFieldValue(message.embeds[0], st.__('GENERIC.CODEPOINT'))?.replaceAll('`', '');
 
       let emjId = new URL(emjURL).pathname.split(/[/&.]/)[2],
-        emj = guild?.emojis.cache.get(emjId),
-        emjMention = getFieldValue(message?.embeds[0], st.__('GENERIC.MENTION')),
-        emjName = getFieldValue(message?.embeds[0], st.__('GENERIC.NAME'))?.replaceAll('`', ''),
-        emjRoles = getFieldValue(message?.embeds[0], st.__('GENERIC.ROLES'));
+        emj = guild?.emojis.cache.get(emjId);
 
-      const displayEmj =
-        emj && guild?.roles.everyone.permissions.has(Permissions.FLAGS.USE_EXTERNAL_EMOJIS) ? `${emj} ` : '';
+      const emjDisplay =
+          emj && guild?.roles.everyone.permissions.has(Permissions.FLAGS.USE_EXTERNAL_EMOJIS) ? `${emj} ` : '',
+        emjMention = emj ? `\`${emj}\`` : getFieldValue(message?.embeds[0], st.__('GENERIC.MENTION')),
+        emjName = emj?.name ?? getFieldValue(message.embeds[0], st.__('GENERIC.NAME'))?.replaceAll('`', ''),
+        emjFR = emj
+          ? {
+              name: `${st.__('GENERIC.ROLES')} [${emj.roles.cache.size}]`,
+              value: collMap(emj.roles.cache, emj.guild?.id !== guild?.id ? { mapValue: 'id' } : {}) || '@everyone',
+            }
+          : null;
 
       if (emj) {
-        emjRoles = collMap(emj.roles.cache, emj.guild?.id !== guild?.id ? { mapValue: 'id' } : {}) || '@everyone';
-        emjMention = `\`${emj}\``;
-        emjName = emj.name;
         emjId = emj.id;
-        emjFR = {
-          name: `${st.__('GENERIC.ROLES')} [${emj.roles.cache.size}]`,
-          value: emjRoles,
-        };
       } else if (!emjCodePoint) {
         if (!['emoji_edit_add', 'emoji_edit_readd'].includes(customId)) customId = 'emoji_nonexistent';
         addBtnVsby = 2;
@@ -264,12 +253,12 @@ module.exports = {
 
       emb
         .setColor('ffff00')
-        .setTitle(`${displayEmj}${st.__('EMOJI.EDITING')}`)
+        .setTitle(`${emjDisplay}${st.__('EMOJI.EDITING')}`)
         .addField(st.__('GENERIC.ID'), `\`${emjId}\``, true)
         .setThumbnail(emjURL)
         .setTimestamp(Date.now());
 
-      if (emjMention) emb.addField(st.__('GENERIC.MENTION'), emjMention, true);
+      if (emjMention) emb.addField(st.__('GENERIC.MENTION'), `\`${emjMention}\``, true);
       if (!emjCodePoint) {
         emb.addField(st.__('GENERIC.CREATION_DATE'), toUTS(SnowflakeUtil.deconstruct(emjId).timestamp), true);
       }
@@ -289,7 +278,7 @@ module.exports = {
                     customId === 'emoji_edit_add'
                       ? emjCodePoint
                         ? 'UNICODE'
-                        : emjRoles && emj?.guild !== guild.id
+                        : emjFR && emj?.guild !== guild.id
                         ? 'ANOTHER_SERVER'
                         : 'CDN'
                       : 'DELETED'
@@ -406,7 +395,7 @@ module.exports = {
           }
 
           await interaction.update({
-            embeds: [emb.setTitle(`${displayEmj}${st.__('EMOJI.VIEWING')}`).setColor('00ff00')],
+            embeds: [emb.setTitle(`${emjDisplay}${st.__('EMOJI.VIEWING')}`).setColor('00ff00')],
             components: rows,
           });
           if (['emoji_nonexistent', 'emoji_noperm'].includes(customId)) {
@@ -427,7 +416,7 @@ module.exports = {
           return interaction.update({
             embeds: [
               emb
-                .setTitle(`${displayEmj}${st.__('EMOJI.DELETING')}`)
+                .setTitle(`${emjDisplay}${st.__('EMOJI.DELETING')}`)
                 .setDescription(st.__('EMOJI.DELETING_DESCRIPTION'))
                 .setColor('ff8000'),
             ],
@@ -489,7 +478,7 @@ module.exports = {
 
           return interaction.presentModal(
             new Modal()
-              .setTitle(`${displayEmj}Renaming Emoji`)
+              .setTitle(`${emjDisplay}Renaming Emoji`)
               .setCustomId('emoji_edit_name_modal')
               .addComponents(
                 new MessageActionRow().addComponents(
@@ -514,7 +503,7 @@ module.exports = {
 
           return interaction.presentModal(
             new Modal()
-              .setTitle(`${displayEmj}Renaming Emoji`)
+              .setTitle(`${emjDisplay}Renaming Emoji`)
               .setCustomId('emoji_edit_name_modal')
               .addComponents(
                 new MessageActionRow().addComponents(

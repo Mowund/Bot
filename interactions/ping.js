@@ -6,16 +6,16 @@ module.exports = {
   data: [
     {
       name: 'ping',
-      description: "Shows bot's latency.",
+      description: "Shows bot's latency",
       options: [
         {
           name: 'defer',
-          description: 'Defers the interaction. (Default: False)',
+          description: 'Defers the interaction (Default: False)',
           type: 'BOOLEAN',
         },
         {
           name: 'ephemeral',
-          description: 'Send reply as an ephemeral message. (Default: True)',
+          description: 'Send reply as an ephemeral message (Default: True)',
           type: 'BOOLEAN',
         },
       ],

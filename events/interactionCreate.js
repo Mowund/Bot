@@ -1,7 +1,6 @@
 'use strict';
 
 const { MessageEmbed } = require('discord.js'),
-  db = require('../database.js'),
   { botColor, debugMode, botLanguage, imgOpts } = require('../defaults.js'),
   { getParam } = require('../utils.js');
 require('colors');
@@ -29,13 +28,12 @@ module.exports = {
         intName === 'generic' ? true : client.commands.find(({ data }) => data.find(({ name }) => name === intName));
 
     if (!hasCommand) return console.error(`${(customId ?? commandName).red} interaction not found as ${intName.red}`);
-
     const fUser = await user.fetch(),
       urlLanguage = getParam(message?.embeds[0], 'mowLang'),
       language =
         (botLanguage.supported.includes(urlLanguage)
           ? urlLanguage
-          : interaction.inGuild() && (await db.guildGet(guild)).language) || botLanguage.default;
+          : interaction.inGuild() && (await client.dbGet(guild)).language) || botLanguage.default;
 
     i18n.setLocale(language);
     interaction.language = language;
@@ -43,7 +41,7 @@ module.exports = {
     /**
      * Configure a predefined embed
      * @returns {string} A predefined embed
-     * @param {Object} [options] Defines the options
+     * @param {Object} options The function's options
      * @param {Object} [options.addParams] Adds extra parameters to the embed's footer image url
      * @param {boolean} [options.interacted=false] Set footer as interacted instead of requested
      * @param {string} [options.title] Change the title but still including the type's emoji

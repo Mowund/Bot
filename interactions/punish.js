@@ -5,16 +5,16 @@ module.exports = {
   data: [
     {
       name: 'punish',
-      description: 'Punish or unpunish a member. (Bot owner only)',
+      description: 'Punish or unpunish a member (Bot owner only)',
       options: [
         {
           name: 'add',
-          description: 'Punishes a member. (Bot owner only)',
+          description: 'Punishes a member (Bot owner only)',
           type: 'SUB_COMMAND',
           options: [
             {
               name: 'type',
-              description: 'Punishment type.',
+              description: 'Punishment type',
               type: 'STRING',
               choices: [
                 {
@@ -34,31 +34,31 @@ module.exports = {
             },
             {
               name: 'user',
-              description: 'Member that will be punished.',
+              description: 'Member that will be punished',
               type: 'USER',
               required: true,
             },
             {
               name: 'ephemeral',
-              description: 'Send reply as an ephemeral message. (Default: True)',
+              description: 'Send reply as an ephemeral message (Default: True)',
               type: 'BOOLEAN',
             },
           ],
         },
         {
           name: 'remove',
-          description: 'Unpunishes a member. (Bot owner only)',
+          description: 'Unpunishes a member (Bot owner only)',
           type: 'SUB_COMMAND',
           options: [
             {
               name: 'user',
-              description: 'Member that will be unpunished.',
+              description: 'Member that will be unpunished',
               type: 'USER',
               required: true,
             },
             {
               name: 'ephemeral',
-              description: 'Send reply as an ephemeral message. (Default: True)',
+              description: 'Send reply as an ephemeral message (Default: True)',
               type: 'BOOLEAN',
             },
           ],

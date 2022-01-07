@@ -1,13 +1,35 @@
 'use strict';
 
-const urlR = require('url'),
+const URL = require('url'),
+  axios = require('axios'),
   { MessageEmbed, Util } = require('discord.js'),
-  tc = require('tinycolor2');
-const XMLHttpRequest = require('xmlhttprequest').XMLHttpRequest;
-const db = require('./database.js'),
+  tc = require('tinycolor2'),
   { emojis } = require('./defaults.js');
 
-const xhr = new XMLHttpRequest();
+/**
+ * @returns {Object} Remove keys with empty values from an object
+ * @param {Object} obj The object to filter the values
+ * @param {Object} options The function's options
+ * @param {boolean} [options.recursion=true] Whether to also recursively filter nested objects (Default: True)
+ */
+const removeEmpty = (obj, options = {}) =>
+  Object.fromEntries(
+    Object.entries(obj)
+      .filter(([, v]) => v != null)
+      .map(([k, v]) => [k, v === ((options.recursion ?? true) && Object(v)) ? removeEmpty(v) : v]),
+  );
+module.exports = { removeEmpty };
+
+module.exports.toUTS = (time = Date.now(), style = 'R') =>
+  `<t:${new Date(time).getTime().toString().slice(0, -3)}:${style}>`;
+
+module.exports.getURL = (url, required = false) => axios.get(url).catch(err => (required ? console.error(err) : null));
+
+module.exports.checkURL = url =>
+  axios
+    .get(url)
+    .then(r => r.status === 200)
+    .catch(() => false);
 
 /**
  * Search for an embed field with its name and return its value
@@ -30,7 +52,7 @@ module.exports.getParam = (embed, param) => new URLSearchParams(embed?.footer?.i
  * Differences in months two dates
  * @returns {number} How much months between the two dates
  * @param {Date} dateFrom The first date
- * @param {Date} [dateTo=Current] The second date (Default: Current date)
+ * @param {Date} dateTo The second date (Default: Current date)
  */
 module.exports.monthDiff = (dateFrom, dateTo = new Date()) =>
   dateTo.getMonth() - dateFrom.getMonth() + 12 * (dateTo.getFullYear() - dateFrom.getFullYear());
@@ -39,14 +61,14 @@ module.exports.monthDiff = (dateFrom, dateTo = new Date()) =>
  * Truncates a string with ellipsis
  * @returns {string} The string truncated with ellipsis
  * @param {string} input The string to truncate
- * @param {number} [limit=1020] The limit of characters to be displayed until truncated (Default: 1020)
+ * @param {number} limit The limit of characters to be displayed until truncated (Default: 1020)
  */
 module.exports.truncate = (input, limit = 1020) => (input.length > limit ? `${input.substring(0, limit)}...` : input);
 
 /**
  * @returns {string} The mapped collections
  * @param {Collection} collections The collections to map
- * @param {Object} [options] The options for mapping
+ * @param {Object} options The function's options
  * @param {string} [options.mapValue] Map something else instead of the mention
  * @param {number} [options.maxValues=40] The maximum amount of mapped collections to return (Default: 40)
  */
@@ -164,7 +186,7 @@ module.exports.diEmb = (
   diB = '000000',
   diL = 'ffffff',
 ) => {
-  const getTS = (message, options) => db.getString(interaction.guild, message, options);
+  const getTS = () => null;
 
   let ciCE = '000000';
 
@@ -204,7 +226,7 @@ module.exports.diEmb = (
   let emb = new MessageEmbed()
     .setColor(ciCE)
     .setTitle(title)
-    .setImage(`https://dummyimage.com/300x100/${diB}/${diL}&${diEV[0]}&text=+${urlR.parse(diT).path}`)
+    .setImage(`https://dummyimage.com/300x100/${diB}/${diL}&${diEV[0]}&text=+${URL.parse(diT).path}`)
     .setFooter({ name: footer, iconURL: eU.avatarURL() })
     .setTimestamp(Date.now());
 
@@ -220,13 +242,3 @@ module.exports.diEmb = (
   }
   return eMsg.edit(emb);
 };
-
-module.exports.toUTS = (time = Date.now(), style = 'R') =>
-  `<t:${new Date(time).getTime().toString().slice(0, -3)}:${style}>`;
-
-module.exports.checkImage = url =>
-  new Promise(resolve => {
-    xhr.open('GET', url, true);
-    xhr.send();
-    xhr.onload = () => resolve(xhr.status === 200);
-  });

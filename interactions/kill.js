@@ -7,16 +7,16 @@ module.exports = {
   data: [
     {
       name: 'kill',
-      description: 'Kills someone.',
+      description: 'Kills someone',
       options: [
         {
           name: 'user',
-          description: 'An user to kill.',
+          description: 'An user to kill',
           type: 'USER',
         },
         {
           name: 'ephemeral',
-          description: 'Send reply as an ephemeral message. (Default: True)',
+          description: 'Send reply as an ephemeral message (Default: True)',
           type: 'BOOLEAN',
         },
       ],

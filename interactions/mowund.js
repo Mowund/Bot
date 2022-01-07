@@ -9,59 +9,59 @@ module.exports = {
   data: [
     {
       name: 'mowund',
-      description: 'Bot owner only commands.',
+      description: 'Bot owner only commands',
       options: [
         {
           name: 'eval',
-          description: 'Executes a script. (Bot owner only)',
+          description: 'Executes a script (Bot owner only)',
           type: 'SUB_COMMAND',
           options: [
             {
               name: 'script',
-              description: 'The script to execute.',
+              description: 'The script to execute',
               type: 'STRING',
               required: true,
             },
             {
               name: 'async',
-              description: 'Makes the script asynchronous. (Default: True)',
+              description: 'Makes the script asynchronous (Default: True)',
               type: 'BOOLEAN',
             },
             {
               name: 'await',
-              description: 'Await the script. (Default: True)',
+              description: 'Await the script (Default: True)',
               type: 'BOOLEAN',
             },
             {
               name: 'ephemeral',
-              description: 'Send reply as an ephemeral message. (Default: True)',
+              description: 'Send reply as an ephemeral message (Default: True)',
               type: 'BOOLEAN',
             },
           ],
         },
         {
           name: 'interaction',
-          description: 'Configures interactions. (Bot owner only)',
+          description: 'Configures interactions (Bot owner only)',
           type: 'SUB_COMMAND_GROUP',
           options: [
             {
               name: 'update',
-              description: 'Update bot commands. (Bot owner only)',
+              description: 'Update bot commands (Bot owner only)',
               type: 'SUB_COMMAND',
               options: [
                 {
                   name: 'id',
-                  description: 'ID of a specific command. (Default: All commands)',
+                  description: 'ID of a specific command (Default: All commands)',
                   type: 'STRING',
                 },
                 {
                   name: 'guild',
-                  description: 'The guild the command is at. (Default: Trigger guild)',
+                  description: 'The guild the command is at (Default: Trigger guild)',
                   type: 'STRING',
                 },
                 {
                   name: 'ephemeral',
-                  description: 'Send reply as an ephemeral message. (Default: True)',
+                  description: 'Send reply as an ephemeral message (Default: True)',
                   type: 'BOOLEAN',
                 },
               ],
@@ -70,32 +70,32 @@ module.exports = {
         },
         {
           name: 'shard',
-          description: 'Configures shards. (Bot owner only)',
+          description: 'Configures shards (Bot owner only)',
           type: 'SUB_COMMAND_GROUP',
           options: [
             {
               name: 'respawnall',
-              description: 'Respawns all shards. (Bot owner only)',
+              description: 'Respawns all shards (Bot owner only)',
               type: 'SUB_COMMAND',
               options: [
                 {
                   name: 'sharddelay',
-                  description: 'How long to wait between shards.',
+                  description: 'How long to wait between shards',
                   type: 'INTEGER',
                 },
                 {
                   name: 'respawndelay',
-                  description: "How long to wait between killing a shard's process and restarting it.",
+                  description: "How long to wait between killing a shard's process and restarting it",
                   type: 'INTEGER',
                 },
                 {
                   name: 'timeout',
-                  description: 'The amount to wait for a shard to become ready before continuing to another.',
+                  description: 'The amount to wait for a shard to become ready before continuing to another',
                   type: 'INTEGER',
                 },
                 {
                   name: 'ephemeral',
-                  description: 'Send reply as an ephemeral message. (Default: True)',
+                  description: 'Send reply as an ephemeral message (Default: True)',
                   type: 'BOOLEAN',
                 },
               ],
@@ -237,7 +237,7 @@ module.exports = {
             return interaction.editReply({
               embeds: [
                 embed({ type: 'error' }).setDescription(
-                  `${st.__('MOWUND.ERROR.RELOADING_APPLICATION_COMMAND')}\n\`\`\`js\n${err}\`\`\``,
+                  `${st.__('ERROR.RELOADING_APPLICATION_COMMAND')}\n\`\`\`js\n${err}\`\`\``,
                 ),
               ],
             });

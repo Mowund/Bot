@@ -8,39 +8,52 @@ module.exports = {
   data: [
     {
       name: 'rolemenu',
-      description: 'Manage a rolemenu.',
+      description: 'Manage a rolemenu',
       options: [
         {
           name: 'create',
-          description: 'Create a rolemenu.',
+          description: 'Create a rolemenu',
           type: 'SUB_COMMAND',
           options: [
             {
               name: 'channel',
-              description: 'The channel to create the rolemenu.',
+              description: 'The channel to create the rolemenu',
               type: 'CHANNEL',
+              channelTypes: [
+                'GUILD_TEXT',
+                'GUILD_NEWS',
+                'GUILD_NEWS_THREAD',
+                'GUILD_PRIVATE_THREAD',
+                'GUILD_PUBLIC_THREAD',
+              ],
             },
             {
               name: 'ephemeral',
-              description: 'Send reply as an ephemeral message. (Default: True)',
+              description: 'Send reply as an ephemeral message (Default: True)',
               type: 'BOOLEAN',
             },
           ],
         },
         {
           name: 'edit',
-          description: 'Edit a rolemenu.',
+          description: 'Edit a rolemenu',
           type: 'SUB_COMMAND',
           options: [
             {
               name: 'channel',
-              description: 'The channel to edit the rolemenu.',
+              description: 'The channel to edit the rolemenu',
               type: 'CHANNEL',
-              channel_types: [0, 5, 10, 11, 12],
+              channelTypes: [
+                'GUILD_TEXT',
+                'GUILD_NEWS',
+                'GUILD_NEWS_THREAD',
+                'GUILD_PRIVATE_THREAD',
+                'GUILD_PUBLIC_THREAD',
+              ],
             },
             {
               name: 'ephemeral',
-              description: 'Send reply as an ephemeral message. (Default: True)',
+              description: 'Send reply as an ephemeral message (Default: True)',
               type: 'BOOLEAN',
             },
           ],
@@ -83,16 +96,10 @@ module.exports = {
       }
 
       if (options?.getSubcommand() === 'create') {
-        if (!channelO.isText()) {
-          return interaction.editReply({
-            components: respRows,
-            embeds: [embed({ type: 'error' }).setDescription('Not a text based channel.')],
-          });
-        }
         if (!channelO.permissionsFor(client.user).has(Permissions.FLAGS.SEND_MESSAGES)) {
           return interaction.editReply({
             components: respRows,
-            embeds: [embed({ type: 'error' }).setDescription("Can't send messages on this channel.")],
+            embeds: [embed({ type: 'error' }).setDescription("Can't send messages on this channel")],
           });
         }
 

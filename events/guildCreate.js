@@ -1,17 +1,15 @@
 'use strict';
 
-const db = require('../database.js'),
-  { debugMode } = require('../defaults');
+const { debugMode } = require('../defaults');
 require('colors');
 
 module.exports = {
   name: 'guildCreate',
   async execute(client, i18n, guild) {
-    await db.guildSet(guild, { language: guild.preferredLocale });
+    const settings = await client.dbSet(guild, { language: guild.preferredLocale }, { setFromClient: true });
     if (debugMode) {
-      console.log(
-        'Joined '.green + guild.name.blue + ' ('.gray + guild.id.blue + ') - '.gray + guild.preferredLocale.blue,
-      );
+      console.log('Joined '.green + guild.name.blue + ' ('.gray + guild.id.blue + '):'.gray);
+      console.log(settings);
     }
   },
 };

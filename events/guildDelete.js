@@ -1,15 +1,15 @@
 'use strict';
 
-const db = require('../database'),
-  { debugMode } = require('../defaults');
+const { debugMode } = require('../defaults');
 require('colors');
 
 module.exports = {
   name: 'guildDelete',
   async execute(client, i18n, guild) {
-    await db.guilds.doc(guild.id).delete();
+    const settings = await client.dbDelete(guild);
     if (debugMode) {
-      console.log('Left '.red + guild.name.blue + ' ('.gray + guild.id.blue + ')'.gray);
+      console.log('Left '.red + guild.name.blue + ' ('.gray + guild.id.blue + '):'.gray);
+      console.log(settings);
     }
   },
 };

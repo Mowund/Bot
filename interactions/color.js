@@ -15,60 +15,60 @@ module.exports = {
   data: [
     {
       name: 'color',
-      description: 'Role color system.',
+      description: 'Role color system',
       options: [
         {
           name: 'change',
-          description: 'Changes the color of a color role.',
+          description: 'Changes the color of a color role',
           type: 'SUB_COMMAND',
           options: [
             {
               name: 'color',
-              description: 'Any supported color.',
+              description: 'Any supported color',
               type: 'STRING',
             },
             {
               name: 'user',
-              description: 'An user. (Requires: Manage roles)',
+              description: 'An user (Requires: Manage roles)',
               type: 'USER',
             },
             {
               name: 'ephemeral',
-              description: 'Send reply as an ephemeral message. (Default: True)',
+              description: 'Send reply as an ephemeral message (Default: True)',
               type: 'BOOLEAN',
             },
           ],
         },
         {
           name: 'current',
-          description: 'The current color of a color role.',
+          description: 'The current color of a color role',
           type: 'SUB_COMMAND',
           options: [
             {
               name: 'user',
-              description: 'An user. (Requires: Manage roles)',
+              description: 'An user (Requires: Manage roles)',
               type: 'USER',
             },
             {
               name: 'ephemeral',
-              description: 'Send reply as an ephemeral message. (Default: True)',
+              description: 'Send reply as an ephemeral message (Default: True)',
               type: 'BOOLEAN',
             },
           ],
         },
         {
           name: 'remove',
-          description: 'Deletes a color role.',
+          description: 'Deletes a color role',
           type: 'SUB_COMMAND',
           options: [
             {
               name: 'user',
-              description: 'An user. (Requires: Manage roles)',
+              description: 'An user (Requires: Manage roles)',
               type: 'USER',
             },
             {
               name: 'ephemeral',
-              description: 'Send reply as an ephemeral message. (Default: True)',
+              description: 'Send reply as an ephemeral message (Default: True)',
               type: 'BOOLEAN',
             },
           ],

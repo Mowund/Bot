@@ -1,7 +1,6 @@
 'use strict';
 
 const { Permissions, MessageButton, MessageActionRow } = require('discord.js'),
-  db = require('../database.js'),
   { botOwners, botLanguage, imgOpts, emojis } = require('../defaults'),
   { searchKey, smp } = require('../utils');
 
@@ -9,22 +8,22 @@ module.exports = {
   data: [
     {
       name: 'settings',
-      description: 'Configures the bot.',
+      description: 'Configures the bot',
       options: [
         {
           name: 'language',
-          description: "Change server's language.",
+          description: "Change server's language",
           type: 'SUB_COMMAND',
           options: [
             {
               name: 'language',
-              description: 'Sets a new language. (Requires: Manage guild)',
+              description: 'Sets a new language (Requires: Manage guild)',
               type: 'STRING',
               autocomplete: true,
             },
             {
               name: 'ephemeral',
-              description: 'Send reply as an ephemeral message. (Default: True)',
+              description: 'Send reply as an ephemeral message (Default: True)',
               type: 'BOOLEAN',
             },
           ],
@@ -73,7 +72,7 @@ module.exports = {
             });
           }
 
-          await db.guildSet(guild, { language: fLanguage });
+          await client.dbSet(guild, { language: fLanguage });
           const m = p => ({ phrase: p, locale: fLanguage });
 
           rows[0].addComponents(

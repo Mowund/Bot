@@ -8,71 +8,71 @@ module.exports = {
   data: [
     {
       name: 'echo',
-      description: 'Echoes a message from the bot. (Requires: Manage messages on specified channel)',
+      description: 'Echoes a message from the bot (Requires: Manage messages on specified channel)',
       options: [
         {
           name: 'content',
-          description: 'The content of the message. (Required if no embed)',
+          description: 'The content of the message (Required if no embed)',
           type: 'STRING',
         },
         {
           name: 'description',
-          description: 'The description of the embed. (Required if no content)',
+          description: 'The description of the embed (Required if no content)',
           type: 'STRING',
         },
         {
           name: 'title',
-          description: 'The title of the embed.',
+          description: 'The title of the embed',
           type: 'STRING',
         },
         {
           name: 'url',
-          description: "The title's url of the embed.",
+          description: "The title's url of the embed",
           type: 'STRING',
         },
         {
           name: 'color',
-          description: "The color of the embed. (Default: Author's display color)",
+          description: "The color of the embed (Default: Author's display color)",
           type: 'STRING',
         },
         {
           name: 'author',
-          description: 'Set an author of the embed.',
+          description: 'Set an author of the embed',
           type: 'USER',
         },
         {
           name: 'footer',
-          description: 'The footer of the embed.',
+          description: 'The footer of the embed',
           type: 'STRING',
         },
         {
           name: 'timestamp',
-          description: 'Enables or disabled the timestamp on the embed. (Default: Disabled)',
+          description: 'Enables or disabled the timestamp on the embed (Default: Disabled)',
           type: 'BOOLEAN',
         },
         {
           name: 'image',
-          description: 'The image link of the embed.',
+          description: 'The image link of the embed',
           type: 'STRING',
         },
         {
           name: 'thumbnail',
-          description: 'The thumbnail link of the embed.',
+          description: 'The thumbnail link of the embed',
           type: 'STRING',
         },
         {
           name: 'tts',
-          description: 'Echoes the message in TTS. (Default: False)',
+          description: 'Echoes the message in TTS (Default: False)',
           type: 'BOOLEAN',
         },
         {
           name: 'channel',
-          description: 'Echoes at a channel as a message. (Default: Interaction channel as a reply)',
+          description: 'Echoes at a channel as a message (Default: Interaction channel as a reply)',
           type: 'STRING',
         },
         {
           name: 'ephemeral',
-          description: 'Send reply as an ephemeral message. (Default: True)',
+          description: 'Send reply as an ephemeral message (Default: True)',
           type: 'BOOLEAN',
         },
       ],
@@ -105,9 +105,7 @@ module.exports = {
     ) {
       return interaction.reply({
         embeds: [
-          embed({ type: 'error' }).setDescription(
-            "You don't have `MANAGE_MESSAGES` permission to echo non-ephemeraly.",
-          ),
+          embed({ type: 'error' }).setDescription("You don't have `MANAGE_MESSAGES` permission to echo non-ephemeraly"),
         ],
         ephemeral: true,
       });
@@ -117,7 +115,7 @@ module.exports = {
       return interaction.reply({
         embeds: [
           embed({ type: 'error' }).setDescription(
-            'You need to provide a content for the message or a description for the embed.',
+            'You need to provide a content for the message or a description for the embed',
           ),
         ],
         ephemeral: true,
@@ -193,7 +191,7 @@ module.exports = {
           if (!interaction.inGuild()) {
             return interaction.editReply({
               components: rows,
-              embeds: [embed({ type: 'error' }).setDescription("Can't find channels using DM without `globalsearch`.")],
+              embeds: [embed({ type: 'error' }).setDescription("Can't find channels using DM without `globalsearch`")],
             });
           }
           const chan = await guild?.channels.cache.get(channelO);
@@ -211,23 +209,23 @@ module.exports = {
             return interaction.editReply({
               components: rows,
               embeds: [
-                embed({ type: 'error' }).setDescription('Only bot owners send messages to a channel on another guild.'),
+                embed({ type: 'error' }).setDescription('Only bot owners send messages to a channel on another guild'),
               ],
             });
           case 2:
             return interaction.editReply({
               components: rows,
-              embeds: [embed({ type: 'error' }).setDescription('Not a text based channel.')],
+              embeds: [embed({ type: 'error' }).setDescription('Not a text based channel')],
             });
           case 3:
             return interaction.editReply({
               components: rows,
-              embeds: [embed({ type: 'error' }).setDescription('Cannot send messages on specified channel.')],
+              embeds: [embed({ type: 'error' }).setDescription('Cannot send messages on specified channel')],
             });
           case 4:
             return interaction.editReply({
               components: rows,
-              embeds: [embed({ type: 'error' }).setDescription('Cannot access the specified channel.')],
+              embeds: [embed({ type: 'error' }).setDescription('Cannot access the specified channel')],
             });
           case 5:
             return interaction.editReply({
