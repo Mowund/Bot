@@ -147,7 +147,7 @@ client.dbGet = async (collection, searchOnly) => {
                   : botLanguage.default,
               }
             : {},
-          { setFromClient: true },
+          { setFromCache: true },
         );
       }
       stts = doc.data();
@@ -163,18 +163,18 @@ client.dbGet = async (collection, searchOnly) => {
  * Deletes the settings of a database's document
  * @returns {Object} The collection's settings saved on the cache
  * @param {Guild | User} collection The guild or user collection
- * @param {boolean} deleteFromClient Whether to also delete the settings saved on the cache
+ * @param {boolean} deleteFromCache Whether to also delete the settings saved on the cache
  */
-client.dbDelete = async (collection, deleteFromClient = false) => {
+client.dbDelete = async (collection, deleteFromCache = false) => {
   try {
     const stts = client.dbGet(collection, false);
     let db;
     if (collection instanceof Guild) {
       db = dbGuilds;
-      if (deleteFromClient) client.dbCache.guilds.delete(collection.id);
+      if (deleteFromCache) client.dbCache.guilds.delete(collection.id);
     } else if (collection instanceof User) {
       db = dbUsers;
-      if (deleteFromClient) client.dbCache.users.delete(collection.id);
+      if (deleteFromCache) client.dbCache.users.delete(collection.id);
     } else {
       throw new Error(collection ? 'Not an instance of guild or user collection' : 'No collection defined');
     }
