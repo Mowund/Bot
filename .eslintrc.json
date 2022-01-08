@@ -12,7 +12,8 @@
     "es6": true
   },
   "parserOptions": {
-    "ecmaVersion": 2021
+    "ecmaVersion": "latest",
+    "sourceType": "module"
   },
   "rules": {
     "import/order": "error",
@@ -105,7 +106,10 @@
     "no-void": "error",
     "prefer-promise-reject-errors": "error",
     "require-await": "warn",
-    "wrap-iife": "error",
+    "wrap-iife": [
+      "error",
+      "inside"
+    ],
     "yoda": "error",
     "no-shadow": "error",
     "no-undef-init": "error",
@@ -136,7 +140,6 @@
       "$this"
     ],
     "eol-last": "error",
-    "func-names": "error",
     "func-name-matching": "error",
     "func-style": [
       "error",
@@ -208,7 +211,7 @@
     "space-before-function-paren": [
       "error",
       {
-        "anonymous": "never",
+        "anonymous": "always",
         "named": "never",
         "asyncArrow": "always"
       }

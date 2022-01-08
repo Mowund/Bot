@@ -1,10 +1,10 @@
-'use strict';
+import URL, { parse } from 'url';
+import axios from 'axios';
+import { MessageEmbed, Util } from 'discord.js';
+import tc from 'tinycolor2';
+import { emojis } from './defaults.js';
 
-const URL = require('url'),
-  axios = require('axios'),
-  { MessageEmbed, Util } = require('discord.js'),
-  tc = require('tinycolor2'),
-  { emojis } = require('./defaults.js');
+const { get } = axios;
 
 /**
  * @returns {Object} Remove keys with empty values from an object
@@ -12,24 +12,27 @@ const URL = require('url'),
  * @param {Object} options The function's options
  * @param {boolean} [options.recursion=true] Whether to also recursively filter nested objects (Default: True)
  */
-const removeEmpty = (obj, options = {}) =>
-  Object.fromEntries(
+export function removeEmpty(obj, options = {}) {
+  return Object.fromEntries(
     Object.entries(obj)
       .filter(([, v]) => v != null)
       .map(([k, v]) => [k, v === ((options.recursion ?? true) && Object(v)) ? removeEmpty(v) : v]),
   );
-module.exports = { removeEmpty };
+}
 
-module.exports.toUTS = (time = Date.now(), style = 'R') =>
-  `<t:${new Date(time).getTime().toString().slice(0, -3)}:${style}>`;
+export function toUTS(time = Date.now(), style = 'R') {
+  return `<t:${new Date(time).getTime().toString().slice(0, -3)}:${style}>`;
+}
 
-module.exports.getURL = (url, required = false) => axios.get(url).catch(err => (required ? console.error(err) : null));
+export function getURL(url, required = false) {
+  return get(url).catch(err => (required ? console.error(err) : null));
+}
 
-module.exports.checkURL = url =>
-  axios
-    .get(url)
+export function checkURL(url) {
+  return get(url)
     .then(r => r.status === 200)
     .catch(() => false);
+}
 
 /**
  * Search for an embed field with its name and return its value
@@ -37,8 +40,9 @@ module.exports.checkURL = url =>
  * @param {Object} embed The embed that will be used to search for its fields
  * @param {string} fieldName The name of the field that will be searched for
  */
-module.exports.getFieldValue = (embed, fieldName) =>
-  embed?.fields?.find(({ name }) => name === fieldName || name.includes(fieldName))?.value ?? null;
+export function getFieldValue(embed, fieldName) {
+  return embed?.fields?.find(({ name }) => name === fieldName || name.includes(fieldName))?.value ?? null;
+}
 
 /**
  * Search for a parameter and get the first value associated to it
@@ -46,7 +50,9 @@ module.exports.getFieldValue = (embed, fieldName) =>
  * @param {Object} embed The object of the embed the parameter will be searched for
  * @param {string} param The parameter that will be used to search for its value
  */
-module.exports.getParam = (embed, param) => new URLSearchParams(embed?.footer?.iconURL).get(param);
+export function getParam(embed, param) {
+  return new URLSearchParams(embed?.footer?.iconURL).get(param);
+}
 
 /**
  * Differences in months two dates
@@ -54,8 +60,9 @@ module.exports.getParam = (embed, param) => new URLSearchParams(embed?.footer?.i
  * @param {Date} dateFrom The first date
  * @param {Date} dateTo The second date (Default: Current date)
  */
-module.exports.monthDiff = (dateFrom, dateTo = new Date()) =>
-  dateTo.getMonth() - dateFrom.getMonth() + 12 * (dateTo.getFullYear() - dateFrom.getFullYear());
+export function monthDiff(dateFrom, dateTo = new Date()) {
+  return dateTo.getMonth() - dateFrom.getMonth() + 12 * (dateTo.getFullYear() - dateFrom.getFullYear());
+}
 
 /**
  * Truncates a string with ellipsis
@@ -63,7 +70,9 @@ module.exports.monthDiff = (dateFrom, dateTo = new Date()) =>
  * @param {string} input The string to truncate
  * @param {number} limit The limit of characters to be displayed until truncated (Default: 1020)
  */
-module.exports.truncate = (input, limit = 1020) => (input.length > limit ? `${input.substring(0, limit)}...` : input);
+export function truncate(input, limit = 1020) {
+  return input.length > limit ? `${input.substring(0, limit)}...` : input;
+}
 
 /**
  * @returns {string} The mapped collections
@@ -72,7 +81,7 @@ module.exports.truncate = (input, limit = 1020) => (input.length > limit ? `${in
  * @param {string} [options.mapValue] Map something else instead of the mention
  * @param {number} [options.maxValues=40] The maximum amount of mapped collections to return (Default: 40)
  */
-module.exports.collMap = (collections, options = { maxValues: 40 }) => {
+export function collMap(collections, options = { maxValues: 40 }) {
   const cM = Util.discordSort(collections)
     .map(c => (options.mapValue ? `\`${c[options.mapValue]}\`` : `${c}`))
     .reverse();
@@ -80,31 +89,33 @@ module.exports.collMap = (collections, options = { maxValues: 40 }) => {
   if (tCM.length > options.maxValues) (tCM = tCM.slice(0, options.maxValues)).push(`\`+${cM.length - tCM.length}\``);
 
   return tCM.join(', ');
-};
+}
 
 /**
  * @returns {string} Simplify a string by normalizing and lowercasing it
  * @param {string} string The string to simplify
  */
-module.exports.smp = string =>
-  string
+export function smp(string) {
+  return string
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '')
     .toLowerCase();
+}
 
 /**
  * @returns {string} The bot invite
  * @param {number} id The bot id
  */
-module.exports.botInvite = id =>
-  `https://discord.com/api/oauth2/authorize?client_id=${id}&permissions=536870911991&scope=bot%20applications.commands`;
+export function botInvite(id) {
+  return `https://discord.com/api/oauth2/authorize?client_id=${id}&permissions=536870911991&scope=bot%20applications.commands`;
+}
 
 /**
  * Converts a flag to an emoji
  * @returns {string} The emoji
  * @param {string} flag The user flag
  */
-module.exports.flagToEmoji = flag => {
+export function flagToEmoji(flag) {
   switch (flag) {
     case 'DISCORD_EMPLOYEE':
       return emojis.discordEmployee;
@@ -133,9 +144,9 @@ module.exports.flagToEmoji = flag => {
     case 'BOT_HTTP_INTERACTIONS':
       return emojis.httpInteractions;
   }
-};
+}
 
-module.exports.msToTime = ms => {
+export function msToTime(ms) {
   const days = Math.floor(ms / 86400000),
     hours = Math.floor((ms % 86400000) / 3600000),
     minutes = Math.floor((ms % 3600000) / 60000),
@@ -148,30 +159,32 @@ module.exports.msToTime = ms => {
   if (sec) str += `${sec}s`;
 
   return str ?? '`0s`';
-};
+}
 
-module.exports.search = (object, key) => {
+export function search(object, key) {
   let value;
   for (key in object) {
     value = object[key];
   }
 
   return value;
-};
+}
 
-module.exports.searchKey = (object, value) => Object.keys(object).find(key => object[key] === value);
+export function searchKey(object, value) {
+  return Object.keys(object).find(key => object[key] === value);
+}
 
-module.exports.msgEdit = async (chan, id, medit) => {
+export async function msgEdit(chan, id, medit) {
   try {
     const message = await chan.messages.fetch(id);
     await message.edit(medit);
   } catch (err) {
     console.error(err);
   }
-};
+}
 
 // Remove when color command is done
-module.exports.diEmb = (
+export function diEmb(
   client,
   eMsg,
   interaction,
@@ -185,7 +198,7 @@ module.exports.diEmb = (
   diT,
   diB = '000000',
   diL = 'ffffff',
-) => {
+) {
   const getTS = () => null;
 
   let ciCE = '000000';
@@ -226,7 +239,7 @@ module.exports.diEmb = (
   let emb = new MessageEmbed()
     .setColor(ciCE)
     .setTitle(title)
-    .setImage(`https://dummyimage.com/300x100/${diB}/${diL}&${diEV[0]}&text=+${URL.parse(diT).path}`)
+    .setImage(`https://dummyimage.com/300x100/${diB}/${diL}&${diEV[0]}&text=+${parse(diT).path}`)
     .setFooter({ name: footer, iconURL: eU.avatarURL() })
     .setTimestamp(Date.now());
 
@@ -241,4 +254,4 @@ module.exports.diEmb = (
     return msg.channel.send(emb);
   }
   return eMsg.edit(emb);
-};
+}

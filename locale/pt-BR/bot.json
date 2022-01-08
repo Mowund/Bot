@@ -1,0 +1,252 @@
+{
+  "CANVAS_LINE_FIRST": "INDEFINIDO",
+  "BOT": {
+    "INFO": {
+      "TITLE": "Informações do Bot",
+      "NAME_FIELD": "Nome do Bot",
+      "VERSION_FIELD": "Versão do Bot",
+      "CREATION_FIELD": "Data de Criação",
+      "SERVERS_FIELD": "Servidores",
+      "SERVERS_FIELD_DESC": "O bot está em atualmente **%s** servidores.",
+      "MEMBERS_FIELD": "Membros",
+      "MEMBERS_FIELD_DESC": "Existem atualmente **%s** membros no total entre todos os servidores.",
+      "INVITES_BOT": "Convidar Bot",
+      "INVITES_SUPPORT": "Servidor de Suporte"
+    }
+  },
+  "CLEAR": {
+    "DELETED": "{count, plural, =0 {Nenhuma mensagem foi excluída} =1 {`#` mensagem excluída} other {`#` mensagens excluídas}}."
+  },
+  "COLOR": {
+    "LIKE": "Você gostaria desta cor?",
+    "SPECIFIED": "Cor especificada",
+    "AVATAR_ESTIMATED": "Cor estimada do seu avatar",
+    "TARGET_AVATAR_ESTIMATED": "Cor estimada do avatar de %s",
+    "USER_CAN_INTERACT": "%s também pode interagir com o sistema.",
+    "SAME_USER_CAN_INTERACT": "Não é necessário mencionar a si mesmo se você vai mudar sua própria cor.",
+    "INVALID": "Cor inválida",
+    "INVALID_IMG": "Inválido",
+    "CANCELED": "Cancelado",
+    "NO_ROLE": "Você não tem um cargo de cor.",
+    "TARGET_NO_ROLE": "O usuário mencionado não tem um cargo de cor.",
+    "RGB_CONVERT": "Convertido para RGB",
+    "CURRENT": "Cor atual",
+    "TARGET_CURRENT": "Cor atual de %s",
+    "ALREADY_NO_ROLE": "Você já não tem um cargo de cor.",
+    "TARGET_ALREADY_NO_ROLE": "O usuário mencionado já não possui um cargo de cor.",
+    "DELETED_ROLE": "Cor deletada",
+    "TARGET_DELETED_ROLE": "Cor de %s deletada",
+    "CREATED_ASSIGNED_ROLE": "Cor criada e atribuída",
+    "TARGET_CREATED_ASSIGNED_ROLE": "Cor criada e atribuída a %s",
+    "CHANGED_ROLE": "Cor alterada",
+    "TARGET_CHANGED_ROLE": "Cor de %s alterada",
+    "CHANGED_ASSIGNED_ROLE": "Cor alterada e atribuída",
+    "TARGET_CHANGED_ASSIGNED_ROLE": "Cor alterada e atribuída a %s",
+    "MIX": "Digite uma cor para misturar",
+    "MIX_INVALID": "Cor inválida, insira uma cor válida para misturar",
+    "MIXED": "Cor misturada",
+    "MIXED_REPEAT": "Cor misturada, digite uma cor para misturar novamente",
+    "EDIT": "Digite uma nova cor",
+    "EDIT_ESTIMATED": "Cor estimada do seu avatar, insira uma cor válida para editar novamente",
+    "EDIT_INVALID": "Cor inválida, insira uma nova cor válida",
+    "EDITED": "Cor editada",
+    "EDITED_REPEAT": "Cor editada, insira uma cor válida para editar novamente",
+    "PREVIEW": "Você está pré-visualizando a cor."
+  },
+  "EMOJI": {
+    "EDIT_EDITING": "Editando Emoji",
+    "EDIT_NAME": "Renomeando Emoji",
+    "EDIT_NAME_INVALID": "Nome Inválido",
+    "EDITED_NAME": "Emoji Renomeado",
+    "EDITED_NAME_REPEAT": "Emoji renomeado, digite um nome para renomear novamente",
+    "EDIT_ROLES_INVALID": "Cargo Inválido",
+    "EDIT_ROLES_RESETED": "Cargos do emoji redefinidos",
+    "EDITED_ROLES": "Cargos do emoji editados",
+    "EDIT_DELETING": "Excluindo Emoji",
+    "EDIT_DELETING_DESC": "Tem certeza de que deseja excluir este emoji?",
+    "EDIT_DELETED": "Emoji Excluído",
+    "EDITING_ROLES": "Editando os cargos do emoji",
+    "EDIT_ROLES_ADDING": "Digite um cargo para adicioná-lo ao emoji",
+    "EDIT_ROLES_ADD_INVALID": "Cargo Inválido",
+    "EDITED_ROLES_ADD_REPEAT": "Cargo adicionado ao emoji, digite outro cargo para adicioná-lo",
+    "EDIT_ROLES_ADDED_ALREADY": "Este cargo já está definido",
+    "EDIT_ROLES_REMOVING": "Digite um cargo para removê-lo do emoji",
+    "EDITED_ROLES_REMOVE_REPEAT": "Cargo removido do emoji, insira outro cargo para removê-lo",
+    "EDIT_ROLES_REMOVE_INVALID": "Cargo Inválido",
+    "EDIT_ROLES_REMOVED": "Este cargo já não está definido",
+    "EDIT_ROLES_REMOVED_ALREADY": "Este cargo já não está definido",
+    "EDIT_ADDED": "Emoji Adicionado",
+    "EDIT_READDED": "Emoji Readicionado",
+    "VIEW_VIEWING": "Visualizando Emoji",
+    "UNALLOWED_SERVER": "Você não tem permissão para editar um emoji de outro servidor.",
+    "COMPONENT": {
+      "VIEW": "Visualizar",
+      "EDIT": "Editar",
+      "EDIT_NAME": "Renomear",
+      "EDIT_ROLES": "Editar Cargos",
+      "EDIT_ROLES_ADD": "Adicionar Cargo",
+      "EDIT_ROLES_REMOVE": "Remover Cargo",
+      "EDIT_ROLES_RESET": "Redefinir Cargos",
+      "EDIT_DELETE": "Excluir Emoji",
+      "EDIT_DELETE_CONFIRM": "Sim",
+      "EDIT_ADD": "Adicionar Emoji",
+      "EDIT_READD": "Readicionar Emoji",
+      "LINK": "Abrir Emoji"
+    }
+  },
+  "KILL": {
+    "DIED": "Caiu para fora do mundo."
+  },
+  "MOWUND": {
+    "INTERACTION": {
+      "COMMANDS": {
+        "UPDATED": "Comandos Atualizados",
+        "DELETED": "Comandos Excluídos",
+        "GLOBAL": "Comandos Globais",
+        "GUILD": "Comandos de Servidor",
+        "SPECIFIED_GUILD": "Comandos do Servidor %s"
+      },
+      "NO_UPDATE": "Nenhum comando foi atualizado."
+    },
+    "SHARD": {
+      "RESPAWNING": "Renascendo todas as shards."
+    }
+  },
+  "PING": {
+    "TITLE": "Pong!",
+    "DEFERRED": "Adiado",
+    "TIME": {
+      "DEFERMENT": "Tempo de Adiamento",
+      "EDITING": "Tempo de Edição",
+      "RESPONSE": "Tempo de Resposta"
+    },
+    "API_LATENCY": "Latência da API",
+    "UPTIME": "Tempo Ativo",
+    "SHARD": "Shard"
+  },
+  "SETTINGS": {
+    "LANGUAGE": {
+      "CHANGED": "Idioma Alterado",
+      "CURRENT": "Idioma Atual",
+      "CURRENT_IS": "O idioma atual do bot nesse servidor é `%s`.",
+      "NOT_SUPPORTED": "No momento, o bot não tem suporte para `%s`.",
+      "CROWDIN": "Traduzir no Crowdin",
+      "NAME": {
+        "en-US": "Inglês (Estados Unidos)",
+        "es-ES": "Espanhol (Espanha)",
+        "pt-BR": "Português (Brasil)"
+      }
+    }
+  },
+  "USER": {
+    "INFO": {
+      "TITLE": "Informações do Usuário",
+      "USER": {
+        "AVATAR": "Avatar",
+        "BANNER": "Banner"
+      },
+      "MEMBER": {
+        "JOINED": "Entrou no Servidor",
+        "AVATAR": "Avatar de Servidor",
+        "BANNER": "Banner de Servidor"
+      }
+    }
+  },
+  "PERM": {
+    "NO_LONGER": "Você não tem mais a permissão `%s` necessária.",
+    "REQUIRES": "Você precisa da permissão `%s`.",
+    "ROLE_REQUIRES": "{role} requer a permissão `{perm}` para que a interação funcione corretamente.",
+    "CREATE_INSTANT_INVITE": "Criar Convite",
+    "KICK_MEMBERS": "Expulsar Membros",
+    "BAN_MEMBERS": "Banir Membros",
+    "ADMINISTRATOR": "Administrador",
+    "MANAGE_CHANNELS": "Gerenciar Canal",
+    "MANAGE_GUILD": "Gerenciar Servidor",
+    "ADD_REACTIONS": "Adicionar Reações",
+    "VIEW_AUDIT_LOG": "Ver o Registro de Auditoria",
+    "PRIORITY_SPEAKER": "Voz Prioritária",
+    "STREAM": "Vídeo",
+    "VIEW_CHANNEL": "Ver Canal",
+    "SEND_MESSAGES": "Enviar Mensagens",
+    "SEND_TTS_MESSAGES": "Enviar mensagens em TTS",
+    "MANAGE_MESSAGES": "Gerenciar Mensagens",
+    "EMBED_LINKS": "Inserir Links",
+    "ATTACH_FILES": "Anexar Arquivos",
+    "READ_MESSAGE_HISTORY": "Ver Histórico de Mensagens",
+    "MENTION_EVERYONE": "Mencionar Todos",
+    "USE_EXTERNAL_EMOJIS": "Usar Emojis Externos",
+    "VIEW_GUILD_INSIGHTS": "Ver Análises do Servidor",
+    "CONNECT": "Conectar",
+    "SPEAK": "Falar",
+    "MUTE_MEMBERS": "Silenciar Membros",
+    "DEAFEN_MEMBERS": "Ensurdecer Membros",
+    "MOVE_MEMBERS": "Mover Membros",
+    "USE_VAD": "Usar Detecção de Voz",
+    "CHANGE_NICKNAME": "Alterar Apelido",
+    "MANAGE_NICKNAMES": "Gerenciar Apelidos",
+    "MANAGE_ROLES": "Gerenciar Cargos",
+    "MANAGE_WEBHOOKS": "Gerenciar Webhooks",
+    "MANAGE_EMOJIS_AND_STICKERS": "Gerenciar Emojis e Figurinhas",
+    "USE_APPLICATION_COMMANDS": "Usar Comandos de Aplicativo",
+    "REQUEST_TO_SPEAK": "Pedir para Falar",
+    "MANAGE_EVENTS": "Gerenciar Eventos",
+    "MANAGE_THREADS": "Gerenciar Tópicos",
+    "USE_PUBLIC_THREADS": "Usar Tópicos Públicos",
+    "CREATE_PUBLIC_THREADS": "Criar Tópicos Públicos",
+    "USE_PRIVATE_THREADS": "Usar Tópicos Privados",
+    "CREATE_PRIVATE_THREADS": "Criar Tópicos Privados",
+    "USE_EXTERNAL_STICKERS": "Usar Figurinhas Externos",
+    "SEND_MESSAGES_IN_THREADS": "Enviar Mensagens em Tópicos",
+    "START_EMBEDDED_ACTIVITIES": "Começar Atividades",
+    "MODERATE_MEMBERS": "Membros de Castigo"
+  },
+  "ERROR": {
+    "DM": "Esse comando não pode ser usado em DMs.",
+    "TIMED_OUT": "Tempo esgotado",
+    "EXECUTING_INTERACTION": "Ocorreu um erro ao executar esta interação.",
+    "DEVELOPERS_ONLY": "Este comando só pode ser usado pelos desenvolvedores do bot.",
+    "GUILD_NOT_FOUND": "Servidor não encontrado.",
+    "RELOADING_APPLICATION_COMMAND": "Ocorreu um erro ao recarregar um comando da aplicação.",
+    "EMOJI": {
+      "NONEXISTENT": "Você não pode editar o emoji pois ele não existe mais.",
+      "NOT_FOUND": "O emoji `%s` não foi encontrado."
+    },
+    "UNALLOWED": {
+      "CHAT": "Você não tem permissão para usar este comando neste chat.",
+      "COMMAND": "Você não tem permissão para interagir com este comando."
+    }
+  },
+  "GENERIC": {
+    "TIME": {
+      "SECONDS": "{count, plural, =0 {agora} =1 {# segundo} other {# segundos}}",
+      "MINUTES": "{count, plural, =0 {agora} =1 {# minuto} other {# minutos}}",
+      "HOURS": "{count, plural, =0 {agora} =1 {# hora} other {# horas}}"
+    },
+    "COMPONENT": {
+      "BACK": "Voltar",
+      "REPEAT": "Repetir",
+      "MESSAGE_DELETE": "Excluir Mensagem"
+    },
+    "FROM": "De",
+    "TO": "Para",
+    "ID": "ID",
+    "NAME": "Nome",
+    "ROLES": "Cargos",
+    "CREATION_DATE": "Data de Criação",
+    "CHAT": "Chat",
+    "MESSAGE": "Mensagem",
+    "USER": "Usuário",
+    "CURRENT": "Atual",
+    "TOTAL": "Total",
+    "REQUESTED_BY": "Solicitado por %s",
+    "INTERACTED_BY": "Interagido por %s",
+    "ERROR": "Erro",
+    "SUCCESS": "Sucesso",
+    "WARNING": "Aviso",
+    "OUTPUT": "Saída",
+    "TYPE": "Tipo",
+    "WIP": "Trabalho em Progresso",
+    "WIP_COMMAND": "Este comando está atualmente em desenvolvimento.",
+    "WIP_FUNCTION": "Esta função está atualmente em desenvolvimento."
+  }
+}

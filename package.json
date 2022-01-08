@@ -15,8 +15,9 @@
     "type": "git",
     "url": "https://github.com/Mowund/bot.git"
   },
-  "license": "MIT",
+  "license": "AGPL-3.0-only",
   "author": "Smidul",
+  "type": "module",
   "main": "index.js",
   "scripts": {
     "lint": "eslint ./",
@@ -25,7 +26,7 @@
   "dependencies": {
     "axios": "^0.24.0",
     "canvas": "^2.8.0",
-    "chalk": "^4.1.2",
+    "chalk": "^5.0.0",
     "color-thief-node": "^1.0.4",
     "colors": "^1.4.0",
     "discord.js": "^14.0.0-dev.1640865766.780b7ed",
@@ -40,7 +41,7 @@
   "devDependencies": {
     "eslint": "^8.6.0",
     "eslint-config-prettier": "^8.3.0",
-    "eslint-plugin-import": "^2.25.3",
+    "eslint-plugin-import": "^2.25.4",
     "eslint-plugin-json": "^3.1.0",
     "eslint-plugin-json-format": "^2.0.1",
     "eslint-plugin-prettier": "^4.0.0",

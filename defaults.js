@@ -1,14 +1,10 @@
-'use strict';
-
-const botLanguage = {
-  default: 'en-US',
-  supported: ['en-US', 'es-ES', 'pt-BR'],
-};
-module.exports = {
-  botColor: '5865f2',
-  botLanguage,
-  botOwners: ['205130563424616450', '204761318434144256'],
-  emojis: {
+export const botColor = '5865f2',
+  botLanguage = {
+    default: 'en-US',
+    supported: ['en-US', 'es-ES', 'pt-BR'],
+  },
+  botOwners = ['205130563424616450', '204761318434144256'],
+  emojis = {
     discordEmployee: '<:DiscordEmployee:905861867338092554>',
     serverOwner: '<:ServerOwner:905860385675034634>',
     partneredServerOwner: '<:PartneredServerOwner:905860411549700126>',
@@ -38,9 +34,9 @@ module.exports = {
     boosting15Months: '<:Boosting15Months:924751044246896710>',
     boosting18Months: '<:Boosting18Months:924751052119617536>',
   },
-  imgOpts: { format: 'png', size: 4096, dynamic: true },
-  supportServer: 'https://discord.gg/f85rEGJ',
-  debugMode: true,
+  imgOpts = { format: 'png', size: 4096, dynamic: true },
+  supportServer = 'https://discord.gg/f85rEGJ',
+  debugMode = true,
   /**
    * @typedef {Object} guildSettings The default settings for guilds
    * @prop {string} [language] The guild's language
@@ -48,9 +44,8 @@ module.exports = {
    * @prop {boolean} [log.badDomains] Whether to log messages containing bad domains
    * @prop {string} [log.channel] The id of the channel used to send log messages from the bot
    */
-  guildSettings: { language: botLanguage.default, log: { badDomains: false, channel: null } },
+  guildSettings = { language: botLanguage.default, log: { badDomains: false, channel: null } },
   /**
    * @typedef {Object} userSettings The default settings for users
    */
-  userSettings: {},
-};
+  userSettings = {};

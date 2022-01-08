@@ -1,12 +1,11 @@
-'use strict';
-
-const fs = require('node:fs'),
-  admin = require('firebase-admin'),
-  i18n = require('i18n'),
-  { Client, Collection, Intents, Constants, User, Guild } = require('discord.js'),
-  { botLanguage, guildSettings, userSettings } = require('./defaults'),
-  { getURL, removeEmpty } = require('./utils');
-require('colors');
+import { readdirSync } from 'node:fs';
+import admin from 'firebase-admin';
+import i18n from 'i18n';
+import { Client, Collection, Intents, Constants, User, Guild } from 'discord.js';
+import { getBotStaticCatalog } from 'mowund-i18n';
+import { botLanguage, guildSettings, userSettings } from './defaults.js';
+import { getURL, removeEmpty } from './utils.js';
+import 'colors';
 
 admin.initializeApp({
   credential: admin.credential.cert(JSON.parse(process.env.FIREBASE)),
@@ -24,18 +23,16 @@ const client = new Client({
   }),
   firestore = admin.firestore(),
   dbGuilds = firestore.collection('guilds'),
-  dbUsers = firestore.collection('users'),
-  staticCatalog = {};
+  dbUsers = firestore.collection('users');
 
 client.commands = new Collection();
 client.dbCache = { guilds: new Collection(), users: new Collection() };
-botLanguage.supported.forEach(l => (staticCatalog[l] = require(`mowund-i18n/locale/${l}/bot.json`)));
 
 i18n.configure({
   locales: botLanguage.supported,
   defaultLocale: botLanguage.default,
   retryInDefaultLocale: true,
-  staticCatalog,
+  staticCatalog: getBotStaticCatalog(),
   objectNotation: true,
 });
 
@@ -49,33 +46,36 @@ client.on('ready', async () => {
     status: 'online',
   });
   console.log('Bot started'.green);
-  try {
-    const interactionFiles = fs.readdirSync('./interactions').filter(file => file.endsWith('.js'));
 
+  try {
+    const interactionFiles = readdirSync('./interactions').filter(file => file.endsWith('.js'));
     for (const file of interactionFiles) {
-      const event = require(`./interactions/${file}`);
+      const event = await import(`./interactions/${file}`);
       client.commands.set(file.match(/.+?(?=\.js)/g)?.[0], event);
     }
     console.log('Successfully set application commands to collection'.green);
   } catch (err) {
     console.error('An error occured while setting application commands to collection:\n'.red, err);
   }
+
   client.badDomains = (await getURL('https://bad-domains.walshy.dev/domains.json'))?.data;
 });
 
-const eventFiles = fs.readdirSync('./events').filter(file => file.endsWith('.js'));
-for (const file of eventFiles) {
+(async function () {
   try {
-    const event = require(`./events/${file}`);
-    if (event.once) {
-      client.once(event.name, (...args) => event.execute(client, i18n, ...args));
-    } else {
-      client.on(event.name, (...args) => event.execute(client, i18n, ...args));
+    const eventFiles = readdirSync('./events').filter(file => file.endsWith('.js'));
+    for (const file of eventFiles) {
+      const event = await import(`./events/${file}`);
+      if (event.once) {
+        client.once(event.eventName, (...args) => event.execute(client, i18n, ...args));
+      } else {
+        client.on(event.eventName, (...args) => event.execute(client, i18n, ...args));
+      }
     }
   } catch (err) {
     console.error(err);
   }
-}
+})();
 
 /**
  * Update the settings of a database's document
