@@ -1,12 +1,11 @@
 /* eslint-disable */
 
 // Old bullshit
-import chalk from 'chalk';
+import { ApplicationCommandOptionType } from 'discord.js';
 import { getColorFromURL } from 'color-thief-node';
 import tc from 'tinycolor2';
 import { botOwners } from '../defaults.js';
 import { diEmb } from '../utils.js';
-import 'colors';
 import 'log-timestamp';
 
 export const data = [
@@ -17,56 +16,56 @@ export const data = [
       {
         name: 'change',
         description: 'Changes the color of a color role',
-        type: 'SUB_COMMAND',
+        type: ApplicationCommandOptionType.Subcommand,
         options: [
           {
             name: 'color',
             description: 'Any supported color',
-            type: 'STRING',
+            type: ApplicationCommandOptionType.String,
           },
           {
             name: 'user',
             description: 'An user (Requires: Manage roles)',
-            type: 'USER',
+            type: ApplicationCommandOptionType.User,
           },
           {
             name: 'ephemeral',
             description: 'Send reply as an ephemeral message (Default: True)',
-            type: 'BOOLEAN',
+            type: ApplicationCommandOptionType.Boolean,
           },
         ],
       },
       {
         name: 'current',
         description: 'The current color of a color role',
-        type: 'SUB_COMMAND',
+        type: ApplicationCommandOptionType.Subcommand,
         options: [
           {
             name: 'user',
             description: 'An user (Requires: Manage roles)',
-            type: 'USER',
+            type: ApplicationCommandOptionType.User,
           },
           {
             name: 'ephemeral',
             description: 'Send reply as an ephemeral message (Default: True)',
-            type: 'BOOLEAN',
+            type: ApplicationCommandOptionType.Boolean,
           },
         ],
       },
       {
         name: 'remove',
         description: 'Deletes a color role',
-        type: 'SUB_COMMAND',
+        type: ApplicationCommandOptionType.Subcommand,
         options: [
           {
             name: 'user',
             description: 'An user (Requires: Manage roles)',
-            type: 'USER',
+            type: ApplicationCommandOptionType.User,
           },
           {
             name: 'ephemeral',
             description: 'Send reply as an ephemeral message (Default: True)',
-            type: 'BOOLEAN',
+            type: ApplicationCommandOptionType.Boolean,
           },
         ],
       },
@@ -74,7 +73,7 @@ export const data = [
   },
 ];
 export const guildOnly = ['420007989261500418'];
-export async function execute(client, interaction, st, embed) {
+export async function execute({ chalk, client, interaction, st, embed }) {
   const { user, guild, options } = interaction,
     userO = options?.getUser('user') ?? user,
     tRoleN = userO ? `USER-${userO.id}` : '',
@@ -107,39 +106,39 @@ export async function execute(client, interaction, st, embed) {
     }
     return [
       {
-        type: 'SUB_COMMAND',
+        type: ApplicationCommandOptionType.Subcommand,
         components: [
           {
-            type: 'SUB_COMMAND_GROUP',
+            type: ApplicationCommandOptionType.SubcommandGroup,
             style: 2,
-            emoji: {
+            name: {
               name: '⛔',
             },
             custom_id: 'color_cancel',
             disabled: getValue('cancel'),
           },
           {
-            type: 'SUB_COMMAND_GROUP',
+            type: ApplicationCommandOptionType.SubcommandGroup,
             style: 2,
-            emoji: {
+            name: {
               name: '✅',
             },
             custom_id: 'color_confirm',
             disabled: getValue('confirm'),
           },
           {
-            type: 'SUB_COMMAND_GROUP',
+            type: ApplicationCommandOptionType.SubcommandGroup,
             style: 2,
-            emoji: {
+            name: {
               name: '📝',
             },
             custom_id: ['COLOR', 'EDIT'],
             disabled: getValue('edit'),
           },
           {
-            type: 'SUB_COMMAND_GROUP',
+            type: ApplicationCommandOptionType.SubcommandGroup,
             style: 2,
-            emoji: {
+            name: {
               name: '🔍',
             },
             custom_id: ['COLOR', 'PREVIEW'],
@@ -148,39 +147,39 @@ export async function execute(client, interaction, st, embed) {
         ],
       },
       {
-        type: 'SUB_COMMAND',
+        type: ApplicationCommandOptionType.Subcommand,
         components: [
           {
-            type: 'SUB_COMMAND_GROUP',
+            type: ApplicationCommandOptionType.SubcommandGroup,
             style: 2,
-            emoji: {
+            name: {
               name: '🔁',
             },
             custom_id: 'color_random',
             disabled: getValue('random'),
           },
           {
-            type: 'SUB_COMMAND_GROUP',
+            type: ApplicationCommandOptionType.SubcommandGroup,
             style: 2,
-            emoji: {
+            name: {
               name: '⚪',
             },
             custom_id: 'color_lighten',
             disabled: getValue('ligthen'),
           },
           {
-            type: 'SUB_COMMAND_GROUP',
+            type: ApplicationCommandOptionType.SubcommandGroup,
             style: 2,
-            emoji: {
+            name: {
               name: '⚫',
             },
             custom_id: 'color_darken',
             disabled: getValue('darken'),
           },
           {
-            type: 'SUB_COMMAND_GROUP',
+            type: ApplicationCommandOptionType.SubcommandGroup,
             style: 2,
-            emoji: {
+            name: {
               name: '🎨',
             },
             custom_id: ['COLOR', 'MIX'],
@@ -195,7 +194,7 @@ export async function execute(client, interaction, st, embed) {
     dftC = dftCF([{ id: 'preview', value: true }]);
   }
 
-  if (interaction.isCommand()) {
+  if (interaction.isChatInputCommand()) {
     // Let alwCH = database.get(guild, 'color_allowed_channels');
     // if (!alwCH || !alwCH.includes(channelI.id))
     //  return utils.iCP(
@@ -288,13 +287,13 @@ export async function execute(client, interaction, st, embed) {
         await diEmb(client, 2, interaction, userO, 1, color, st.__('COLOR.CANCELED'), 1, 0),
         [
           {
-            type: 'SUB_COMMAND',
+            type: ApplicationCommandOptionType.Subcommand,
             components: [
               {
-                type: 'SUB_COMMAND_GROUP',
+                type: ApplicationCommandOptionType.SubcommandGroup,
                 style: 4,
                 label: st.__('GENERIC.COMPONENT.MESSAGE_DELETE'),
-                emoji: {
+                name: {
                   name: '🧹',
                 },
                 custom_id: 'color_message_delete',
@@ -352,13 +351,13 @@ export async function execute(client, interaction, st, embed) {
 
       iCP(client, 3, interaction, 0, 0, 0, await diEmb(client, 2, interaction, userO, 1, color, eTitle, 1, 0), [
         {
-          type: 'SUB_COMMAND',
+          type: ApplicationCommandOptionType.Subcommand,
           components: [
             {
-              type: 'SUB_COMMAND_GROUP',
+              type: ApplicationCommandOptionType.SubcommandGroup,
               style: 4,
               label: st.__('GENERIC.COMPONENT.MESSAGE_DELETE'),
-              emoji: {
+              name: {
                 name: '🧹',
               },
               custom_id: 'color_message_delete',
@@ -377,12 +376,12 @@ export async function execute(client, interaction, st, embed) {
         await diEmb(client, 2, interaction, userO, 1, color, st.__('COLOR.EDIT'), 1, 0, `${color}+->`),
         [
           {
-            type: 'SUB_COMMAND',
+            type: ApplicationCommandOptionType.Subcommand,
             components: [
               {
-                type: 'SUB_COMMAND_GROUP',
+                type: ApplicationCommandOptionType.SubcommandGroup,
                 style: 2,
-                emoji: {
+                name: {
                   name: '↩️',
                 },
                 custom_id: 'color_back',
@@ -467,20 +466,20 @@ export async function execute(client, interaction, st, embed) {
               await diEmb(client, 2, interaction, userO, 1, color, st.__('COLOR.TIME_OUT'), 0, 0),
               [
                 {
-                  type: 'SUB_COMMAND',
+                  type: ApplicationCommandOptionType.Subcommand,
                   components: [
                     {
-                      type: 'SUB_COMMAND_GROUP',
+                      type: ApplicationCommandOptionType.SubcommandGroup,
                       style: 2,
-                      emoji: {
+                      name: {
                         name: '↩️',
                       },
                       custom_id: 'color_back',
                     },
                     {
-                      type: 'SUB_COMMAND_GROUP',
+                      type: ApplicationCommandOptionType.SubcommandGroup,
                       style: 2,
-                      emoji: {
+                      name: {
                         name: '🔄',
                       },
                       custom_id: ['COLOR', 'EDIT'],
@@ -502,12 +501,12 @@ export async function execute(client, interaction, st, embed) {
         await diEmb(client, 2, interaction, userO, 1, color, st.__('COLOR.EDIT'), 1, 0, `${color}+->`),
         [
           {
-            type: 'SUB_COMMAND',
+            type: ApplicationCommandOptionType.Subcommand,
             components: [
               {
-                type: 'SUB_COMMAND_GROUP',
+                type: ApplicationCommandOptionType.SubcommandGroup,
                 style: 2,
-                emoji: {
+                name: {
                   name: '↩️',
                 },
                 custom_id: 'color_back',
@@ -538,20 +537,20 @@ export async function execute(client, interaction, st, embed) {
         await diEmb(client, 2, interaction, userO, 1, color, st.__('COLOR.PREVIEW'), 1),
         [
           {
-            type: 'SUB_COMMAND',
+            type: ApplicationCommandOptionType.Subcommand,
             components: [
               {
-                type: 'SUB_COMMAND_GROUP',
+                type: ApplicationCommandOptionType.SubcommandGroup,
                 style: 2,
-                emoji: {
+                name: {
                   name: '↩️',
                 },
                 custom_id: 'color_back_preview',
               },
               {
-                type: 'SUB_COMMAND_GROUP',
+                type: ApplicationCommandOptionType.SubcommandGroup,
                 style: 2,
-                emoji: {
+                name: {
                   name: '✅',
                 },
                 custom_id: 'color_confirm',
@@ -607,12 +606,12 @@ export async function execute(client, interaction, st, embed) {
         await diEmb(client, 2, interaction, userO, 1, color, st.__('COLOR.MIX'), 1, 0, `${color}+＋`),
         [
           {
-            type: 'SUB_COMMAND',
+            type: ApplicationCommandOptionType.Subcommand,
             components: [
               {
-                type: 'SUB_COMMAND_GROUP',
+                type: ApplicationCommandOptionType.SubcommandGroup,
                 style: 2,
-                emoji: {
+                name: {
                   name: '↩️',
                 },
                 custom_id: 'color_back',
@@ -697,20 +696,20 @@ export async function execute(client, interaction, st, embed) {
               await diEmb(client, 2, interaction, userO, 1, color, st.__('COLOR.TIME_OUT'), 0, 0),
               [
                 {
-                  type: 'SUB_COMMAND',
+                  type: ApplicationCommandOptionType.Subcommand,
                   components: [
                     {
-                      type: 'SUB_COMMAND_GROUP',
+                      type: ApplicationCommandOptionType.SubcommandGroup,
                       style: 2,
-                      emoji: {
+                      name: {
                         name: '↩️',
                       },
                       custom_id: 'color_back',
                     },
                     {
-                      type: 'SUB_COMMAND_GROUP',
+                      type: ApplicationCommandOptionType.SubcommandGroup,
                       style: 2,
-                      emoji: {
+                      name: {
                         name: '🔄',
                       },
                       custom_id: ['COLOR', 'MIX'],

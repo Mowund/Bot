@@ -1,12 +1,9 @@
 import { debugMode } from '../defaults.js';
-import 'colors';
 
 export const eventName = 'messageCreate';
-export async function execute(client, i18n, message) {
+export async function execute({ chalk, client }, message) {
   // TODO
-  if (message.author.bot || message.guild.id !== '420007989261500418') {
-    return;
-  }
+  if (message.author.bot || message.guild.id !== '420007989261500418') return;
 
   const scamReportTimeout = 15000;
   if (client.badDomains.some(w => message.content.includes(w))) {
@@ -17,9 +14,7 @@ export async function execute(client, i18n, message) {
         const logChannel = await message.guild.channels.cache.get(guildSettings.logChannel);
 
         logChannel.send(`Bad word: ${message.content}`);
-        if (debugMode) {
-          console.log('Bad word detected: '.gray + message.content.red);
-        }
+        if (debugMode) console.log(chalk.gray('Bad word detected: ') + chalk.red(message.content));
       }
     }
     message.author.lastScamTimestamp = message.createdTimestamp;

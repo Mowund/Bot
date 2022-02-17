@@ -1,79 +1,88 @@
-import { MessageSelectMenu, Permissions, MessageActionRow, Collection, MessageButton } from 'discord.js';
+import {
+  SelectMenuComponent,
+  ActionRow,
+  Collection,
+  ButtonComponent,
+  ButtonStyle,
+  ApplicationCommandOptionType,
+  ChannelType,
+  PermissionFlagsBits,
+} from 'discord.js';
 import { botOwners } from '../defaults.js';
 import { collMap } from '../utils.js';
 
 export const data = [
   {
-    name: 'rolemenu',
     description: 'Manage a rolemenu',
+    name: 'rolemenu',
     options: [
       {
-        name: 'create',
         description: 'Create a rolemenu',
-        type: 'SUB_COMMAND',
+        name: 'create',
         options: [
           {
-            name: 'channel',
-            description: 'The channel to create the rolemenu',
-            type: 'CHANNEL',
             channelTypes: [
-              'GUILD_TEXT',
-              'GUILD_NEWS',
-              'GUILD_NEWS_THREAD',
-              'GUILD_PRIVATE_THREAD',
-              'GUILD_PUBLIC_THREAD',
+              ChannelType.GuildText,
+              ChannelType.GuildNews,
+              ChannelType.GuildNewsThread,
+              ChannelType.GuildPrivateThread,
+              ChannelType.GuildPublicThread,
             ],
+            description: 'The channel to create the rolemenu',
+            name: 'channel',
+            type: ApplicationCommandOptionType.Channel,
           },
           {
-            name: 'ephemeral',
             description: 'Send reply as an ephemeral message (Default: True)',
-            type: 'BOOLEAN',
+            name: 'ephemeral',
+            type: ApplicationCommandOptionType.Boolean,
           },
         ],
+        type: ApplicationCommandOptionType.Subcommand,
       },
       {
-        name: 'edit',
         description: 'Edit a rolemenu',
-        type: 'SUB_COMMAND',
+        name: 'edit',
         options: [
           {
-            name: 'channel',
-            description: 'The channel to edit the rolemenu',
-            type: 'CHANNEL',
             channelTypes: [
-              'GUILD_TEXT',
-              'GUILD_NEWS',
-              'GUILD_NEWS_THREAD',
-              'GUILD_PRIVATE_THREAD',
-              'GUILD_PUBLIC_THREAD',
+              ChannelType.GuildText,
+              ChannelType.GuildNews,
+              ChannelType.GuildNewsThread,
+              ChannelType.GuildPrivateThread,
+              ChannelType.GuildPublicThread,
             ],
+            description: 'The channel to edit the rolemenu',
+            name: 'channel',
+            type: ApplicationCommandOptionType.Channel,
           },
           {
-            name: 'ephemeral',
             description: 'Send reply as an ephemeral message (Default: True)',
-            type: 'BOOLEAN',
+            name: 'ephemeral',
+            type: ApplicationCommandOptionType.Boolean,
           },
         ],
+        type: ApplicationCommandOptionType.Subcommand,
       },
     ],
   },
 ];
 export const guildOnly = ['420007989261500418'];
-export async function execute(client, interaction, st, embed) {
-  const { guild, user, values, options } = interaction,
+export async function execute({ client, interaction, st, embed }) {
+  const { customId, guild, user, values, options } = interaction,
     channelO = options?.getChannel('channel') ?? interaction.channel,
     ephemeralO = options?.getBoolean('ephemeral') ?? true;
 
-  if (interaction.isCommand()) {
+  if (interaction.isChatInputCommand()) {
     await interaction.deferReply({ ephemeral: ephemeralO });
 
     const respRows = !ephemeralO
       ? [
-          new MessageActionRow().addComponents(
-            new MessageButton()
+          new ActionRow().addComponents(
+            new ButtonComponent()
               .setLabel(st.__('GENERIC.COMPONENT.MESSAGE_DELETE'))
-              .setEmoji('🧹')
-              .setStyle('DANGER')
+              .setEmoji({ name: '🧹' })
+              .setStyle(ButtonStyle.Danger)
               .setCustomId('generic_message_delete'),
           ),
         ]
@@ -93,7 +102,7 @@ export async function execute(client, interaction, st, embed) {
     }
 
     if (options?.getSubcommand() === 'create') {
-      if (!channelO.permissionsFor(client.user).has(Permissions.FLAGS.SEND_MESSAGES)) {
+      if (!channelO.permissionsFor(client.user).has(PermissionFlagsBits.SendMessages)) {
         return interaction.editReply({
           components: respRows,
           embeds: [embed({ type: 'error' }).setDescription("Can't send messages on this channel")],
@@ -101,23 +110,23 @@ export async function execute(client, interaction, st, embed) {
       }
 
       const menuRows = [
-        new MessageActionRow().addComponents(
-          new MessageSelectMenu()
+        new ActionRow().addComponents(
+          new SelectMenuComponent()
             .setCustomId('rolemenu_giverole')
             .setPlaceholder('Escolha um cargo')
-            .setMinValues(1)
+            .setMinValues(0)
             .setMaxValues(2)
             .addOptions([
               {
-                label: 'Aniversariantes',
                 description: 'Cargo de aniversariantes',
-                emoji: '🎂',
+                label: 'Aniversariantes',
+                name: '🎂',
                 value: '503219168007421971',
               },
               {
-                label: 'Mutados',
                 description: 'Cargo de mutados',
-                emoji: '⛔',
+                label: 'Mutados',
+                name: '⛔',
                 value: '531313330703433758',
               },
             ]),
@@ -125,8 +134,8 @@ export async function execute(client, interaction, st, embed) {
       ];
 
       await channelO.send({
-        embeds: [embed({ title: 'Escolha Algum Cargo' }).setDescription('🎂 Aniversariantes\n⛔ Mutados')],
         components: menuRows,
+        embeds: [embed({ title: 'Escolha Algum Cargo' }).setDescription('🎂 Aniversariantes\n⛔ Mutados')],
       });
 
       return interaction.editReply({
@@ -134,25 +143,25 @@ export async function execute(client, interaction, st, embed) {
         embeds: [embed().setDescription(`rolemenu criado em: ${channelO.toString()}`)],
       });
     }
-  }
-  if (interaction.isSelectMenu()) {
-    if (interaction.customId === 'rolemenu_giverole') {
-      await interaction.deferReply({ ephemeral: true });
-      let roles = new Collection();
-      for (let rId of values) {
-        rId = rId.split(' ').join('');
-        const role = guild.roles.cache.filter(r => r.id === rId);
+  } else if (interaction.isSelectMenu()) {
+    switch (customId) {
+      case 'rolemenu_giverole': {
+        await interaction.deferReply({ ephemeral: true });
+        let roles = new Collection();
+        for (let rId of values) {
+          rId = rId.split(' ').join('');
+          const role = guild.roles.cache.filter(r => r.id === rId);
 
-        if (!role) {
-          return interaction.reply(`Role ${rId} not found`);
+          if (!role) return interaction.reply(`Role ${rId} not found`);
+
+          roles = roles.concat(role);
         }
-        roles = roles.concat(role);
-      }
-      roles = collMap(roles);
+        roles = collMap(roles);
 
-      return interaction.editReply({
-        embeds: [embed({ title: 'Cargos Selecionados' }).setDescription(roles)],
-      });
+        return interaction.editReply({
+          embeds: [embed({ title: 'Cargos Selecionados' }).setDescription(roles)],
+        });
+      }
     }
   }
 }

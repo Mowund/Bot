@@ -1,18 +1,14 @@
-import { MessageActionRow, MessageButton, MessageFlags } from 'discord.js';
+import { ActionRow, ApplicationCommandOptionType, ButtonComponent, ButtonStyle, MessageFlags } from 'discord.js';
 export const data = [
   {
-    name: 'punish',
     description: 'Punish or unpunish a member (Bot owner only)',
+    name: 'punish',
     options: [
       {
-        name: 'add',
         description: 'Punishes a member (Bot owner only)',
-        type: 'SUB_COMMAND',
+        name: 'add',
         options: [
           {
-            name: 'type',
-            description: 'Punishment type',
-            type: 'STRING',
             choices: [
               {
                 name: 'Warn',
@@ -27,53 +23,57 @@ export const data = [
                 value: 'ban',
               },
             ],
+            description: 'Punishment type',
+            name: 'type',
             required: true,
+            type: ApplicationCommandOptionType.String,
           },
           {
-            name: 'user',
             description: 'Member that will be punished',
-            type: 'USER',
+            name: 'user',
             required: true,
+            type: ApplicationCommandOptionType.User,
           },
           {
-            name: 'ephemeral',
             description: 'Send reply as an ephemeral message (Default: True)',
-            type: 'BOOLEAN',
+            name: 'ephemeral',
+            type: ApplicationCommandOptionType.Boolean,
           },
         ],
+        type: ApplicationCommandOptionType.Subcommand,
       },
       {
-        name: 'remove',
         description: 'Unpunishes a member (Bot owner only)',
-        type: 'SUB_COMMAND',
+        name: 'remove',
         options: [
           {
-            name: 'user',
             description: 'Member that will be unpunished',
-            type: 'USER',
+            name: 'user',
             required: true,
+            type: ApplicationCommandOptionType.User,
           },
           {
-            name: 'ephemeral',
             description: 'Send reply as an ephemeral message (Default: True)',
-            type: 'BOOLEAN',
+            name: 'ephemeral',
+            type: ApplicationCommandOptionType.Boolean,
           },
         ],
+        type: ApplicationCommandOptionType.Subcommand,
       },
     ],
   },
 ];
 export const guildOnly = ['420007989261500418'];
-export async function execute(client, interaction, st, embed) {
-  const { message, options } = interaction,
+export async function execute({ interaction, st, embed }) {
+  const { customId, message, options } = interaction,
     ephemeralO = options?.getBoolean('ephemeral') ?? true,
-    mdBtn = new MessageButton()
+    mdBtn = new ButtonComponent()
       .setLabel(st.__('GENERIC.COMPONENT.MESSAGE_DELETE'))
-      .setEmoji('🧹')
-      .setStyle('DANGER')
+      .setEmoji({ name: '🧹' })
+      .setStyle(ButtonStyle.Danger)
       .setCustomId('generic_message_delete');
 
-  if (interaction.isCommand()) {
+  if (interaction.isChatInputCommand()) {
     await interaction.deferReply({ ephemeral: ephemeralO });
     if (!interaction.inGuild()) {
       return interaction.editReply({
@@ -84,31 +84,28 @@ export async function execute(client, interaction, st, embed) {
 
     if (['add', 'remove'].includes(options?.getSubcommand())) {
       const rows = [
-        new MessageActionRow().addComponents(
-          new MessageButton()
+        new ActionRow().addComponents(
+          new ButtonComponent()
             .setLabel(st.__('GENERIC.WIP'))
-            .setEmoji('🔨')
-            .setStyle('DANGER')
+            .setEmoji({ name: '🔨' })
+            .setStyle(ButtonStyle.Danger)
             .setCustomId('punish_danger'),
         ),
       ];
-      if (!ephemeralO) {
-        rows[0].addComponents(mdBtn);
-      }
+      if (!ephemeralO) rows[0].addComponents(mdBtn);
 
       return interaction.editReply({
+        components: rows,
         embeds: [embed({ type: 'wip' })],
         ephemeral: ephemeralO,
-        components: rows,
       });
     }
   } else if (interaction.isButton()) {
-    if (interaction.customId === 'punish_danger') {
-      return interaction.update({
-        components: !message.flags.has(MessageFlags.FLAGS.EPHEMERAL)
-          ? [new MessageActionRow().addComponents(mdBtn)]
-          : [],
-      });
+    switch (customId) {
+      case 'punish_danger':
+        return interaction.update({
+          components: !message.flags.has(MessageFlags.Ephemeral) ? [new ActionRow().addComponents(mdBtn)] : [],
+        });
     }
   }
 }

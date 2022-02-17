@@ -1,123 +1,130 @@
 import { readdirSync } from 'node:fs';
-import { MessageActionRow, MessageButton } from 'discord.js';
-import { botOwners } from '../defaults.js';
+import { inspect } from 'node:util';
+import {
+  ActionRow,
+  ApplicationCommandOptionType,
+  ApplicationCommandType,
+  ButtonComponent,
+  ButtonStyle,
+} from 'discord.js';
+import { botOwners, colors } from '../defaults.js';
 import { truncate } from '../utils.js';
 
 export const data = [
   {
-    name: 'mowund',
     description: 'Bot owner only commands',
+    name: 'mowund',
     options: [
       {
-        name: 'eval',
         description: 'Executes a script (Bot owner only)',
-        type: 'SUB_COMMAND',
+        name: 'eval',
         options: [
           {
-            name: 'script',
             description: 'The script to execute',
-            type: 'STRING',
+            name: 'script',
             required: true,
+            type: ApplicationCommandOptionType.String,
           },
           {
-            name: 'async',
             description: 'Makes the script asynchronous (Default: True)',
-            type: 'BOOLEAN',
+            name: 'async',
+            type: ApplicationCommandOptionType.Boolean,
           },
           {
-            name: 'await',
             description: 'Await the script (Default: True)',
-            type: 'BOOLEAN',
+            name: 'await',
+            type: ApplicationCommandOptionType.Boolean,
           },
           {
-            name: 'ephemeral',
             description: 'Send reply as an ephemeral message (Default: True)',
-            type: 'BOOLEAN',
+            name: 'ephemeral',
+            type: ApplicationCommandOptionType.Boolean,
           },
         ],
+        type: ApplicationCommandOptionType.Subcommand,
       },
       {
-        name: 'interaction',
         description: 'Configures interactions (Bot owner only)',
-        type: 'SUB_COMMAND_GROUP',
+        name: 'interaction',
         options: [
           {
-            name: 'update',
             description: 'Update bot commands (Bot owner only)',
-            type: 'SUB_COMMAND',
+            name: 'update',
             options: [
               {
-                name: 'id',
                 description: 'ID of a specific command (Default: All commands)',
-                type: 'STRING',
+                name: 'id',
+                type: ApplicationCommandOptionType.String,
               },
               {
-                name: 'guild',
                 description: 'The guild the command is at (Default: Trigger guild)',
-                type: 'STRING',
+                name: 'guild',
+                type: ApplicationCommandOptionType.String,
               },
               {
-                name: 'ephemeral',
                 description: 'Send reply as an ephemeral message (Default: True)',
-                type: 'BOOLEAN',
+                name: 'ephemeral',
+                type: ApplicationCommandOptionType.Boolean,
               },
             ],
+            type: ApplicationCommandOptionType.Subcommand,
           },
         ],
+        type: ApplicationCommandOptionType.SubcommandGroup,
       },
       {
-        name: 'shard',
         description: 'Configures shards (Bot owner only)',
-        type: 'SUB_COMMAND_GROUP',
+        name: 'shard',
         options: [
           {
-            name: 'respawnall',
             description: 'Respawns all shards (Bot owner only)',
-            type: 'SUB_COMMAND',
+            name: 'respawnall',
             options: [
               {
-                name: 'sharddelay',
                 description: 'How long to wait between shards',
-                type: 'INTEGER',
+                name: 'sharddelay',
+                type: ApplicationCommandOptionType.Integer,
               },
               {
-                name: 'respawndelay',
                 description: "How long to wait between killing a shard's process and restarting it",
-                type: 'INTEGER',
+                name: 'respawndelay',
+                type: ApplicationCommandOptionType.Integer,
               },
               {
-                name: 'timeout',
                 description: 'The amount to wait for a shard to become ready before continuing to another',
-                type: 'INTEGER',
+                name: 'timeout',
+                type: ApplicationCommandOptionType.Integer,
               },
               {
-                name: 'ephemeral',
                 description: 'Send reply as an ephemeral message (Default: True)',
-                type: 'BOOLEAN',
+                name: 'ephemeral',
+                type: ApplicationCommandOptionType.Boolean,
               },
             ],
+            type: ApplicationCommandOptionType.Subcommand,
           },
         ],
+        type: ApplicationCommandOptionType.SubcommandGroup,
       },
     ],
   },
 ];
-export async function execute(client, interaction, st, embed) {
+export async function execute({ chalk, client, interaction, st, embed }) {
   const { user, options } = interaction,
     ephemeralO = options?.getBoolean('ephemeral') ?? true,
     idO = options?.getString('id'),
     guildO = options?.getString('guild');
 
-  if (interaction.isCommand()) {
+  if (interaction.isChatInputCommand()) {
     await interaction.deferReply({ ephemeral: ephemeralO });
 
     const rows = !ephemeralO
       ? [
-          new MessageActionRow().addComponents(
-            new MessageButton()
+          new ActionRow().addComponents(
+            new ButtonComponent()
               .setLabel(st.__('GENERIC.COMPONENT.MESSAGE_DELETE'))
-              .setEmoji('🧹')
-              .setStyle('DANGER')
+              .setEmoji({ name: '🧹' })
+              .setStyle(ButtonStyle.Danger)
               .setCustomId('generic_message_delete'),
           ),
         ]
@@ -145,8 +152,6 @@ export async function execute(client, interaction, st, embed) {
       });
     }
 
-    let emb = [];
-
     if (options?.getSubcommand() === 'eval') {
       const scriptO = options?.getString('script'),
         asyncO = options?.getBoolean('async') ?? true,
@@ -157,46 +162,43 @@ export async function execute(client, interaction, st, embed) {
         let evaled = awaitO ? await eval(script) : eval(script);
         const evaledType = typeof evaled;
 
-        if (evaledType !== 'string') {
-          evaled = require('node:util').inspect(evaled);
-        }
+        if (evaledType !== 'string') evaled = inspect(evaled);
 
-        emb = embed({ type: 'success' })
-          .addField(st.__('GENERIC.OUTPUT'), `\`\`\`js\n${truncate(evaled, 1012)}\`\`\``)
-          .addField(st.__('GENERIC.TYPE'), `\`\`\`js\n${evaledType}\`\`\``);
         return interaction.editReply({
           components: rows,
-          embeds: [emb],
+          embeds: [
+            embed({ type: 'success' })
+              .addField({ name: st.__('GENERIC.OUTPUT'), value: `\`\`\`js\n${truncate(evaled, 1012)}\`\`\`` })
+              .addField({ name: st.__('GENERIC.TYPE'), value: `\`\`\`js\n${evaledType}\`\`\`` }),
+          ],
         });
       } catch (err) {
-        emb = embed({ type: 'error' }).addField(st.__('GENERIC.OUTPUT'), `\`\`\`js\n${err}\`\`\``);
         return interaction.editReply({
           components: rows,
-          embeds: [emb],
+          embeds: [
+            embed({ type: 'error' }).addField({ name: st.__('GENERIC.OUTPUT'), value: `\`\`\`js\n${err}\`\`\`` }),
+          ],
         });
       }
     }
     if (options?.getSubcommandGroup() === 'interaction') {
       const appCmds = client.application.commands,
-        fAppCmds = await appCmds.fetch();
+        fAppCmds = await appCmds.fetch(),
+        embs = [];
       let fGdCmds;
-      if (guild ?? interaction.guild) {
-        fGdCmds = await appCmds.fetch({ guildId: (guild ?? interaction.guild).id });
-      }
+      if (guild ?? interaction.guild) fGdCmds = await appCmds.fetch({ guildId: (guild ?? interaction.guild).id });
 
       if (options?.getSubcommand() === 'update') {
         let updCmds = [],
           delCmds = [];
 
         fAppCmds.each(c => (delCmds = delCmds.concat(c)));
-        if (fGdCmds) {
-          fGdCmds.each(c => (delCmds = delCmds.concat(c)));
-        }
+        if (fGdCmds) fGdCmds.each(c => (delCmds = delCmds.concat(c)));
 
         try {
           const interactionFiles = readdirSync('./interactions').filter(f => f.endsWith('.js'));
           for (const file of interactionFiles) {
-            const event = require(`../interactions/${file}`);
+            const event = await import(`../interactions/${file}`);
             for (const dt of event.data) {
               const guildOnly = event.guildOnly?.find(i => i === (guild ?? interaction.guild)?.id),
                 findCmd = idO
@@ -208,9 +210,8 @@ export async function execute(client, interaction, st, embed) {
 
               if (dt.name === findCmd.name) {
                 if (interaction.inGuild() && event.guildOnly) {
-                  if (idO) {
-                    delCmds = delCmds.filter(c => c.name === dt.name);
-                  }
+                  if (idO) delCmds = delCmds.filter(c => c.name === dt.name);
+
                   const found = delCmds.find(c => c.name === dt.name);
                   delCmds =
                     found && event.guildOnly?.includes(found?.guildId)
@@ -223,9 +224,8 @@ export async function execute(client, interaction, st, embed) {
                     console.log(`Updated guild (${guild?.id || guildOnly}) command: ${cmd.name} (${cmd.id})`.green);
                   }
                 } else if (!event.guildOnly) {
-                  if (idO) {
-                    delCmds = delCmds.filter(c => c.name === dt.name);
-                  }
+                  if (idO) delCmds = delCmds.filter(c => c.name === dt.name);
+
                   const found = delCmds.find(c => c.name === dt.name);
                   delCmds = found ? delCmds.filter(c => c.name !== dt.name || c.guildId) : delCmds;
 
@@ -239,7 +239,7 @@ export async function execute(client, interaction, st, embed) {
             }
           }
         } catch (err) {
-          console.error('An error occured while reloading an application command:\n'.red, err);
+          console.error(chalk.red('An error occured while reloading an application command:\n'), err);
           return interaction.editReply({
             embeds: [
               embed({ type: 'error' }).setDescription(
@@ -258,15 +258,19 @@ export async function execute(client, interaction, st, embed) {
             console.log(`Deleted global command: ${c.name} (${c.id})`.red);
           }
         });
+
+        client.splitedCmds = client.splitCmds(await appCmds.fetch());
+        await client.updateMowundDescription();
+
         const cmdMap = (cmds, guildOnly = false) =>
             cmds
               .filter(o => (guildOnly ? o.guildId : !o.guildId))
               .map(o =>
                 (guildOnly ? o.guildId : !o.guildId)
                   ? `**${
-                      o.type === 'MESSAGE'
+                      o.type === ApplicationCommandType.Message
                         ? st.__('GENERIC.MESSAGE')
-                        : o.type === 'USER'
+                        : o.type === ApplicationCommandType.User
                         ? st.__('GENERIC.USER')
                         : st.__('GENERIC.CHAT')
                     }**: \`${o.name}\``
@@ -280,41 +284,41 @@ export async function execute(client, interaction, st, embed) {
 
         if (updCmds.length > 0) {
           const e = embed({ title: st.__('MOWUND.INTERACTION.COMMANDS.UPDATED'), type: 'success' });
-          if (updCmdGlobal) {
-            e.addField(st.__('MOWUND.INTERACTION.COMMANDS.GLOBAL'), updCmdGlobal, true);
-          }
+          if (updCmdGlobal)
+            e.addField({ inline: true, name: st.__('MOWUND.INTERACTION.COMMANDS.GLOBAL'), value: updCmdGlobal });
+
           if (updCmdGuild) {
-            e.addField(
-              guild
+            e.addField({
+              inline: true,
+              name: guild
                 ? st.__('MOWUND.INTERACTION.COMMANDS.SPECIFIED_GUILD', guild.name)
                 : st.__('MOWUND.INTERACTION.COMMANDS.GUILD'),
-              updCmdGuild,
-              true,
-            );
+              value: updCmdGuild,
+            });
           }
-          emb = emb.concat(e);
+          embs.push(e);
         }
         if (delCmds.length > 0) {
-          const e = embed({ title: `🗑️ ${st.__('MOWUND.INTERACTION.COMMANDS.DELETED')}` }).setColor('FF0000');
-          if (delCmdGlobal) {
-            e.addField(st.__('MOWUND.INTERACTION.COMMANDS.GLOBAL'), delCmdGlobal, true);
-          }
+          const e = embed({ title: `🗑️ ${st.__('MOWUND.INTERACTION.COMMANDS.DELETED')}` }).setColor(colors.red);
+          if (delCmdGlobal)
+            e.addField({ inline: true, name: st.__('MOWUND.INTERACTION.COMMANDS.GLOBAL'), value: delCmdGlobal });
+
           if (delCmdGuild) {
-            e.addField(
-              guild
+            e.addField({
+              inline: true,
+              name: guild
                 ? st.__('MOWUND.INTERACTION.COMMANDS.SPECIFIED_GUILD', guild.name)
                 : st.__('MOWUND.INTERACTION.COMMANDS.GUILD'),
-              delCmdGuild,
-              true,
-            );
+              value: delCmdGuild,
+            });
           }
-          emb = emb.concat(e);
+          embs.push(e);
         }
 
         return interaction.editReply({
           components: rows,
           embeds:
-            emb.length > 0 ? emb : [embed({ type: 'warning' }).setDescription(st.__('MOWUND.INTERACTION.NO_UPDATE'))],
+            embs.length > 0 ? embs : [embed({ type: 'warning' }).setDescription(st.__('MOWUND.INTERACTION.NO_UPDATE'))],
         });
       }
     }
@@ -330,8 +334,8 @@ export async function execute(client, interaction, st, embed) {
         });
 
         client.shard.respawnAll({
-          shardDelay: shardDelayO,
           respawnDelay: respawnDelayO,
+          shardDelay: shardDelayO,
           timeout: timeoutO,
         });
       }

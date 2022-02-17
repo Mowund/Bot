@@ -1,36 +1,35 @@
-import { ShardClientUtil, MessageActionRow, MessageButton } from 'discord.js';
-import { msToTime, toUTS } from '../utils.js';
+import { ShardClientUtil, ActionRow, ButtonComponent, ButtonStyle, ApplicationCommandOptionType } from 'discord.js';
 export const data = [
   {
-    name: 'ping',
     description: "Shows bot's latency",
+    name: 'ping',
     options: [
       {
-        name: 'defer',
         description: 'Defers the interaction (Default: False)',
-        type: 'BOOLEAN',
+        name: 'defer',
+        type: ApplicationCommandOptionType.Boolean,
       },
       {
-        name: 'ephemeral',
         description: 'Send reply as an ephemeral message (Default: True)',
-        type: 'BOOLEAN',
+        name: 'ephemeral',
+        type: ApplicationCommandOptionType.Boolean,
       },
     ],
   },
 ];
-export async function execute(client, interaction, st, embed) {
+export async function execute({ client, interaction, st, embed }) {
   const { guild, options } = interaction,
     deferO = options?.getBoolean('defer') ?? false,
     ephemeralO = options?.getBoolean('ephemeral') ?? true;
 
-  if (interaction.isCommand()) {
+  if (interaction.isChatInputCommand()) {
     const rows = !ephemeralO
       ? [
-          new MessageActionRow().addComponents(
-            new MessageButton()
+          new ActionRow().addComponents(
+            new ButtonComponent()
               .setLabel(st.__('GENERIC.COMPONENT.MESSAGE_DELETE'))
-              .setEmoji('🧹')
-              .setStyle('DANGER')
+              .setEmoji({ name: '🧹' })
+              .setStyle(ButtonStyle.Danger)
               .setCustomId('generic_message_delete'),
           ),
         ]
@@ -41,29 +40,36 @@ export async function execute(client, interaction, st, embed) {
         timeNow = Date.now();
 
       embed = embed({ title: `🏓 ${st.__('PING.TITLE')} (${st.__('PING.DEFERRED')})` })
-        .addField(
-          `⏱️ ${st.__('PING.TIME.DEFERMENT')}`,
-          `\`${itc.createdTimestamp - interaction.createdTimestamp}ms\``,
-          true,
-        )
-        .addField(`📝 ${st.__('PING.TIME.EDITING')}`, `\`${timeNow - itc.createdTimestamp}ms\``, true)
-        .addField(`⌛ ${st.__('PING.TIME.RESPONSE')}`, `\`${timeNow - interaction.createdTimestamp}ms\``, true)
-        .addField(`💓 ${st.__('PING.API_LATENCY')}`, `\`${Math.round(client.ws.ping)}ms\``, true)
-        .addField(
-          `🕑 ${st.__('PING.UPTIME')}`,
-          `\`${msToTime(client.uptime)}\` | ${toUTS(Date.now() - client.uptime)}`,
-          true,
-        );
+        .addField({
+          inline: true,
+          name: `⏱️ ${st.__('PING.TIME.DEFERMENT')}`,
+          value: `\`${itc.createdTimestamp - interaction.createdTimestamp}ms\``,
+        })
+        .addField({
+          inline: true,
+          name: `📝 ${st.__('PING.TIME.EDITING')}`,
+          value: `\`${timeNow - itc.createdTimestamp}ms\``,
+        })
+        .addField({
+          inline: true,
+          name: `⌛ ${st.__('PING.TIME.RESPONSE')}`,
+          value: `\`${timeNow - interaction.createdTimestamp}ms\``,
+        })
+        .addField({
+          inline: true,
+          name: `💓 ${st.__('PING.API_LATENCY')}`,
+          value: `\`${Math.round(client.ws.ping)}ms\``,
+        });
 
       if (interaction.inGuild()) {
-        embed = embed.addField(
-          `💎 ${st.__('PING.SHARD')}`,
-          `**${st.__('GENERIC.CURRENT')}:** \`${ShardClientUtil.shardIdForGuildId(
+        embed = embed.addField({
+          inline: true,
+          name: `💎 ${st.__('PING.SHARD')}`,
+          value: `**${st.__('GENERIC.CURRENT')}:** \`${ShardClientUtil.shardIdForGuildId(
             guild.id,
             client.shard.count,
           )}\`\n**${st.__('GENERIC.TOTAL')}:** \`${client.shard.count}\` `,
-          false,
-        );
+        });
       }
 
       return interaction.editReply({
@@ -72,23 +78,25 @@ export async function execute(client, interaction, st, embed) {
       });
     }
     embed = embed({ title: `🏓 ${st.__('PING.TITLE')}` })
-      .addField(`⌛ ${st.__('PING.TIME.RESPONSE')}`, `\`${Date.now() - interaction.createdTimestamp}ms\``, true)
-      .addField(`💓 ${st.__('PING.API_LATENCY')}`, `\`${Math.round(client.ws.ping)}ms\``, true)
-      .addField(
-        `🕑 ${st.__('PING.UPTIME')}`,
-        `\`${msToTime(client.uptime)}\` | ${toUTS(Date.now() - client.uptime)}`,
-        false,
-      );
+      .addField({
+        inline: true,
+        name: `⌛ ${st.__('PING.TIME.RESPONSE')}`,
+        value: `\`${Date.now() - interaction.createdTimestamp}ms\``,
+      })
+      .addField({
+        inline: true,
+        name: `💓 ${st.__('PING.API_LATENCY')}`,
+        value: `\`${Math.round(client.ws.ping)}ms\``,
+      });
 
     if (interaction.inGuild()) {
-      embed = embed.addField(
-        `💎 ${st.__('PING.SHARD')}`,
-        `**${st.__('GENERIC.CURRENT')}:** \`${ShardClientUtil.shardIdForGuildId(
+      embed = embed.addField({
+        name: `💎 ${st.__('PING.SHARD')}`,
+        value: `**${st.__('GENERIC.CURRENT')}:** \`${ShardClientUtil.shardIdForGuildId(
           guild.id,
           client.shard.count,
         )}\`\n**${st.__('GENERIC.TOTAL')}:** \`${client.shard.count}\` `,
-        false,
-      );
+      });
     }
 
     return interaction.reply({

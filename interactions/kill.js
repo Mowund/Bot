@@ -1,49 +1,49 @@
-import { MessageActionRow, MessageButton } from 'discord.js';
-import { imgOpts } from '../defaults.js';
+import { ActionRow, ApplicationCommandOptionType, ButtonComponent, ButtonStyle } from 'discord.js';
+import { colors, imgOpts } from '../defaults.js';
 
 export const data = [
   {
-    name: 'kill',
     description: 'Kills someone',
+    name: 'kill',
     options: [
       {
-        name: 'user',
         description: 'An user to kill',
-        type: 'USER',
+        name: 'user',
+        type: ApplicationCommandOptionType.User,
       },
       {
-        name: 'ephemeral',
         description: 'Send reply as an ephemeral message (Default: True)',
-        type: 'BOOLEAN',
+        name: 'ephemeral',
+        type: ApplicationCommandOptionType.Boolean,
       },
     ],
   },
 ];
-export function execute(client, interaction, st, embed) {
+export function execute({ interaction, st, embed }) {
   const { user, member, options } = interaction,
     userO = options?.getUser('user') ?? user,
     memberO = options?.getMember('user') ?? member,
     ephemeralO = options?.getBoolean('ephemeral') ?? true;
 
-  if (interaction.isCommand()) {
+  if (interaction.isChatInputCommand()) {
     return interaction.reply({
       components: !ephemeralO
         ? [
-            new MessageActionRow().addComponents(
-              new MessageButton()
+            new ActionRow().addComponents(
+              new ButtonComponent()
                 .setLabel(st.__('GENERIC.COMPONENT.MESSAGE_DELETE'))
-                .setEmoji('🧹')
-                .setStyle('DANGER')
+                .setEmoji({ name: '🧹' })
+                .setStyle(ButtonStyle.Danger)
                 .setCustomId('generic_message_delete'),
             ),
           ]
         : [],
       embeds: [
         embed()
-          .setColor('ff0000')
+          .setColor(colors.red)
           .setAuthor({
-            name: memberO?.displayName ?? userO.username,
             iconURL: (memberO ?? userO).displayAvatarURL(imgOpts),
+            name: memberO?.displayName ?? userO.username,
           })
           .setDescription(st.__('KILL.DIED')),
       ],

@@ -1,45 +1,55 @@
-import { Permissions, MessageButton, MessageActionRow } from 'discord.js';
-import { botOwners, botLanguage, imgOpts, emojis } from '../defaults.js';
+import {
+  ButtonComponent,
+  ActionRow,
+  ButtonStyle,
+  Util,
+  ApplicationCommandOptionType,
+  PermissionFlagsBits,
+} from 'discord.js';
+import { botOwners, imgOpts, emojis } from '../defaults.js';
 import { searchKey, smp } from '../utils.js';
 
 export const data = [
   {
-    name: 'settings',
     description: 'Configures the bot',
+    name: 'settings',
     options: [
       {
-        name: 'language',
         description: "Change server's language",
-        type: 'SUB_COMMAND',
+        name: 'language',
         options: [
           {
-            name: 'language',
-            description: 'Sets a new language (Requires: Manage guild)',
-            type: 'STRING',
             autocomplete: true,
+            description: 'Sets a new language (Requires: Manage guild)',
+            name: 'language',
+            type: ApplicationCommandOptionType.String,
           },
           {
-            name: 'ephemeral',
             description: 'Send reply as an ephemeral message (Default: True)',
-            type: 'BOOLEAN',
+            name: 'ephemeral',
+            type: ApplicationCommandOptionType.Boolean,
           },
         ],
+        type: ApplicationCommandOptionType.Subcommand,
       },
     ],
   },
 ];
-export async function execute(client, interaction, st, embed) {
+export async function execute({ client, interaction, st, embed }) {
   const { guild, user, member, memberPermissions, language, options } = interaction,
     ephemeralO = options?.getBoolean('ephemeral') ?? true;
 
   if (interaction.isAutocomplete()) {
     return interaction.respond(
-      botLanguage.supported
-        .filter(v => smp(`${st.__(`SETTINGS.LANGUAGE.NAME.${v}`)} | ${v}`).includes(smp(options.getFocused())))
+      st
+        .getLocales()
+        .supported.filter(v =>
+          smp(`${st.__(`SETTINGS.LANGUAGE.NAME.${v}`)} | ${v}`).includes(smp(options.getFocused())),
+        )
         .map(c => ({ name: `${st.__(`SETTINGS.LANGUAGE.NAME.${c}`)} | ${c}`, value: c })),
     );
   }
-  if (interaction.isCommand()) {
+  if (interaction.isChatInputCommand()) {
     await interaction.deferReply({ ephemeral: ephemeralO });
 
     if (options?.getSubcommand() === 'language') {
@@ -51,14 +61,14 @@ export async function execute(client, interaction, st, embed) {
       }
 
       const languageO = options?.getString('language'),
-        rows = [new MessageActionRow()];
+        rows = [new ActionRow()];
 
       if (languageO) {
         const fLanguage =
-          botLanguage.supported.find(l => l.toLowerCase() === languageO.toLowerCase()) ??
+          st.getLocales().supported.find(l => l.toLowerCase() === languageO.toLowerCase()) ??
           searchKey(st.__('SETTINGS.LANGUAGE.NAME'), languageO.match(/(?:(?! \|).)*/)?.[0] || languageO);
 
-        if (!memberPermissions?.has(Permissions.FLAGS.MANAGE_GUILD) && !botOwners.includes(user.id)) {
+        if (!memberPermissions?.has(PermissionFlagsBits.ManageGuild) && !botOwners.includes(user.id)) {
           return interaction.editReply({
             embeds: [embed({ type: 'error' }).setDescription(st.__('PERM.REQUIRES', st.__('PERM.MANAGE_GUILD')))],
           });
@@ -70,72 +80,72 @@ export async function execute(client, interaction, st, embed) {
         }
 
         await client.dbSet(guild, { language: fLanguage });
-        const m = p => ({ phrase: p, locale: fLanguage });
+        const m = p => ({ locale: fLanguage, phrase: p });
 
         rows[0].addComponents(
-          new MessageButton()
+          new ButtonComponent()
             .setLabel(st.__(m('SETTINGS.LANGUAGE.CROWDIN')))
-            .setEmoji(emojis.crowdin)
-            .setStyle('LINK')
+            .setEmoji(Util.parseEmoji(emojis.crowdin))
+            .setStyle(ButtonStyle.Link)
             .setURL('https://crowdin.com/project/mowund'),
         );
         if (!ephemeralO) {
           rows[0].addComponents(
-            new MessageButton()
+            new ButtonComponent()
               .setLabel(st.__(m('GENERIC.COMPONENT.MESSAGE_DELETE')))
-              .setEmoji('🧹')
-              .setStyle('DANGER')
+              .setEmoji({ name: '🧹' })
+              .setStyle(ButtonStyle.Danger)
               .setCustomId('generic_message_delete'),
           );
         }
 
         return interaction.editReply({
+          components: rows,
           embeds: [
-            embed({ type: 'success', title: st.__(m('SETTINGS.LANGUAGE.CHANGED')) })
-              .addField(
-                st.__(m('GENERIC.FROM')),
-                `\`${st.__(m(`SETTINGS.LANGUAGE.NAME.${language}`))}\` - \`${language}\``,
-              )
-              .addField(
-                st.__(m('GENERIC.TO')),
-                `\`${st.__(m(`SETTINGS.LANGUAGE.NAME.${fLanguage}`))}\` - \`${fLanguage}\``,
-              )
+            embed({ title: st.__(m('SETTINGS.LANGUAGE.CHANGED')), type: 'success' })
+              .addField({
+                name: st.__(m('GENERIC.FROM')),
+                value: `\`${st.__(m(`SETTINGS.LANGUAGE.NAME.${language}`))}\` - \`${language}\``,
+              })
+              .addField({
+                name: st.__(m('GENERIC.TO')),
+                value: `\`${st.__(m(`SETTINGS.LANGUAGE.NAME.${fLanguage}`))}\` - \`${fLanguage}\``,
+              })
               .setFooter({
-                text: st.__(m('GENERIC.REQUESTED_BY'), member?.displayName ?? user.username),
                 iconURL: `${(member ?? user).displayAvatarURL(imgOpts)}&mowLang=${language}`,
+                text: st.__(m('GENERIC.REQUESTED_BY'), member?.displayName ?? user.username),
               }),
           ],
-          components: rows,
+
           ephemeral: ephemeralO,
         });
       }
 
       rows[0].addComponents(
-        new MessageButton()
+        new ButtonComponent()
           .setLabel(st.__('SETTINGS.LANGUAGE.CROWDIN'))
-          .setEmoji(emojis.crowdin)
-          .setStyle('LINK')
+          .setEmoji(Util.parseEmoji(emojis.crowdin))
+          .setStyle(ButtonStyle.Link)
           .setURL('https://crowdin.com/project/mowund'),
       );
       if (!ephemeralO) {
         rows[0].addComponents(
-          new MessageButton()
+          new ButtonComponent()
             .setLabel(st.__('GENERIC.COMPONENT.MESSAGE_DELETE'))
-            .setEmoji('🧹')
-            .setStyle('DANGER')
+            .setEmoji({ name: '🧹' })
+            .setStyle(ButtonStyle.Danger)
             .setCustomId('generic_message_delete'),
         );
       }
 
       return interaction.editReply({
-        embeds: [
-          embed({ title: st.__('SETTINGS.LANGUAGE.CURRENT') })
-            .setColor('00ff00')
-            .setDescription(
-              st.__('SETTINGS.LANGUAGE.CURRENT_IS', `${st.__(`SETTINGS.LANGUAGE.NAME.${language}`)}\` - \`${language}`),
-            ),
-        ],
         components: rows,
+        embeds: [
+          embed({ title: st.__('SETTINGS.LANGUAGE.CURRENT') }).setDescription(
+            st.__('SETTINGS.LANGUAGE.CURRENT_IS', `${st.__(`SETTINGS.LANGUAGE.NAME.${language}`)}\` - \`${language}`),
+          ),
+        ],
+
         ephemeral: ephemeralO,
       });
     }

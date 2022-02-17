@@ -1,11 +1,14 @@
 import { debugMode } from '../defaults.js';
-import 'colors';
 
 export const eventName = 'guildCreate';
-export async function execute(client, i18n, guild) {
-  const settings = await client.dbSet(guild, { language: guild.preferredLocale }, { setFromCache: true });
+export async function execute({ chalk, client }, guild) {
+  const settings = await client.dbSet(guild, {}, { setFromCache: true });
+  await client.updateMowundDescription();
+
   if (debugMode) {
-    console.log('Joined '.green + guild.name.blue + ' ('.gray + guild.id.blue + '):'.gray);
+    console.log(
+      chalk.green('Joined ') + chalk.blue(guild.name) + chalk.gray(' (') + chalk.blue(guild.id) + chalk.gray('):'),
+    );
     console.log(settings);
   }
 }

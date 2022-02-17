@@ -7,13 +7,13 @@
     "discord",
     "mowund"
   ],
-  "homepage": "https://github.com/Mowund/bot#readme",
+  "homepage": "https://github.com/Mowund/Bot#readme",
   "bugs": {
-    "url": "https://github.com/Mowund/bot/issues"
+    "url": "https://github.com/Mowund/Bot/issues"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/Mowund/bot.git"
+    "url": "https://github.com/Mowund/Bot.git"
   },
   "license": "AGPL-3.0-only",
   "author": "Smidul",
@@ -24,22 +24,22 @@
     "start": "node index.js"
   },
   "dependencies": {
-    "axios": "^0.24.0",
-    "canvas": "^2.8.0",
+    "axios": "^0.26.0",
+    "canvas": "^2.9.0",
     "chalk": "^5.0.0",
     "color-thief-node": "^1.0.4",
-    "colors": "^1.4.0",
-    "discord.js": "^14.0.0-dev.1640865766.780b7ed",
+    "discord-akairo": "^8.1.0",
+    "discord.js": "^14.0.0-dev.1645056357.dee27db",
     "firebase-admin": "^10.0.1",
     "git": "^0.1.5",
-    "i18n": "^0.13.4",
+    "i18n": "^0.14.1",
     "log-timestamp": "^0.3.0",
-    "mowund-i18n": "github:Mowund/i18n",
+    "mowund-i18n": "Mowund/i18n",
     "tinycolor2": "^1.4.2",
     "twemoji-parser": "^13.1.0"
   },
   "devDependencies": {
-    "eslint": "^8.6.0",
+    "eslint": "^8.9.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-import": "^2.25.4",
     "eslint-plugin-json": "^3.1.0",
@@ -48,6 +48,6 @@
     "prettier": "^2.5.1"
   },
   "engines": {
-    "node": "16.x"
+    "node": ">=17.5.0"
   }
 }

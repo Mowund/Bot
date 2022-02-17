@@ -1,81 +1,88 @@
-import { MessageEmbed, Permissions, MessageActionRow, MessageButton } from 'discord.js';
+import {
+  ActionRow,
+  ApplicationCommandOptionType,
+  ButtonComponent,
+  ButtonStyle,
+  Embed,
+  PermissionFlagsBits,
+} from 'discord.js';
 import tc from 'tinycolor2';
-import { botColor, botOwners, imgOpts } from '../defaults.js';
+import { colors, botOwners, imgOpts } from '../defaults.js';
 
 export const data = [
   {
-    name: 'echo',
     description: 'Echoes a message from the bot (Requires: Manage messages on specified channel)',
+    name: 'echo',
     options: [
       {
-        name: 'content',
         description: 'The content of the message (Required if no embed)',
-        type: 'STRING',
+        name: 'content',
+        type: ApplicationCommandOptionType.String,
       },
       {
-        name: 'description',
         description: 'The description of the embed (Required if no content)',
-        type: 'STRING',
+        name: 'description',
+        type: ApplicationCommandOptionType.String,
       },
       {
-        name: 'title',
         description: 'The title of the embed',
-        type: 'STRING',
+        name: 'title',
+        type: ApplicationCommandOptionType.String,
       },
       {
-        name: 'url',
         description: "The title's url of the embed",
-        type: 'STRING',
+        name: 'url',
+        type: ApplicationCommandOptionType.String,
       },
       {
-        name: 'color',
         description: "The color of the embed (Default: Author's display color)",
-        type: 'STRING',
+        name: 'color',
+        type: ApplicationCommandOptionType.String,
       },
       {
-        name: 'author',
         description: 'Set an author of the embed',
-        type: 'USER',
+        name: 'author',
+        type: ApplicationCommandOptionType.User,
       },
       {
-        name: 'footer',
         description: 'The footer of the embed',
-        type: 'STRING',
+        name: 'footer',
+        type: ApplicationCommandOptionType.String,
       },
       {
-        name: 'timestamp',
         description: 'Enables or disabled the timestamp on the embed (Default: Disabled)',
-        type: 'BOOLEAN',
+        name: 'timestamp',
+        type: ApplicationCommandOptionType.Boolean,
       },
       {
-        name: 'image',
         description: 'The image link of the embed',
-        type: 'STRING',
+        name: 'image',
+        type: ApplicationCommandOptionType.String,
       },
       {
-        name: 'thumbnail',
         description: 'The thumbnail link of the embed',
-        type: 'STRING',
+        name: 'thumbnail',
+        type: ApplicationCommandOptionType.String,
       },
       {
-        name: 'tts',
         description: 'Echoes the message in TTS (Default: False)',
-        type: 'BOOLEAN',
+        name: 'tts',
+        type: ApplicationCommandOptionType.Boolean,
       },
       {
-        name: 'channel',
         description: 'Echoes at a channel as a message (Default: Interaction channel as a reply)',
-        type: 'STRING',
+        name: 'channel',
+        type: ApplicationCommandOptionType.String,
       },
       {
-        name: 'ephemeral',
         description: 'Send reply as an ephemeral message (Default: True)',
-        type: 'BOOLEAN',
+        name: 'ephemeral',
+        type: ApplicationCommandOptionType.Boolean,
       },
     ],
   },
 ];
-export async function execute(client, interaction, st, embed) {
+export async function execute({ client, interaction, st, embed }) {
   const { user, member, memberPermissions, guild, options } = interaction,
     contentO = options?.getString('content'),
     descriptionO = options?.getString('description'),
@@ -89,13 +96,13 @@ export async function execute(client, interaction, st, embed) {
     thumbnailO = options?.getString('thumbnail'),
     colorO = tc(options?.getString('color')).isValid()
       ? tc(options?.getString('color')).toHex()
-      : (memberO ?? member)?.displayColor ?? botColor,
+      : (memberO ?? member)?.displayColor ?? colors.blurple,
     ttsO = options?.getBoolean('tts') ?? false,
     channelO = options?.getString('channel')?.replace(/[<#>]/g, ''),
     ephemeralO = options?.getBoolean('ephemeral') ?? true;
 
   if (
-    !memberPermissions?.has(Permissions.FLAGS.MANAGE_MESSAGES) &&
+    !memberPermissions?.has(PermissionFlagsBits.ManageMessages) &&
     !botOwners.includes(user.id) &&
     (ephemeralO === false || channelO) &&
     interaction.inGuild()
@@ -119,56 +126,39 @@ export async function execute(client, interaction, st, embed) {
     });
   }
 
-  if (interaction.isCommand()) {
+  if (interaction.isChatInputCommand()) {
     await interaction.deferReply({ ephemeral: ephemeralO });
 
-    const eEmb = new MessageEmbed().setColor(colorO),
+    const eEmb = new Embed().setColor(colorO),
       eMsg = {},
       rows = !ephemeralO
         ? [
-            new MessageActionRow().addComponents(
-              new MessageButton()
+            new ActionRow().addComponents(
+              new ButtonComponent()
                 .setLabel(st.__('GENERIC.COMPONENT.MESSAGE_DELETE'))
-                .setEmoji('🧹')
-                .setStyle('DANGER')
+                .setEmoji({ name: '🧹' })
+                .setStyle(ButtonStyle.Danger)
                 .setCustomId('generic_message_delete'),
             ),
           ]
         : [];
 
-    if (titleO) {
-      eEmb.setTitle(titleO);
-    }
-    if (urlO) {
-      eEmb.setURL(urlO);
-    }
     if (authorO) {
       eEmb.setAuthor({
-        name: memberO?.displayName ?? authorO.username,
         iconURL: (memberO ?? authorO).displayAvatarURL(imgOpts),
+        name: memberO?.displayName ?? authorO.username,
       });
     }
-    if (footerO) {
-      eEmb.setFooter({ name: footerO });
-    }
-    if (timestampO) {
-      eEmb.setTimestamp(Date.now());
-    }
-    if (imageO) {
-      eEmb.setImage(imageO);
-    }
-    if (thumbnailO) {
-      eEmb.setThumbnail(thumbnailO);
-    }
-    if (contentO) {
-      eMsg.content = contentO;
-    }
-    if (descriptionO) {
-      eMsg.embeds = [eEmb.setDescription(descriptionO)];
-    }
-    if (ttsO) {
-      eMsg.tts = ttsO;
-    }
+
+    if (titleO) eEmb.setTitle(titleO);
+    if (urlO) eEmb.setURL(urlO);
+    if (footerO) eEmb.setFooter({ name: footerO });
+    if (timestampO) eEmb.setTimestamp(Date.now());
+    if (imageO) eEmb.setImage(imageO);
+    if (thumbnailO) eEmb.setThumbnail(thumbnailO);
+    if (contentO) eMsg.content = contentO;
+    if (descriptionO) eMsg.embeds = [eEmb.setDescription(descriptionO)];
+    if (ttsO) eMsg.tts = ttsO;
 
     if (channelO) {
       let result;
@@ -178,18 +168,13 @@ export async function execute(client, interaction, st, embed) {
             try {
               const chan = await c.channels.cache.get(ch);
 
-              if (!chan) {
-                return 0;
-              }
-              if (chan.guild.id !== g.id && !bO.includes(u.id)) {
-                return 1;
-              }
-              if (!chan.isText()) {
-                return 2;
-              }
-              if (!chan.permissionsFor(c.user).has(Permissions.FLAGS.SEND_MESSAGES)) {
-                return 3;
-              }
+              if (!chan) return 0;
+
+              if (chan.guild.id !== g.id && !bO.includes(u.id)) return 1;
+
+              if (!chan.isText()) return 2;
+
+              if (!chan.permissionsFor(c.user).has(PermissionFlagsBits.SendMessages)) return 3;
 
               await chan.send(m);
               return 5;
@@ -200,11 +185,11 @@ export async function execute(client, interaction, st, embed) {
           },
           {
             context: {
-              ch: channelO,
-              m: eMsg,
-              g: guild,
-              u: user,
               bO: botOwners,
+              ch: channelO,
+              g: guild,
+              m: eMsg,
+              u: user,
             },
           },
         );
@@ -217,15 +202,11 @@ export async function execute(client, interaction, st, embed) {
         }
         const chan = await guild?.channels.cache.get(channelO);
 
-        if (!chan) {
-          return (result = 6);
-        }
-        if (!chan.isText()) {
-          return (result = 2);
-        }
-        if (!chan.permissionsFor(client.user).has(Permissions.FLAGS.SEND_MESSAGES)) {
-          return (result = 3);
-        }
+        if (!chan) return (result = 6);
+
+        if (!chan.isText()) return (result = 2);
+
+        if (!chan.permissionsFor(client.user).has(PermissionFlagsBits.SendMessages)) return (result = 3);
 
         await chan.send(eMsg);
         return (result = 5);
@@ -258,7 +239,10 @@ export async function execute(client, interaction, st, embed) {
           return interaction.editReply({
             components: rows,
             embeds: [
-              embed({ title: 'Message Sent', type: 'success' }).addField('Channel', `<#${channelO}> - \`${channelO}\``),
+              embed({ title: 'Message Sent', type: 'success' }).addField({
+                name: 'Channel',
+                value: `<#${channelO}> - \`${channelO}\``,
+              }),
             ],
           });
         case 6:
