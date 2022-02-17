@@ -157,6 +157,8 @@ export async function execute({ client, interaction, st, embed }) {
                 alphanum: alphanumI,
                 input: inputO,
                 length: lengthI,
+                maxLength: 32,
+                minLength: 2,
               }),
             ),
           ],
@@ -327,7 +329,7 @@ export async function execute({ client, interaction, st, embed }) {
       return interaction.followUp({
         embeds: [
           embed({ type: 'warning' }).setDescription(
-            st.__(`ERROR.EMOJI.MAXIMUM_NOW.${emj.animated ? 'ANIMATED' : 'STATIC'}`, emojiLimit),
+            st.__mf(`ERROR.EMOJI.MAXIMUM_NOW.${emj.animated ? 'ANIMATED' : 'STATIC'}`, { limit: emojiLimit }),
           ),
         ],
         ephemeral: true,
@@ -554,7 +556,7 @@ export async function execute({ client, interaction, st, embed }) {
           return interaction.followUp({
             embeds: [
               embed({ type: 'warning' }).setDescription(
-                st.__(`ERROR.EMOJI.MAXIMUM_NOW.${emj.animated ? 'ANIMATED' : 'STATIC'}`, emojiLimit),
+                st.__(`ERROR.EMOJI.MAXIMUM_NOW.${emj.animated ? 'ANIMATED' : 'STATIC'}`, { limit: emojiLimit }),
               ),
             ],
             ephemeral: true,

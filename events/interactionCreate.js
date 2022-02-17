@@ -73,10 +73,9 @@ export async function execute({ chalk, client, i18n, firebase }, interaction) {
         iconURL: `${(member ?? user).displayAvatarURL(imgOpts)}&mowLang=${language}${
           options.addParams ? `&${new URLSearchParams(options.addParams).toString()}` : ''
         }`,
-        text: i18n.__(
-          `GENERIC.${options.interacted ? 'INTERACTED_BY' : 'REQUESTED_BY'}`,
-          member?.displayName ?? user.username,
-        ),
+        text: i18n.__mf(`GENERIC.${options.interacted ? 'INTERACTED_BY' : 'REQUESTED_BY'}`, {
+          user: member?.displayName ?? user.username,
+        }),
       })
       .setTimestamp(Date.now());
     switch (options.type) {
