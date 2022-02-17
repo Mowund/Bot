@@ -12,10 +12,10 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: 17
-          cache: yarn
+          cache: 'yarn'
  ​         ​cache-dependency-path​: ​yarn.lock
 
-      - name: Install dependencies
+      - name: Install Dependencies
         run: yarn --immutable
 
       - name: Run ESLint
