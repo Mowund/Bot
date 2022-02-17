@@ -41,7 +41,7 @@ export async function execute({ client, interaction, st, embed }) {
 
       const guildCmds = client.splitCmds(await client.application.commands.fetch({ guildId: interaction.guild.id })),
         embs = [
-          embed({ title: st.__('BOT.INFO.TITLE', client.user.username) })
+          embed({ title: st.__mf('BOT.INFO.TITLE', { bot: client.user.username }) })
             .setColor(botMember?.displayColor || colors.blurple)
             .addField({
               inline: true,
@@ -81,12 +81,12 @@ export async function execute({ client, interaction, st, embed }) {
             .addField({
               inline: true,
               name: `${emojis.discordJS} ${st.__('BOT.INFO.DISCORDJS_VERSION')}`,
-              value: `\`${version}\``,
+              value: `[\`${version}\`](https://discord.js.org)`,
             })
             .addField({
               inline: true,
               name: `${emojis.nodeJS} ${st.__('BOT.INFO.NODEJS_VERSION')}`,
-              value: `\`${process.version.slice(1)}\``,
+              value: `[\`${process.version.slice(1)}\`](https://nodejs.org)`,
             })
             .addField({
               inline: true,

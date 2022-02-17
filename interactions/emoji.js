@@ -134,7 +134,9 @@ export async function execute({ client, interaction, st, embed }) {
         return interaction.editReply({
           components: mdRow,
           embeds: [
-            embed({ type: 'error' }).setDescription(st.__('PERM.REQUIRES', st.__('PERM.MANAGE_EMOJIS_AND_STICKERS'))),
+            embed({ type: 'error' }).setDescription(
+              st.__mf('PERM.REQUIRES', { perm: st.__('PERM.MANAGE_EMOJIS_AND_STICKERS') }),
+            ),
           ],
         });
       }
@@ -243,7 +245,7 @@ export async function execute({ client, interaction, st, embed }) {
       default:
         return interaction.editReply({
           components: mdRow,
-          embeds: [embed({ type: 'error' }).setDescription(st.__('ERROR.EMOJI.NOT_FOUND', inputO))],
+          embeds: [embed({ type: 'error' }).setDescription(st.__mf('ERROR.EMOJI.NOT_FOUND', { input: inputO }))],
         });
     }
 
@@ -598,7 +600,7 @@ export async function execute({ client, interaction, st, embed }) {
               embed({ type: 'warning' }).setDescription(
                 customId === 'emoji_nonexistent'
                   ? st.__('ERROR.EMOJI.NONEXISTENT')
-                  : st.__('PERM.NO_LONGER', st.__('PERM.MANAGE_EMOJIS_AND_STICKERS')),
+                  : st.__mf('PERM.NO_LONGER', { perm: st.__('PERM.MANAGE_EMOJIS_AND_STICKERS') }),
               ),
             ],
             ephemeral: true,

@@ -55,7 +55,9 @@ export async function execute({ interaction, st, embed }) {
     if (!memberPermissions?.has(PermissionFlagsBits.ManageMessages) && !botOwners.includes(user.id)) {
       return interaction.editReply({
         components: rows,
-        embeds: [embed({ type: 'error' }).setDescription(st.__('PERM.REQUIRES', st.__('PERM.MANAGE_MESSAGES')))],
+        embeds: [
+          embed({ type: 'error' }).setDescription(st.__mf('PERM.REQUIRES', { perm: st.__('PERM.MANAGE_MESSAGES') })),
+        ],
       });
     }
 

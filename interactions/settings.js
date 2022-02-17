@@ -70,12 +70,16 @@ export async function execute({ client, interaction, st, embed }) {
 
         if (!memberPermissions?.has(PermissionFlagsBits.ManageGuild) && !botOwners.includes(user.id)) {
           return interaction.editReply({
-            embeds: [embed({ type: 'error' }).setDescription(st.__('PERM.REQUIRES', st.__('PERM.MANAGE_GUILD')))],
+            embeds: [
+              embed({ type: 'error' }).setDescription(st.__mf('PERM.REQUIRES', { perm: st.__('PERM.MANAGE_GUILD') })),
+            ],
           });
         }
         if (!fLanguage) {
           return interaction.editReply({
-            embeds: [embed({ type: 'error' }).setDescription(st.__('SETTINGS.LANGUAGE.NOT_SUPPORTED', languageO))],
+            embeds: [
+              embed({ type: 'error' }).setDescription(st.__mf('SETTINGS.LANGUAGE.NOT_SUPPORTED', { input: languageO })),
+            ],
           });
         }
 
@@ -142,7 +146,9 @@ export async function execute({ client, interaction, st, embed }) {
         components: rows,
         embeds: [
           embed({ title: st.__('SETTINGS.LANGUAGE.CURRENT') }).setDescription(
-            st.__('SETTINGS.LANGUAGE.CURRENT_IS', `${st.__(`SETTINGS.LANGUAGE.NAME.${language}`)}\` - \`${language}`),
+            st.__mf('SETTINGS.LANGUAGE.CURRENT_IS', {
+              lang: `${st.__(`SETTINGS.LANGUAGE.NAME.${language}`)}\` - \`${language}`,
+            }),
           ),
         ],
 
