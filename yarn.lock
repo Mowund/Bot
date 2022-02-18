@@ -862,20 +862,15 @@ dir-glob@^3.0.1:
   dependencies:
     path-type "^4.0.0"
 
-discord-akairo@^8.1.0:
-  version "8.1.0"
-  resolved "https://registry.npmjs.org/discord-akairo/-/discord-akairo-8.1.0.tgz"
-  integrity sha512-INWYmHo6NgyYx1ZKGSCmgznVfvkXpWGj4fGCGjO8IPkZ06Bidb9YKr4rXy2lwG0kprCjvqY0qbbhcw6N050abQ==
-
 discord-api-types@^0.27.0:
   version "0.27.1"
   resolved "https://registry.npmjs.org/discord-api-types/-/discord-api-types-0.27.1.tgz"
   integrity sha512-NhOrRs3TDx/p/e7+VCzcvtVz/Wkqa/olS82HJb2aM/oI0CLcnB+lJMXWa8wjn57XviFBcMMR0poqUMXx0IqTkQ==
 
-discord.js@^14.0.0-dev.1645056357.dee27db:
-  version "14.0.0-dev.1645056357.dee27db"
-  resolved "https://registry.yarnpkg.com/discord.js/-/discord.js-14.0.0-dev.1645056357.dee27db.tgz#098d0b2a1b987dede7933d90247055bcc44daa88"
-  integrity sha512-JjDHBeC13viLl67SrmFEr3QycWU1hT90Pbr0V5Ho7sleE1K+WoDwnADHs1Y3TPFPJSrCS7zAmAKnFUhvnw9L4g==
+discord.js@^14.0.0-dev.1645142857.f7257f0:
+  version "14.0.0-dev.1645142857.f7257f0"
+  resolved "https://registry.yarnpkg.com/discord.js/-/discord.js-14.0.0-dev.1645142857.f7257f0.tgz#8f884db9333b124b40168e96532c95d3eb37060f"
+  integrity sha512-OwiDVELMT2rbf9LkZeZb1v2pUwSD+/LAgd8kEo6iBS27bdeHMHj21I7I0FkmHRTQzo+E7tpxlkoBfrTIv68Vgg==
   dependencies:
     "@discordjs/builders" "^0.13.0-dev"
     "@discordjs/collection" "^0.6.0-dev"
@@ -2092,7 +2087,7 @@ moo@^0.5.1:
 
 mowund-i18n@Mowund/i18n:
   version "1.0.1"
-  resolved "https://codeload.github.com/Mowund/i18n/tar.gz/a87f9eb76ad08b2aaaf401196b7717142c5445c7"
+  resolved "https://codeload.github.com/Mowund/i18n/tar.gz/d0e2d66d5fe44be81a5623d3cfb19f72f581406f"
 
 ms@2.0.0:
   version "2.0.0"
