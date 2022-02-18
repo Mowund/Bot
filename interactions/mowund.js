@@ -291,7 +291,7 @@ export async function execute({ chalk, client, interaction, st, embed }) {
             e.addField({
               inline: true,
               name: guild
-                ? st.__mf('MOWUND.INTERACTION.COMMANDS.SPECIFIED_GUILD', { guild: guild.name })
+                ? st.__mf('MOWUND.INTERACTION.COMMANDS.SPECIFIED_GUILD', { guildName: guild.name })
                 : st.__('MOWUND.INTERACTION.COMMANDS.GUILD'),
               value: updCmdGuild,
             });
@@ -307,7 +307,7 @@ export async function execute({ chalk, client, interaction, st, embed }) {
             e.addField({
               inline: true,
               name: guild
-                ? st.__mf('MOWUND.INTERACTION.COMMANDS.SPECIFIED_GUILD', { guild: guild.name })
+                ? st.__mf('MOWUND.INTERACTION.COMMANDS.SPECIFIED_GUILD', { guildName: guild.name })
                 : st.__('MOWUND.INTERACTION.COMMANDS.GUILD'),
               value: delCmdGuild,
             });

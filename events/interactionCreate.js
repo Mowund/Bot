@@ -74,7 +74,7 @@ export async function execute({ chalk, client, i18n, firebase }, interaction) {
           options.addParams ? `&${new URLSearchParams(options.addParams).toString()}` : ''
         }`,
         text: i18n.__mf(`GENERIC.${options.interacted ? 'INTERACTED_BY' : 'REQUESTED_BY'}`, {
-          user: member?.displayName ?? user.username,
+          userName: member?.displayName ?? user.username,
         }),
       })
       .setTimestamp(Date.now());

@@ -117,7 +117,7 @@ export async function execute({ client, interaction, st, embed }) {
               })
               .setFooter({
                 iconURL: `${(member ?? user).displayAvatarURL(imgOpts)}&mowLang=${language}`,
-                text: st.__(m('GENERIC.REQUESTED_BY'), member?.displayName ?? user.username),
+                text: st.__mf(m('GENERIC.REQUESTED_BY'), { userName: member?.displayName ?? user.username }),
               }),
           ],
 

@@ -84,7 +84,7 @@ export async function execute({ interaction, st, embed }) {
         embs = [
           embed({ title: st.__('USER.INFO.TITLE') })
             .setColor(color)
-            .setAuthor({ iconURL: userO.displayAvatarURL(imgOpts), name: `${userO.tag}💻` })
+            .setAuthor({ iconURL: userO.displayAvatarURL(imgOpts), name: userO.tag })
             .setThumbnail((memberO ?? userO).displayAvatarURL(imgOpts))
             .setDescription(`${userO} ${flags.join(' ')}`)
             .addField({ inline: true, name: `💻 ${st.__('GENERIC.ID')}`, value: `\`${userO.id}\`` })
