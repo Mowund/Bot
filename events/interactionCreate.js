@@ -24,9 +24,9 @@ export async function execute({ chalk, client, i18n, firebase }, interaction) {
     command =
       intName === 'generic' ? true : client.commands.find(({ data }) => data.find(({ name }) => name === intName)),
     embColor =
-      member?.displayColor || user.accentColor === undefined
-        ? (await user.fetch()).accentColor
-        : user.accentColor || colors.blurple;
+      member?.displayColor ||
+      (user.accentColor === undefined ? (await user.fetch()).accentColor : user.accentColor) ||
+      colors.blurple;
 
   if (!command)
     return console.error(`${chalk.red(customId ?? commandName)} interaction not found as ${chalk.red(intName)}`);
