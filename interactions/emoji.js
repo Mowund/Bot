@@ -2,59 +2,81 @@ import { parse } from 'twemoji-parser';
 import {
   MessageFlags,
   SnowflakeUtil,
-  Util,
-  ButtonComponent,
-  ActionRow,
+  ButtonBuilder,
+  ActionRowBuilder,
   RESTJSONErrorCodes,
   ButtonStyle,
   ApplicationCommandOptionType,
   PermissionFlagsBits,
+  ModalBuilder,
+  TextInputBuilder,
+  TextInputStyle,
+  InteractionType,
+  parseEmoji,
 } from 'discord.js';
-import { checkURL, collMap, toUTS, getFieldValue, decreaseSizeCDN } from '../utils.js';
+import { collMap, toUTS, getFieldValue, decreaseSizeCDN, disableComponents } from '../utils.js';
 import { botOwners, colors, emojis, imgOpts, premiumLimits } from '../defaults.js';
 
 export const data = [
   {
     description: 'Emoji related commands',
+    description_localizations: { 'pt-BR': 'Comandos relacionados à emojis' },
     name: 'emoji',
+    name_localizations: {},
     options: [
       {
         description: 'Adds a new emoji',
+        description_localizations: { 'pt-BR': 'Adiciona um novo emoji' },
         name: 'add',
+        name_localizations: { 'pt-BR': 'adicionar' },
         options: [
           {
             description: 'The emoji itself (Maximum size: 256kb)',
+            description_localizations: { 'pt-BR': 'O emoji em si (Tamanho máximo: 256kb)' },
             name: 'image',
+            name_localizations: { 'pt-BR': 'imagem' },
             required: true,
             type: ApplicationCommandOptionType.Attachment,
           },
           {
-            description: 'The name of the emoji (Alphanumerical 2-32)',
+            description: 'The name of the emoji (Alphanumerical)',
+            description_localizations: { 'pt-BR': 'O nome do emoji (Alfanumérico)' },
+            max_length: 32,
+            min_length: 2,
             name: 'name',
+            name_localizations: { 'pt-BR': 'nome' },
             required: true,
             type: ApplicationCommandOptionType.String,
           },
           {
             description: 'Send reply as an ephemeral message (Default: True)',
+            description_localizations: { 'pt-BR': 'Envia a resposta como uma mensagem efêmera (Padrão: Verdadeiro)' },
             name: 'ephemeral',
+            name_localizations: { 'pt-BR': 'efêmero' },
             type: ApplicationCommandOptionType.Boolean,
           },
         ],
         type: ApplicationCommandOptionType.Subcommand,
       },
       {
-        description: 'View info or manage an emoji',
+        description: 'Shows info or manages an emoji',
+        description_localizations: { 'pt-BR': 'Mostra informações ou gerencia um emoji' },
         name: 'info',
+        name_localizations: {},
         options: [
           {
             description: "ID, mention, unicode or name (if it's on the same server)",
+            description_localizations: { 'pt-BR': 'ID, menção, unicode ou nome (caso esteja no mesmo servidor)' },
             name: 'emoji',
+            name_localizations: {},
             required: true,
             type: ApplicationCommandOptionType.String,
           },
           {
             description: 'Send reply as an ephemeral message (Default: True)',
+            description_localizations: { 'pt-BR': 'Envia a resposta como uma mensagem efêmera (Padrão: Verdadeiro)' },
             name: 'ephemeral',
+            name_localizations: { 'pt-BR': 'efêmero' },
             type: ApplicationCommandOptionType.Boolean,
           },
         ],
@@ -63,13 +85,13 @@ export const data = [
     ],
   },
 ];
-export async function execute({ client, interaction, st, embed }) {
-  const { guild, user, memberPermissions, message, options } = interaction,
+export async function execute({ embed, interaction, st }) {
+  const { appPermissions, client, fields, guild, memberPermissions, message, options, user } = interaction,
     ephemeralO = options?.getBoolean('ephemeral') ?? message?.flags.has(MessageFlags.Ephemeral) ?? true,
     emojiLimit = premiumLimits[guild.premiumTier].emojis,
-    mdBtn = new ButtonComponent()
+    mdBtn = new ButtonBuilder()
       .setLabel(st.__('GENERIC.COMPONENT.MESSAGE_DELETE'))
-      .setEmoji({ name: '🧹' })
+      .setEmoji('🧹')
       .setStyle(ButtonStyle.Danger)
       .setCustomId('generic_message_delete');
 
@@ -81,8 +103,8 @@ export async function execute({ client, interaction, st, embed }) {
 
     const isInfo = options?.getSubcommand() === 'info',
       inputO = isInfo ? options?.getString('emoji') : options?.getString('name'),
-      parsedEmoji = isInfo ? Util.parseEmoji(inputO) : {},
-      mdRow = !ephemeralO ? [new ActionRow().addComponents(mdBtn)] : [];
+      parsedEmoji = isInfo ? parseEmoji(inputO) : {},
+      mdRow = !ephemeralO ? [new ActionRowBuilder().addComponents([mdBtn])] : [];
 
     let emj,
       emjId = parsedEmoji.id || inputO.match(/\d+/g)?.[0],
@@ -144,7 +166,7 @@ export async function execute({ client, interaction, st, embed }) {
       if (imageO.size > 256000) {
         return interaction.editReply({
           components: mdRow,
-          embeds: [embed({ type: 'error' }).setDescription(st.__mf('ERROR.INVALID.IMAGE', { size: 256 }))],
+          embeds: [embed({ type: 'error' }).setDescription(st.__mf('ERROR.INVALID.IMAGE.SIZE', { maxSize: 256 }))],
         });
       }
 
@@ -155,8 +177,8 @@ export async function execute({ client, interaction, st, embed }) {
             embed({ type: 'error' }).setDescription(
               st.__mf('ERROR.INVALID.NAME.EMOJI', {
                 alphanum: alphanumI,
+                condition: lengthI,
                 input: inputO,
-                length: lengthI,
                 maxLength: 32,
                 minLength: 2,
               }),
@@ -167,7 +189,7 @@ export async function execute({ client, interaction, st, embed }) {
 
       emj = await guild.emojis
         .create(imageO.attachment, inputO, {
-          reason: `${user.tag} | ${st.__(`EMOJI.REASON.CREATED.COMMAND`)}`,
+          reason: `${user.tag} | ${st.__('EMOJI.REASON.CREATED.COMMAND')}`,
         })
         .catch(async err => {
           if (
@@ -180,11 +202,11 @@ export async function execute({ client, interaction, st, embed }) {
               components: mdRow,
               embeds: [
                 embed({ type: 'error' }).setDescription(
-                  st.__(
+                  st.__mf(
                     `ERROR.EMOJI.MAXIMUM.${
                       err.code === RESTJSONErrorCodes.MaximumNumberOfAnimatedEmojisReached ? 'ANIMATED' : 'STATIC'
                     }`,
-                    emojiLimit,
+                    { limit: emojiLimit },
                   ),
                 ),
               ],
@@ -198,15 +220,7 @@ export async function execute({ client, interaction, st, embed }) {
       if (emj === 1) return;
     }
 
-    const emjFR = emj
-        ? {
-            name: `${emojis.role} ${st.__('GENERIC.ROLES')} [${emj[3] ?? emj.roles?.cache.size}]`,
-            value:
-              (emj[2] ?? collMap(emj.roles.cache, emj.guild?.id !== guild?.id ? { mapValue: 'id' } : {})) ||
-              '@everyone',
-          }
-        : null,
-      emjUnicodeURL = `https://twemoji.maxcdn.com/v/latest/72x72/`;
+    const emjUnicodeURL = `https://twemoji.maxcdn.com/v/latest/72x72/`;
 
     if (emj) {
       emjId = (emj[0] ?? emj).id;
@@ -221,7 +235,7 @@ export async function execute({ client, interaction, st, embed }) {
     if (!memberPermissions?.has(PermissionFlagsBits.ManageEmojisAndStickers)) addBtnVsby = editBtnVsby = 0;
 
     let emjDisplay =
-        (!interaction.inGuild() || guild?.roles.everyone.permissions.has(PermissionFlagsBits.UseExternalEmojis)) && emj
+        (!interaction.inGuild() || appPermissions.has(PermissionFlagsBits.UseExternalEmojis)) && emj
           ? (emj[0] ?? emj).animated
             ? `<${(emj[0] ?? emj).identifier}> `
             : `<:${(emj[0] ?? emj).identifier}> `
@@ -230,19 +244,21 @@ export async function execute({ client, interaction, st, embed }) {
       emjURL = `https://cdn.discordapp.com/emojis/${parsedEmoji.id || emjId}`;
 
     const parsedTwemoji = parse(emjName)[0],
-      checkedImage = parsedTwemoji ? 1 : (await checkURL(`${emjURL}.gif`)) ? 2 : (await checkURL(emjURL)) ? 3 : 0;
+      imageType = parsedTwemoji
+        ? 'twemoji'
+        : (await fetch(`${emjURL}.gif`)).ok
+        ? 'gif'
+        : (await fetch(emjURL)).ok && 'png';
 
-    switch (checkedImage) {
-      case 1:
+    switch (imageType) {
+      case 'gif':
+      case 'png':
+        emjURL += `.${imageType}?size=${imgOpts.size}`;
+        break;
+      case 'twemoji':
         emjDisplay = `${parsedTwemoji.text} `;
         emjCodePoint = new URL(parsedTwemoji.url).pathname.split(/[/&.]/)[4];
         emjURL = `${emjUnicodeURL}${emjCodePoint}.png`;
-        break;
-      case 2:
-        emjURL += `.gif?size=${imgOpts.size}`;
-        break;
-      case 3:
-        emjURL += `.png?size=${imgOpts.size}`;
         break;
       default:
         return interaction.editReply({
@@ -253,70 +269,84 @@ export async function execute({ client, interaction, st, embed }) {
 
     const emb = embed();
     if (parsedEmoji.id || emj)
-      emb.addField({ inline: true, name: `📛 ${st.__('GENERIC.NAME')}`, value: `\`${emjName}\`` });
+      emb.addFields([{ inline: true, name: `📛 ${st.__('GENERIC.NAME')}`, value: `\`${emjName}\`` }]);
 
     emb
       .setTitle(emjDisplay + st.__(`EMOJI.${isInfo ? (emjCodePoint ? 'VIEWING_UNICODE' : 'VIEWING') : 'ADDED'}`))
-      .addField({
-        inline: true,
-        name: `💻 ${st.__(`GENERIC.${emjCodePoint ? 'CODEPOINT' : 'ID'}`)}`,
-        value: `\`${emjCodePoint ?? emjId}\``,
-      })
+      .addFields([
+        {
+          inline: true,
+          name: `🏷️ ${st.__(`GENERIC.${emjCodePoint ? 'CODEPOINT' : 'ID'}`)}`,
+          value: `\`${emjCodePoint ?? emjId}\``,
+        },
+      ])
       .setThumbnail(emjURL)
       .setColor(colors.green)
       .setTimestamp(Date.now());
 
     if (emjCodePoint || parsedEmoji.id || emj) {
-      emb.addField({
-        inline: true,
-        name: `${emojis.mention} ${st.__('GENERIC.MENTION')}`,
-        value: `\`${emjDisplay.trim() || `<${checkedImage === 2 ? 'a' : ''}:${emjName}:${emjId}>`}\``,
-      });
+      emb.addFields([
+        {
+          inline: true,
+          name: `${emojis.mention} ${st.__('GENERIC.MENTION')}`,
+          value: `\`${emjDisplay.trim() || `<${imageType === 'gif' ? 'a' : ''}:${emjName}:${emjId}>`}\``,
+        },
+      ]);
     }
 
     if (!emjCodePoint) {
-      emb.addField({
-        inline: true,
-        name: `📅 ${st.__('GENERIC.CREATION_DATE')}`,
-        value: toUTS(SnowflakeUtil.timestampFrom(emjId)),
-      });
+      emb.addFields([
+        {
+          inline: true,
+          name: `📅 ${st.__('GENERIC.CREATION_DATE')}`,
+          value: toUTS(SnowflakeUtil.timestampFrom(emjId)),
+        },
+      ]);
     }
 
-    if (emjFR) emb.addFields(emjFR);
+    if (emj) {
+      emb.addFields([
+        {
+          name: `${emojis.role} ${st.__('GENERIC.ROLES')} [${emj[3] ?? emj.roles?.cache.size}]`,
+          value:
+            (emj[2] ?? collMap(emj.roles.cache, emj.guild?.id !== guild?.id ? { mapValue: 'id' } : {})) || '@everyone',
+        },
+      ]);
+    }
 
-    const rows = [new ActionRow()];
-    rows[0].addComponents(
-      new ButtonComponent()
+    const rows = [new ActionRowBuilder()];
+    rows[0].addComponents([
+      new ButtonBuilder()
         .setLabel(st.__('EMOJI.COMPONENT.LINK'))
-        .setEmoji({ name: '🖼️' })
+        .setEmoji('🖼️')
         .setStyle(ButtonStyle.Link)
         .setURL(emjCodePoint ? emjURL : `${emjURL.split('?')[0]}?size=${imgOpts.size}`),
-    );
+    ]);
 
-    if (addBtnVsby > 0) {
-      rows[0].addComponents(
-        new ButtonComponent()
+    if (addBtnVsby) {
+      rows[0].addComponents([
+        new ButtonBuilder()
           .setLabel(st.__('EMOJI.COMPONENT.ADD'))
-          .setEmoji({ name: '➕' })
+          .setEmoji('➕')
           .setStyle(ButtonStyle.Success)
           .setCustomId('emoji_edit_add')
           .setDisabled(addBtnVsby < 2),
-      );
+      ]);
     }
-    if (editBtnVsby > 0) {
-      rows[0].addComponents(
-        new ButtonComponent()
+    if (editBtnVsby) {
+      rows[0].addComponents([
+        new ButtonBuilder()
           .setLabel(st.__('EMOJI.COMPONENT.EDIT'))
-          .setEmoji({ name: '📝' })
+          .setEmoji('📝')
           .setStyle(ButtonStyle.Primary)
           .setCustomId('emoji_edit')
           .setDisabled(editBtnVsby < 2),
-      );
+      ]);
     }
 
     if (!ephemeralO) {
-      if (rows[0].components.length > 1) rows.push(new ActionRow().addComponents(mdBtn));
-      else rows[0].addComponents(mdBtn);
+      if (rows[0].components.length > 1) rows.push(new ActionRowBuilder().addComponents([mdBtn]));
+      else rows[0].addComponents([mdBtn]);
     }
 
     await interaction.editReply({
@@ -336,7 +366,7 @@ export async function execute({ client, interaction, st, embed }) {
       });
     }
   }
-  if (interaction.isButton()) {
+  if (interaction.isButton() || interaction.type === InteractionType.ModalSubmit) {
     if (message.interaction.user.id !== user.id) {
       return interaction.reply({
         embeds: [embed({ type: 'error' }).setDescription(st.__('ERROR.UNALLOWED.COMMAND'))],
@@ -348,20 +378,13 @@ export async function execute({ client, interaction, st, embed }) {
       emjCodePoint = getFieldValue(oldEmbs[0], st.__('GENERIC.CODEPOINT'))?.replaceAll('`', '');
 
     let { customId } = interaction,
-      emb = embed({ interacted: true }),
+      emb = embed({ footer: 'interacted' }),
       emjId = new URL(emjURL).pathname.split(/[/&.]/)[2],
       emj = guild?.emojis.cache.get(emjId);
 
-    const emjDisplay =
-        emj && guild?.roles.everyone.permissions.has(PermissionFlagsBits.UseExternalEmojis) ? `${emj} ` : '',
+    const emjDisplay = emj && appPermissions.has(PermissionFlagsBits.UseExternalEmojis) ? `${emj} ` : '',
       emjMention = emj ? `\`${emj}\`` : getFieldValue(oldEmbs[0], st.__('GENERIC.MENTION')),
-      emjName = emj?.name ?? getFieldValue(oldEmbs[0], st.__('GENERIC.NAME'))?.replaceAll('`', ''),
-      emjFR = emj
-        ? {
-            name: `${emojis.role} ${st.__('GENERIC.ROLES')} [${emj.roles.cache.size}]`,
-            value: collMap(emj.roles.cache, emj.guild?.id !== guild?.id ? { mapValue: 'id' } : {}) || '@everyone',
-          }
-        : null;
+      emjName = emj?.name ?? getFieldValue(oldEmbs[0], st.__('GENERIC.NAME'))?.replaceAll('`', '');
 
     if (emj) {
       emjId = emj.id;
@@ -379,38 +402,49 @@ export async function execute({ client, interaction, st, embed }) {
     }
 
     const rows = [
-      new ActionRow().addComponents(
-        new ButtonComponent()
+      new ActionRowBuilder().addComponents([
+        new ButtonBuilder()
           .setLabel(st.__('EMOJI.COMPONENT.LINK'))
-          .setEmoji({ name: '🖼️' })
+          .setEmoji('🖼️')
           .setStyle(ButtonStyle.Link)
           .setURL(`${emjURL.split('?')[0]}?size=${imgOpts.size}`),
-      ),
+      ]),
     ];
 
-    if (emjName) emb.addField({ inline: true, name: `📛 ${st.__('GENERIC.NAME')}`, value: `\`${emjName}\`` });
+    if (emjName) emb.addFields([{ inline: true, name: `📛 ${st.__('GENERIC.NAME')}`, value: `\`${emjName}\`` }]);
 
     emb
       .setColor(colors.yellow)
       .setTitle(emjDisplay + st.__('EMOJI.EDITING'))
-      .addField({
-        inline: true,
-        name: `💻 ${st.__(`GENERIC.${emjCodePoint ? 'CODEPOINT' : 'ID'}`)}`,
-        value: `\`${emjCodePoint ?? emjId}\``,
-      })
+      .addFields([
+        {
+          inline: true,
+          name: `🏷️ ${st.__(`GENERIC.${emjCodePoint ? 'CODEPOINT' : 'ID'}`)}`,
+          value: `\`${emjCodePoint ?? emjId}\``,
+        },
+      ])
       .setThumbnail(emjURL)
       .setTimestamp(Date.now());
 
     if (emjMention)
-      emb.addField({ inline: true, name: `${emojis.mention} ${st.__('GENERIC.MENTION')}`, value: emjMention });
+      emb.addFields([{ inline: true, name: `${emojis.mention} ${st.__('GENERIC.MENTION')}`, value: emjMention }]);
     if (!emjCodePoint) {
-      emb.addField({
-        inline: true,
-        name: `📅 ${st.__('GENERIC.CREATION_DATE')}`,
-        value: toUTS(SnowflakeUtil.timestampFrom(emjId)),
-      });
+      emb.addFields([
+        {
+          inline: true,
+          name: `📅 ${st.__('GENERIC.CREATION_DATE')}`,
+          value: toUTS(SnowflakeUtil.timestampFrom(emjId)),
+        },
+      ]);
     }
-    if (emjFR) emb.addFields(emjFR);
+    if (emj) {
+      emb.addFields([
+        {
+          name: `${emojis.role} ${st.__('GENERIC.ROLES')} [${emj.roles.cache.size}]`,
+          value: collMap(emj.roles.cache, emj.guild?.id !== guild?.id ? { mapValue: 'id' } : {}) || '@everyone',
+        },
+      ]);
+    }
 
     switch (customId) {
       case 'emoji_edit_add':
@@ -420,21 +454,8 @@ export async function execute({ client, interaction, st, embed }) {
         if (isAdd) {
           const isAddId = customId === 'emoji_edit_add';
 
-          rows[0].addComponents(
-            new ButtonComponent()
-              .setLabel(st.__(`EMOJI.COMPONENT.${isAddId ? 'ADD' : 'READD'}`))
-              .setEmoji({ name: '➕' })
-              .setStyle(ButtonStyle.Success)
-              .setCustomId(`emoji_edit_${isAddId ? 'add' : 'readd'}`)
-              .setDisabled(true),
-          );
-          if (!ephemeralO) {
-            if (rows[0].components.length > 1) rows.push(new ActionRow().addComponents(mdBtn));
-            else rows[0].addComponents(mdBtn);
-          }
-
           await interaction.update({
-            components: rows,
+            components: disableComponents(message.components),
             embeds: [
               emb
                 .setTitle(
@@ -444,24 +465,19 @@ export async function execute({ client, interaction, st, embed }) {
             ],
           });
 
+          console.log(emj, emj?.guild !== guild.id, emj && emj?.guild !== guild.id);
           const emjCreate = url =>
             guild.emojis
-              .create(url, emjCodePoint?.substring(0, 32).replaceAll('-', '_') || emjName || emjId, {
+              .create({
+                attachment: url,
+                name: emjCodePoint?.substring(0, 32).replaceAll('-', '_') || emjName || emjId,
                 reason: `${user.tag} | ${st.__(
-                  `EMOJI.REASON.CREATED.${
-                    isAddId
-                      ? emjCodePoint
-                        ? 'UNICODE'
-                        : emjFR && emj?.guild !== guild.id
-                        ? 'ANOTHER_SERVER'
-                        : 'CDN'
-                      : 'DELETED'
-                  }`,
+                  `EMOJI.REASON.CREATED.${isAddId ? (emjCodePoint ? 'UNICODE' : 'CDN') : 'DELETED'}`,
                 )}`,
               })
               .catch(async err => {
                 if (err.code === RESTJSONErrorCodes.InvalidFormBodyOrContentType)
-                  return emjCreate(await decreaseSizeCDN(url, 256));
+                  return emjCreate(await decreaseSizeCDN(url, { initialSize: 256, maxSize: 256000 }));
 
                 if (
                   [
@@ -473,11 +489,11 @@ export async function execute({ client, interaction, st, embed }) {
                   await interaction.followUp({
                     embeds: [
                       embed({ type: 'warning' }).setDescription(
-                        st.__(
+                        st.__mf(
                           `ERROR.EMOJI.MAXIMUM.${
                             err.code === RESTJSONErrorCodes.MaximumNumberOfAnimatedEmojisReached ? 'ANIMATED' : 'STATIC'
                           }`,
-                          emojiLimit,
+                          { limit: emojiLimit },
                         ),
                       ),
                     ],
@@ -491,62 +507,64 @@ export async function execute({ client, interaction, st, embed }) {
           if (emj === 1) return;
 
           emb = embed({
-            interacted: true,
+            footer: 'interacted',
             title: `${emj} ${st.__(`EMOJI.${isAddId ? (emjCodePoint ? 'ADDED_UNICODE' : 'ADDED') : 'READDED'}`)}`,
           })
             .setColor(colors.green)
             .setThumbnail(emj.url)
-            .addField({
-              inline: true,
-              name: `📛 ${st.__('GENERIC.NAME')}`,
-              value: `\`${emj.name}\``,
-            })
-            .addField({
-              inline: true,
-              name: `💻 ${st.__('GENERIC.ID')}`,
-              value: `\`${emj.id}\``,
-            })
-            .addField({
-              inline: true,
-              name: `${emojis.mention} ${st.__('GENERIC.MENTION')}`,
-              value: `\`${emj}\``,
-            })
-            .addField({
-              inline: true,
-              name: `📅 ${st.__('GENERIC.CREATION_DATE')}`,
-              value: toUTS(emj.createdTimestamp),
-            })
-            .addField({
-              name: `${emojis.role} ${st.__('GENERIC.ROLES')} [0]`,
-              value: '@everyone',
-            });
+            .addFields([
+              {
+                inline: true,
+                name: `📛 ${st.__('GENERIC.NAME')}`,
+                value: `\`${emj.name}\``,
+              },
+              {
+                inline: true,
+                name: `🏷️ ${st.__('GENERIC.ID')}`,
+                value: `\`${emj.id}\``,
+              },
+              {
+                inline: true,
+                name: `${emojis.mention} ${st.__('GENERIC.MENTION')}`,
+                value: `\`${emj}\``,
+              },
+              {
+                inline: true,
+                name: `📅 ${st.__('GENERIC.CREATION_DATE')}`,
+                value: toUTS(emj.createdTimestamp),
+              },
+              {
+                name: `${emojis.role} ${st.__('GENERIC.ROLES')} [0]`,
+                value: '@everyone',
+              },
+            ]);
         }
         const opts = {
           components: [
-            new ActionRow().addComponents(
-              new ButtonComponent()
+            new ActionRowBuilder().addComponents([
+              new ButtonBuilder()
                 .setLabel(st.__('EMOJI.COMPONENT.VIEW'))
-                .setEmoji({ name: '🔎' })
+                .setEmoji('🔎')
                 .setStyle(ButtonStyle.Primary)
                 .setCustomId('emoji_view'),
-              new ButtonComponent()
+              new ButtonBuilder()
                 .setLabel(st.__('EMOJI.COMPONENT.RENAME'))
-                .setEmoji({ name: '✏️' })
+                .setEmoji('✏️')
                 .setStyle(ButtonStyle.Secondary)
-                .setCustomId('emoji_edit_name'),
-              new ButtonComponent()
+                .setCustomId('emoji_rename'),
+              new ButtonBuilder()
                 .setLabel(st.__('EMOJI.COMPONENT.ROLES.EDIT'))
-                .setEmoji({ name: '📜' })
+                .setEmoji('📜')
                 .setStyle(ButtonStyle.Secondary)
                 .setCustomId('emoji_edit_role'),
-            ),
-            new ActionRow().addComponents(
-              new ButtonComponent()
+            ]),
+            new ActionRowBuilder().addComponents([
+              new ButtonBuilder()
                 .setLabel(st.__('EMOJI.COMPONENT.DELETE'))
-                .setEmoji({ name: '🗑️' })
+                .setEmoji('🗑️')
                 .setStyle(ButtonStyle.Danger)
                 .setCustomId('emoji_edit_delete'),
-            ),
+            ]),
           ],
           embeds: [emb],
         };
@@ -556,7 +574,7 @@ export async function execute({ client, interaction, st, embed }) {
           return interaction.followUp({
             embeds: [
               embed({ type: 'warning' }).setDescription(
-                st.__(`ERROR.EMOJI.MAXIMUM_NOW.${emj.animated ? 'ANIMATED' : 'STATIC'}`, { limit: emojiLimit }),
+                st.__mf(`ERROR.EMOJI.MAXIMUM_NOW.${emj.animated ? 'ANIMATED' : 'STATIC'}`, { limit: emojiLimit }),
               ),
             ],
             ephemeral: true,
@@ -567,29 +585,29 @@ export async function execute({ client, interaction, st, embed }) {
       case 'emoji_nonexistent':
       case 'emoji_noperm':
       case 'emoji_view': {
-        if (addBtnVsby > 0 && (emj?.guild || emj?.[1])?.id !== guild?.id) {
-          rows[0].addComponents(
-            new ButtonComponent()
+        if (addBtnVsby && (emj?.guild || emj?.[1])?.id !== guild?.id) {
+          rows[0].addComponents([
+            new ButtonBuilder()
               .setLabel(st.__('EMOJI.COMPONENT.ADD'))
-              .setEmoji({ name: '➕' })
+              .setEmoji('➕')
               .setStyle(ButtonStyle.Success)
               .setCustomId('emoji_edit_add')
               .setDisabled(addBtnVsby < 2),
-          );
+          ]);
         }
-        if (editBtnVsby > 0) {
-          rows[0].addComponents(
-            new ButtonComponent()
+        if (editBtnVsby) {
+          rows[0].addComponents([
+            new ButtonBuilder()
               .setLabel(st.__('EMOJI.COMPONENT.EDIT'))
-              .setEmoji({ name: '📝' })
+              .setEmoji('📝')
               .setStyle(ButtonStyle.Primary)
               .setCustomId('emoji_edit')
               .setDisabled(editBtnVsby < 2),
-          );
+          ]);
         }
         if (!ephemeralO) {
-          if (rows[0].components.length > 1) rows.push(new ActionRow().addComponents(mdBtn));
-          else rows[0].addComponents(mdBtn);
+          if (rows[0].components.length > 1) rows.push(new ActionRowBuilder().addComponents([mdBtn]));
+          else rows[0].addComponents([mdBtn]);
         }
 
         await interaction.update({
@@ -613,18 +631,18 @@ export async function execute({ client, interaction, st, embed }) {
       case 'emoji_edit_delete': {
         return interaction.update({
           components: [
-            new ActionRow().addComponents(
-              new ButtonComponent()
+            new ActionRowBuilder().addComponents([
+              new ButtonBuilder()
                 .setLabel(st.__('GENERIC.COMPONENT.BACK'))
-                .setEmoji({ name: '↩️' })
+                .setEmoji('↩️')
                 .setStyle(ButtonStyle.Primary)
                 .setCustomId('emoji_edit'),
-              new ButtonComponent()
+              new ButtonBuilder()
                 .setLabel(st.__('GENERIC.YES'))
-                .setEmoji({ name: '✅' })
+                .setEmoji('✅')
                 .setStyle(ButtonStyle.Success)
                 .setCustomId('emoji_edit_delete_confirm'),
-            ),
+            ]),
           ],
           embeds: [
             emb
@@ -637,16 +655,16 @@ export async function execute({ client, interaction, st, embed }) {
       case 'emoji_edit_delete_confirm': {
         await emj?.delete(`${user.tag} | ${st.__('EMOJI.REASON.DELETED')}`);
 
-        rows[0].addComponents(
-          new ButtonComponent()
+        rows[0].addComponents([
+          new ButtonBuilder()
             .setLabel(st.__('EMOJI.COMPONENT.READD'))
-            .setEmoji({ name: '➕' })
+            .setEmoji('➕')
             .setStyle(ButtonStyle.Success)
             .setCustomId('emoji_edit_readd'),
-        );
+        ]);
         if (!ephemeralO) {
-          if (rows[0].components.length > 1) rows.push(new ActionRow().addComponents(mdBtn));
-          else rows[0].addComponents(mdBtn);
+          if (rows[0].components.length > 1) rows.push(new ActionRowBuilder().addComponents([mdBtn]));
+          else rows[0].addComponents([mdBtn]);
         }
 
         return interaction.update({
@@ -654,16 +672,75 @@ export async function execute({ client, interaction, st, embed }) {
           embeds: [emb.setTitle(st.__('EMOJI.DELETED')).setColor(colors.red)],
         });
       }
-      // TODO: Add edit roles and rename emoji
-      case 'emoji_edit_name': {
-        if (!botOwners.includes(user.id)) {
-          return interaction.reply({
-            embeds: [embed({ type: 'wip' }).setDescription(st.__('GENERIC.WIP_FUNCTION'))],
-            ephemeral: true,
+      case 'emoji_rename': {
+        return interaction.showModal(
+          new ModalBuilder()
+            .setTitle(st.__('EMOJI.RENAMING'))
+            .setCustomId('emoji_rename_submit')
+            .addComponents([
+              new ActionRowBuilder().addComponents([
+                new TextInputBuilder()
+                  .setCustomId('emoji_rename_input')
+                  .setLabel(st.__('EMOJI.RENAMING_LABEL'))
+                  .setMinLength(2)
+                  .setMaxLength(32)
+                  .setPlaceholder(emjName)
+                  .setStyle(TextInputStyle.Short),
+              ]),
+            ]),
+        );
+      }
+      case 'emoji_rename_submit': {
+        console.log(0);
+        const inputF = fields.getTextInputValue('emoji_rename_input').replace(/\s/g, ''),
+          alphanumI = /[^\w]/g.test(inputF) && (inputF.length < 2 || inputF.length > 32 ? 'also' : 'only'),
+          lengthI = inputF.length < 2 ? 'shorter' : inputF.length > 32 && 'longer';
+        console.log(1);
+
+        if (inputF === emjName) return interaction.deferUpdate();
+        console.log(2);
+        if (alphanumI || lengthI) {
+          return interaction.update({
+            embeds: [
+              emb
+                .setColor(colors.red)
+                .setTitle(emjDisplay + st.__('ERROR.INVALID.NAME.SHORT'))
+                .setDescription(
+                  st.__mf('ERROR.INVALID.NAME.LONG', {
+                    alphanum: alphanumI,
+                    condition: lengthI,
+                    input: inputF,
+                    maxLength: 32,
+                    minLength: 2,
+                  }),
+                ),
+            ],
           });
         }
-        return interaction.deferUpdate();
+        console.log(3);
+
+        emj = await emj.edit({ name: inputF }, `${user.tag} | ${st.__('EMOJI.REASON.RENAMED')}`);
+        console.log(4);
+
+        console.log(emb);
+        emb.spliceFields(0, 1, {
+          inline: true,
+          name: `📛 ${st.__('GENERIC.NAME')}`,
+          value: `\`${emj.name}\``,
+        });
+        emb.spliceFields(2, 1, {
+          inline: true,
+          name: `${emojis.mention} ${st.__('GENERIC.MENTION')}`,
+          value: `\`${emj}\``,
+        });
+        console.log(emb);
+        console.log(5);
+
+        return interaction.update({
+          embeds: [emb.setColor(colors.green).setTitle(emjDisplay + st.__('EMOJI.RENAMED'))],
+        });
       }
+      // TODO: Add edit emoji roles
       case 'emoji_edit_role': {
         if (!botOwners.includes(user.id)) {
           return interaction.reply({

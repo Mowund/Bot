@@ -1,26 +1,32 @@
-import { ActionRow, ApplicationCommandOptionType, ButtonComponent, ButtonStyle } from 'discord.js';
+import { ActionRowBuilder, ApplicationCommandOptionType, ButtonBuilder, ButtonStyle } from 'discord.js';
 import { colors, imgOpts } from '../defaults.js';
 
 export const data = [
   {
     description: 'Kills someone',
+    description_localizations: { 'pt-BR': 'Mata alguém' },
     name: 'kill',
+    name_localizations: { 'pt-BR': 'matar' },
     options: [
       {
         description: 'An user to kill',
+        description_localizations: { 'pt-BR': 'Um usuário para matar' },
         name: 'user',
+        name_localizations: { 'pt-BR': 'usuário' },
         type: ApplicationCommandOptionType.User,
       },
       {
         description: 'Send reply as an ephemeral message (Default: True)',
+        description_localizations: { 'pt-BR': 'Envia a resposta como uma mensagem efêmera (Padrão: Verdadeiro)' },
         name: 'ephemeral',
+        name_localizations: { 'pt-BR': 'efêmero' },
         type: ApplicationCommandOptionType.Boolean,
       },
     ],
   },
 ];
-export function execute({ interaction, st, embed }) {
-  const { user, member, options } = interaction,
+export function execute({ embed, interaction, st }) {
+  const { member, options, user } = interaction,
     userO = options?.getUser('user') ?? user,
     memberO = options?.getMember('user') ?? member,
     ephemeralO = options?.getBoolean('ephemeral') ?? true;
@@ -29,13 +35,13 @@ export function execute({ interaction, st, embed }) {
     return interaction.reply({
       components: !ephemeralO
         ? [
-            new ActionRow().addComponents(
-              new ButtonComponent()
+            new ActionRowBuilder().addComponents([
+              new ButtonBuilder()
                 .setLabel(st.__('GENERIC.COMPONENT.MESSAGE_DELETE'))
-                .setEmoji({ name: '🧹' })
+                .setEmoji('🧹')
                 .setStyle(ButtonStyle.Danger)
                 .setCustomId('generic_message_delete'),
-            ),
+            ]),
           ]
         : [],
       embeds: [

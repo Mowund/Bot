@@ -2,6 +2,7 @@ import { debugMode } from '../defaults.js';
 
 export const eventName = 'guildCreate';
 export async function execute({ chalk, client }, guild) {
+  console.log(await client.dbGet(guild, { searchOnly: 'cache' }));
   const settings = await client.dbSet(guild, {}, { setFromCache: true });
   await client.updateMowundDescription();
 

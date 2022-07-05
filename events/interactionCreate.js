@@ -1,23 +1,22 @@
-import { ActionRow, ButtonComponent, ButtonStyle, Embed, MessageFlags } from 'discord.js';
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, InteractionType, MessageFlags } from 'discord.js';
 import { colors, debugMode, imgOpts, defaultLocale } from '../defaults.js';
-import { getParam } from '../utils.js';
-import 'log-timestamp';
+import { addSearchParams } from '../utils.js';
 
 export const eventName = 'interactionCreate';
-export async function execute({ chalk, client, i18n, firebase }, interaction) {
+export async function execute({ chalk, client, firebase, i18n }, interaction) {
   const {
       channel,
       channelId,
       commandName,
+      commandType,
       componentType,
       customId,
-      commandType,
-      type,
       guild,
-      options: opts,
-      user,
       member,
       message,
+      options: opts,
+      type,
+      user,
     } = interaction,
     ephemeralO = opts?.getBoolean('ephemeral') ?? message?.flags.has(MessageFlags.Ephemeral) ?? true,
     intName = customId?.match(/^[^_]*/g)?.[0] ?? commandName,
@@ -31,28 +30,7 @@ export async function execute({ chalk, client, i18n, firebase }, interaction) {
   if (!command)
     return console.error(`${chalk.red(customId ?? commandName)} interaction not found as ${chalk.red(intName)}`);
 
-  let language =
-    getParam(message?.embeds[0], 'mowLang') ??
-    (!interaction.inGuild() || ephemeralO
-      ? null
-      : (await client.dbGet(guild))?.locale ??
-        (interaction.guild?.features.includes('COMMUNITY') ? interaction.guildLocale : null));
-
-  language = i18n.getLocales().includes(language)
-    ? language
-    : i18n.getLocales().includes(interaction.locale)
-    ? interaction.locale
-    : defaultLocale;
-
-  /* console.log(1, getParam(message?.embeds[0], 'mowLang'));
-  console.log(2, !interaction.inGuild());
-  console.log(3, ephemeralO);
-  console.log(4, interaction.locale);
-  console.log(5, (await client.dbGet(guild))?.locale);
-  console.log(6, interaction.guild?.features.includes('COMMUNITY'));
-  console.log(7, interaction.guildLocale);
-  console.log(8, interaction.locale);
-  console.log(9, language);*/
+  const language = i18n.getLocales().includes(interaction.locale) ? interaction.locale : defaultLocale;
 
   i18n.setLocale(language);
   interaction.language = language;
@@ -62,22 +40,22 @@ export async function execute({ chalk, client, i18n, firebase }, interaction) {
    * @returns {string} A predefined embed
    * @param {Object} options The function's options
    * @param {Object} [options.addParams] Adds extra parameters to the embed's footer image url
-   * @param {boolean} [options.interacted=false] Set footer as interacted instead of requested
-   * @param {string} [options.title] Change the title but still including the type's emoji
+   * @param {('interacted'|'requested'|'none')} [options.footer='requested'] Sets the default footer type (Default: Interacted)
+   * @param {string} [options.title] Change the title while still including the type's emoji
    * @param {('error'|'success'|'warning'|'wip')} [options.type] The type of the embed
    */
   const embed = (options = {}) => {
-    const emb = new Embed()
-      .setColor(embColor)
-      .setFooter({
-        iconURL: `${(member ?? user).displayAvatarURL(imgOpts)}&mowLang=${language}${
-          options.addParams ? `&${new URLSearchParams(options.addParams).toString()}` : ''
-        }`,
-        text: i18n.__mf(`GENERIC.${options.interacted ? 'INTERACTED_BY' : 'REQUESTED_BY'}`, {
+    const emb = new EmbedBuilder().setTimestamp(Date.now());
+
+    if (options.footer !== 'none') {
+      emb.setFooter({
+        iconURL: addSearchParams(new URL((member ?? user).displayAvatarURL(imgOpts)), options.addParams).href,
+        text: i18n.__mf(`GENERIC.${options.footer === 'interacted' ? 'INTERACTED_BY' : 'REQUESTED_BY'}`, {
           userName: member?.displayName ?? user.username,
         }),
-      })
-      .setTimestamp(Date.now());
+      });
+    }
+
     switch (options.type) {
       case 'error':
         return emb.setColor(colors.red).setTitle(`❌ ${options.title || i18n.__('GENERIC.ERROR')}`);
@@ -91,14 +69,20 @@ export async function execute({ chalk, client, i18n, firebase }, interaction) {
           .setTitle(`🔨 ${options.title || i18n.__('GENERIC.WIP')}`)
           .setDescription(i18n.__('GENERIC.WIP_COMMAND'));
       default:
-        return options.title ? emb.setTitle(options.title) : emb;
+        return (options.title ? emb.setTitle(options.title) : emb).setColor(embColor);
     }
   };
 
   try {
     switch (customId) {
       case 'generic_message_delete': {
-        if (message.interaction.user.id !== user.id) {
+        if (
+          message.interaction?.user.id !== user.id &&
+          !new URLSearchParams(message.embeds[message.embeds.length - 1]?.footer?.iconURL)
+            .get('messageOwners')
+            ?.split('-')
+            .includes(user.id)
+        ) {
           return interaction.reply({
             embeds: [embed({ type: 'error' }).setDescription(i18n.__('ERROR.UNALLOWED.COMMAND'))],
             ephemeral: true,
@@ -108,25 +92,24 @@ export async function execute({ chalk, client, i18n, firebase }, interaction) {
         return message.delete();
       }
       default:
-        await command.execute({ chalk, client, embed, firebase, interaction, st: i18n });
+        await command.execute({ chalk, embed, firebase, interaction, st: i18n });
     }
   } catch (err) {
-    if (interaction.isAutocomplete()) return;
+    if (interaction.type === InteractionType.ApplicationCommandAutocomplete) return;
     console.error(err);
 
     const eOpts = {
-      components:
-        opts?.getBoolean('ephemeral') === false
-          ? [
-              new ActionRow().addComponents(
-                new ButtonComponent()
-                  .setLabel(i18n.__('GENERIC.COMPONENT.MESSAGE_DELETE'))
-                  .setEmoji({ name: '🧹' })
-                  .setStyle(ButtonStyle.Danger)
-                  .setCustomId('generic_message_delete'),
-              ),
-            ]
-          : [],
+      components: !ephemeralO
+        ? [
+            new ActionRowBuilder().addComponents([
+              new ButtonBuilder()
+                .setLabel(i18n.__('GENERIC.COMPONENT.MESSAGE_DELETE'))
+                .setEmoji('🧹')
+                .setStyle(ButtonStyle.Danger)
+                .setCustomId('generic_message_delete'),
+            ]),
+          ]
+        : [],
       embeds: [
         embed({ type: 'error' }).setDescription(`${i18n.__('ERROR.EXECUTING_INTERACTION')}\n\`\`\`js\n${err}\`\`\``),
       ],
@@ -134,7 +117,7 @@ export async function execute({ chalk, client, i18n, firebase }, interaction) {
     };
     return interaction.deferred || interaction.replied ? interaction.followUp(eOpts) : interaction.reply(eOpts);
   } finally {
-    if (debugMode && !interaction.isAutocomplete()) {
+    if (debugMode && interaction.type !== InteractionType.ApplicationCommandAutocomplete) {
       console.log(
         chalk.blue(user.tag) +
           chalk.gray(' (') +

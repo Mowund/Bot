@@ -2,7 +2,7 @@
 
 // Old bullshit
 const chalk = require('chalk'),
-  { getColorFromURL } = require('color-thief-node'),
+  //FIXME: { getColorFromURL } = require('color-thief-node'),
   Discord = require('discord.js'),
   tc = require('tinycolor2'),
   utils = require('../utils.js');

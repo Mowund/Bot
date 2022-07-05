@@ -1,80 +1,100 @@
 /* eslint-disable */
-
 // Old bullshit
 import { ApplicationCommandOptionType } from 'discord.js';
-import { getColorFromURL } from 'color-thief-node';
+//TODO: import { getColorFromURL } from 'color-thief-node';
 import tc from 'tinycolor2';
 import { botOwners } from '../defaults.js';
 import { diEmb } from '../utils.js';
-import 'log-timestamp';
 
 export const data = [
   {
+    description: 'Color role related commands',
+    description_localizations: { 'pt-BR': 'Comandos relacionados aos cargos de cor' },
     name: 'color',
-    description: 'Role color system',
+    name_localizations: { 'pt-BR': 'cor' },
     options: [
       {
-        name: 'change',
         description: 'Changes the color of a color role',
-        type: ApplicationCommandOptionType.Subcommand,
+        description_localizations: { 'pt-BR': 'Altera a cor de um cargo de cor' },
+        name: 'change',
+        name_localizations: { 'pt-BR': 'alterar' },
         options: [
           {
-            name: 'color',
             description: 'Any supported color',
+            description_localizations: { 'pt-BR': 'Qualquer cor suportada' },
+            name: 'color',
+            name_localizations: { 'pt-BR': 'cor' },
             type: ApplicationCommandOptionType.String,
           },
           {
+            description: 'A member (Requires: Manage roles)',
+            description_localizations: { 'pt-BR': 'Um membro (Requer: Gerenciar cargos)' },
             name: 'user',
-            description: 'An user (Requires: Manage roles)',
+            name_localizations: { 'pt-BR': 'usuário' },
             type: ApplicationCommandOptionType.User,
           },
           {
-            name: 'ephemeral',
             description: 'Send reply as an ephemeral message (Default: True)',
+            description_localizations: { 'pt-BR': 'Envia a resposta como uma mensagem efêmera (Padrão: Verdadeiro)' },
+            name: 'ephemeral',
+            name_localizations: { 'pt-BR': 'efêmero' },
             type: ApplicationCommandOptionType.Boolean,
           },
         ],
+        type: ApplicationCommandOptionType.Subcommand,
       },
       {
-        name: 'current',
         description: 'The current color of a color role',
-        type: ApplicationCommandOptionType.Subcommand,
+        description_localizations: { 'pt-BR': 'A cor atual de um cargo de cor' },
+        name: 'current',
+        name_localizations: { 'pt-BR': 'atual' },
         options: [
           {
+            description: 'A member (Requires: Manage roles)',
+            description_localizations: { 'pt-BR': 'Um membro (Requer: Gerenciar cargos)' },
             name: 'user',
-            description: 'An user (Requires: Manage roles)',
+            name_localizations: { 'pt-BR': 'usuário' },
             type: ApplicationCommandOptionType.User,
           },
           {
-            name: 'ephemeral',
             description: 'Send reply as an ephemeral message (Default: True)',
+            description_localizations: { 'pt-BR': 'Envia a resposta como uma mensagem efêmera (Padrão: Verdadeiro)' },
+            name: 'ephemeral',
+            name_localizations: { 'pt-BR': 'efêmero' },
             type: ApplicationCommandOptionType.Boolean,
           },
         ],
+        type: ApplicationCommandOptionType.Subcommand,
       },
       {
-        name: 'remove',
         description: 'Deletes a color role',
-        type: ApplicationCommandOptionType.Subcommand,
+        description_localizations: { 'pt-BR': 'Exclui um cargo de cor' },
+        name: 'remove',
+        name_localizations: { 'pt-BR': 'remover' },
         options: [
           {
+            description: 'A member (Requires: Manage roles)',
+            description_localizations: { 'pt-BR': 'Um membro (Requer: Gerenciar cargos)' },
             name: 'user',
-            description: 'An user (Requires: Manage roles)',
+            name_localizations: { 'pt-BR': 'usuário' },
             type: ApplicationCommandOptionType.User,
           },
           {
-            name: 'ephemeral',
             description: 'Send reply as an ephemeral message (Default: True)',
+            description_localizations: { 'pt-BR': 'Envia a resposta como uma mensagem efêmera (Padrão: Verdadeiro)' },
+            name: 'ephemeral',
+            name_localizations: { 'pt-BR': 'efêmero' },
             type: ApplicationCommandOptionType.Boolean,
           },
         ],
+        type: ApplicationCommandOptionType.Subcommand,
       },
     ],
   },
 ];
 export const guildOnly = ['420007989261500418'];
-export async function execute({ chalk, client, interaction, st, embed }) {
-  const { user, guild, options } = interaction,
+export async function execute({ chalk, interaction, st, embed }) {
+  const { client, user, guild, options } = interaction,
     userO = options?.getUser('user') ?? user,
     tRoleN = userO ? `USER-${userO.id}` : '',
     tRole = guild.roles.cache.find(x => x.name === tRoleN),
@@ -96,9 +116,8 @@ export async function execute({ chalk, client, interaction, st, embed }) {
 
   console.log(pos);
   function dftCF(disabled) {
-    if (!disabled) {
-      disabled = [];
-    }
+    if (!disabled) disabled = [];
+
     function getValue(id) {
       return typeof disabled.find(item => item.id === id) !== 'undefined'
         ? disabled.find(item => item.id === id).value
@@ -190,9 +209,7 @@ export async function execute({ chalk, client, interaction, st, embed }) {
     ];
   }
   let dftC = dftCF();
-  if (!tRole) {
-    dftC = dftCF([{ id: 'preview', value: true }]);
-  }
+  if (!tRole) dftC = dftCF([{ id: 'preview', value: true }]);
 
   if (interaction.isChatInputCommand()) {
     // Let alwCH = database.get(guild, 'color_allowed_channels');
@@ -209,20 +226,16 @@ export async function execute({ chalk, client, interaction, st, embed }) {
     if (options?.getSubcommand('change')) {
       let color = options?.getString('color'),
         pColor = [];
-      if (tRole) {
-        pColor = tc(tRole.hexColor).toHex();
-      }
+      if (tRole) pColor = tc(tRole.hexColor).toHex();
+
       let eTitle = st.__('COLOR.SPECIFIED');
       if (!color) {
         const [r, g, b] = await getColorFromURL(userO.avatarURL({ format: 'png' }));
         color = tc(chalk.rgb(r, g, b)(`rgb(${r}, ${g}, ${b})`)).toHex();
         eTitle = st.__('COLOR.AVATAR_ESTIMATED');
       }
-      if (tc(color).isValid()) {
-        color = tc(color).toHex();
-      } else {
-        return iCP(client, 0, interaction, 0, 1, 0, await diEmb(client, 2, interaction, userO));
-      }
+      if (tc(color).isValid()) color = tc(color).toHex();
+      else return iCP(client, 0, interaction, 0, 1, 0, await diEmb(client, 2, interaction, userO));
 
       color = color.replace('000000', '000001');
 
@@ -263,9 +276,8 @@ export async function execute({ chalk, client, interaction, st, embed }) {
   }
   if (interaction.isButton()) {
     const component_id = interaction.data.custom_id;
-    if (!component_id.startsWith('color_')) {
-      return;
-    }
+    if (!component_id.startsWith('color_')) return;
+
     let message = interaction.message;
     const embIURL = new URL(message.embeds[0].image.url).pathname.split(/[/&]/),
       embAURL = new URL(message.embeds[0].footer.icon_url).pathname.split(/[/&]/);
@@ -273,9 +285,8 @@ export async function execute({ chalk, client, interaction, st, embed }) {
       eTitle;
     const diEV = [embAURL[2], embIURL[4]];
 
-    if (userO.id !== diEV[0]) {
-      return iCP(client, 0, interaction, 0, 1, 0, 1);
-    }
+    if (userO.id !== diEV[0]) return iCP(client, 0, interaction, 0, 1, 0, 1);
+
     if (component_id === 'color_cancel') {
       iCP(
         client,
@@ -306,7 +317,7 @@ export async function execute({ chalk, client, interaction, st, embed }) {
       if (tRole) {
         function reSC() {
           eTitle = st.__('COLOR.CHANGED_ROLE');
-          tRole.setPosition(pos - 1);
+          tRole.setPosition(--pos);
           tRole.setColor(color);
           setInterval(() => {
             if (tc(tRole.hexColor).toHex() !== color) {
@@ -396,15 +407,12 @@ export async function execute({ chalk, client, interaction, st, embed }) {
       function fm1() {
         async function checkV() {
           message = await iCP(client, 4, interaction);
-          if (message.embeds[0].title === st.__('COLOR.EDIT')) {
-            return 1;
-          }
-          if (message.embeds[0].title === st.__('COLOR.EDIT_INVALID')) {
-            return 2;
-          }
-          if (message.embeds[0].title === st.__('COLOR.EDITED_REPEAT')) {
-            return 3;
-          }
+          if (message.embeds[0].title === st.__('COLOR.EDIT')) return 1;
+
+          if (message.embeds[0].title === st.__('COLOR.EDIT_INVALID')) return 2;
+
+          if (message.embeds[0].title === st.__('COLOR.EDITED_REPEAT')) return 3;
+
           return 0;
         }
 
@@ -416,9 +424,8 @@ export async function execute({ chalk, client, interaction, st, embed }) {
             errors: ['time'],
           })
           .then(async msg => {
-            if ((await checkV()) === 0) {
-              return;
-            }
+            if ((await checkV()) === 0) return;
+
             msg = msg.first();
             if (tc(msg.content).isValid()) {
               color = tc(msg.content).toHex().replace('000000', '000001');
@@ -453,9 +460,8 @@ export async function execute({ chalk, client, interaction, st, embed }) {
             }
           })
           .catch(async () => {
-            if ((await checkV()) === 0) {
-              return;
-            }
+            if ((await checkV()) === 0) return;
+
             iCP(
               client,
               3,
@@ -626,15 +632,12 @@ export async function execute({ chalk, client, interaction, st, embed }) {
       function fm1() {
         async function checkV() {
           message = await iCP(client, 4, interaction);
-          if (message.embeds[0].title === st.__('COLOR.MIX')) {
-            return 1;
-          }
-          if (message.embeds[0].title === st.__('COLOR.MIXED_REPEAT')) {
-            return 2;
-          }
-          if (message.embeds[0].title === st.__('COLOR.MIX_INVALID')) {
-            return 3;
-          }
+          if (message.embeds[0].title === st.__('COLOR.MIX')) return 1;
+
+          if (message.embeds[0].title === st.__('COLOR.MIXED_REPEAT')) return 2;
+
+          if (message.embeds[0].title === st.__('COLOR.MIX_INVALID')) return 3;
+
           return 0;
         }
 
@@ -646,9 +649,8 @@ export async function execute({ chalk, client, interaction, st, embed }) {
             errors: ['time'],
           })
           .then(async msg => {
-            if ((await checkV()) === 0) {
-              return;
-            }
+            if ((await checkV()) === 0) return;
+
             msg = msg.first();
             if (tc(msg.content).isValid()) {
               color = tc.mix(color, msg.content, 50).toHex().replace('000000', '000001');
@@ -683,9 +685,8 @@ export async function execute({ chalk, client, interaction, st, embed }) {
             }
           })
           .catch(async () => {
-            if ((await checkV()) === 0) {
-              return;
-            }
+            if ((await checkV()) === 0) return;
+
             iCP(
               client,
               3,

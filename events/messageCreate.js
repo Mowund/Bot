@@ -3,7 +3,7 @@ import { debugMode } from '../defaults.js';
 export const eventName = 'messageCreate';
 export async function execute({ chalk, client }, message) {
   // TODO
-  if (message.author.bot || message.guild.id !== '420007989261500418') return;
+  if (!message.guild?.available || message.author.bot || message.guild.id !== '420007989261500418') return;
 
   const scamReportTimeout = 15000;
   if (client.badDomains.some(w => message.content.includes(w))) {

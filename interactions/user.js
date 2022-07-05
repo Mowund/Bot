@@ -1,11 +1,11 @@
 import {
   UserFlags,
-  ActionRow,
-  ButtonComponent,
+  ActionRowBuilder,
+  ButtonBuilder,
   ButtonStyle,
+  InteractionType,
   ApplicationCommandOptionType,
   ApplicationCommandType,
-  PermissionFlagsBits,
 } from 'discord.js';
 import { emojis, colors, imgOpts } from '../defaults.js';
 import { toUTS, userFlagToEmoji, collMap, monthDiff } from '../utils.js';
@@ -13,24 +13,41 @@ import { toUTS, userFlagToEmoji, collMap, monthDiff } from '../utils.js';
 export const data = [
   {
     name: 'User Info',
+    name_localizations: { 'pt-BR': 'Informações do Usuário' },
     type: ApplicationCommandType.User,
   },
   {
     description: 'User related commands',
+    description_localizations: {
+      'pt-BR': 'Comandos relacionados à usuários',
+    },
     name: 'user',
+    name_localizations: { 'pt-BR': 'usuário' },
     options: [
       {
-        description: 'Get information about a user',
+        description: 'Gets information about a user',
+        description_localizations: {
+          'pt-BR': 'Obtém informações sobre um usuário',
+        },
         name: 'info',
+        name_localizations: { 'pt-BR': 'info' },
         options: [
           {
-            description: 'The user to get information from',
+            description: 'The user to get information about',
+            description_localizations: {
+              'pt-BR': 'O usuário para obter informações sobre',
+            },
             name: 'user',
+            name_localizations: { 'pt-BR': 'usuário' },
             type: ApplicationCommandOptionType.User,
           },
           {
             description: 'Send reply as an ephemeral message (Default: True)',
+            description_localizations: {
+              'pt-BR': 'Envia a resposta como uma mensagem efêmera (Padrão: Verdadeiro)',
+            },
             name: 'ephemeral',
+            name_localizations: { 'pt-BR': 'efêmero' },
             type: ApplicationCommandOptionType.Boolean,
           },
         ],
@@ -39,13 +56,18 @@ export const data = [
     ],
   },
 ];
-export async function execute({ interaction, st, embed }) {
-  const { channel, commandName, guild, user, options } = interaction,
+export async function execute({ embed, interaction, st }) {
+  const { commandName, guild, options, user } = interaction,
     userO = await (options?.getUser('user') ?? user).fetch(),
     memberO = guild?.members.cache.get(userO.id),
-    ephemeralO = options?.getBoolean('ephemeral') ?? true;
+    ephemeralO = options?.getBoolean('ephemeral') ?? true,
+    mdBtn = new ButtonBuilder()
+      .setLabel(st.__('GENERIC.COMPONENT.MESSAGE_DELETE'))
+      .setEmoji('🧹')
+      .setStyle(ButtonStyle.Danger)
+      .setCustomId('generic_message_delete');
 
-  if (interaction.isCommand()) {
+  if (interaction.type === InteractionType.ApplicationCommand) {
     await interaction.deferReply({ ephemeral: ephemeralO });
 
     if (commandName === 'User Info' || options?.getSubcommand(true) === 'info') {
@@ -87,59 +109,65 @@ export async function execute({ interaction, st, embed }) {
             .setAuthor({ iconURL: userO.displayAvatarURL(imgOpts), name: userO.tag })
             .setThumbnail((memberO ?? userO).displayAvatarURL(imgOpts))
             .setDescription(`${userO} ${flags.join(' ')}`)
-            .addField({ inline: true, name: `💻 ${st.__('GENERIC.ID')}`, value: `\`${userO.id}\`` })
-            .addField({
-              inline: true,
-              name: `📅 ${st.__('GENERIC.CREATION_DATE')}`,
-              value: toUTS(userO.createdTimestamp),
-            }),
+            .addFields([
+              { inline: true, name: `🏷️ ${st.__('GENERIC.ID')}`, value: `\`${userO.id}\`` },
+              {
+                inline: true,
+                name: `📅 ${st.__('GENERIC.CREATION_DATE')}`,
+                value: toUTS(userO.createdTimestamp),
+              },
+            ]),
         ],
         rows = [
-          new ActionRow().addComponents(
-            new ButtonComponent()
+          new ActionRowBuilder().addComponents([
+            new ButtonBuilder()
               .setLabel(st.__('USER.INFO.USER.AVATAR'))
-              .setEmoji({ name: '🖼️' })
+              .setEmoji('🖼️')
               .setStyle(ButtonStyle.Link)
               .setURL(userO.displayAvatarURL(imgOpts)),
-          ),
+          ]),
         ];
 
       if (memberO) {
         const mRoles = memberO.roles.cache.filter(({ id }) => id !== guild.id);
-        embs[0].addField({
-          inline: true,
-          name: `${emojis.serverJoin} ${st.__('USER.INFO.MEMBER.JOINED')}`,
-          value: toUTS(memberO.joinedTimestamp),
-        });
-        if (mRoles.size > 0) {
-          embs[0].addField({
-            name: `${emojis.role} ${st.__('GENERIC.ROLES')} [${mRoles.size}]`,
-            value: collMap(mRoles),
-          });
+        embs[0].addFields([
+          {
+            inline: true,
+            name: `${emojis.serverJoin} ${st.__('USER.INFO.MEMBER.JOINED')}`,
+            value: toUTS(memberO.joinedTimestamp),
+          },
+        ]);
+        if (mRoles.size) {
+          embs[0].addFields([
+            {
+              name: `${emojis.role} ${st.__('GENERIC.ROLES')} [${mRoles.size}]`,
+              value: collMap(mRoles),
+            },
+          ]);
         }
       }
 
       if (memberO?.avatar) {
-        rows[0].addComponents(
-          new ButtonComponent()
+        rows[0].addComponents([
+          new ButtonBuilder()
             .setLabel(st.__('USER.INFO.MEMBER.AVATAR'))
-            .setEmoji({ name: '🖼️' })
+            .setEmoji('🖼️')
             .setStyle(ButtonStyle.Link)
             .setURL(memberO.displayAvatarURL(imgOpts)),
-        );
+        ]);
       }
 
       if (userO.banner) {
-        const button = new ButtonComponent()
+        const button = new ButtonBuilder()
           .setLabel(st.__('USER.INFO.USER.BANNER'))
-          .setEmoji({ name: '🖼️' })
+          .setEmoji('🖼️')
           .setStyle(ButtonStyle.Link)
           .setURL(userO.bannerURL(imgOpts));
 
         embs[0]
-          .addField({ name: `🖼️ ${st.__('USER.INFO.USER.BANNER')}`, value: '_ _' })
+          .addFields([{ name: `🖼️ ${st.__('USER.INFO.USER.BANNER')}`, value: '\u200B' }])
           .setImage(userO.bannerURL(imgOpts));
-        rows[0].addComponents(button);
+        rows[0].addComponents([button]);
       }
 
       if (memberO?.banner) {
@@ -149,51 +177,30 @@ export async function execute({ interaction, st, embed }) {
           embs.push(
             embed()
               .setColor(color)
-              .addField({ name: `🖼️ ${st.__('USER.INFO.MEMBER.BANNER')}`, value: '_ _' })
+              .addFields([{ name: `🖼️ ${st.__('USER.INFO.MEMBER.BANNER')}`, value: '\u200B' }])
               .setImage(memberO.bannerURL(imgOpts)),
           );
         } else {
           embs[0]
-            .addField({ name: `🖼️ ${st.__('USER.INFO.MEMBER.BANNER')}`, value: '_ _' })
+            .addFields([{ name: `🖼️ ${st.__('USER.INFO.MEMBER.BANNER')}`, value: '\u200B' }])
             .setImage(memberO.bannerURL(imgOpts));
         }
 
-        rows[0].addComponents(
-          new ButtonComponent()
+        rows[0].addComponents([
+          new ButtonBuilder()
             .setLabel(st.__('USER.INFO.MEMBER.BANNER'))
-            .setEmoji({ name: '🖼️' })
+            .setEmoji('🖼️')
             .setStyle(ButtonStyle.Link)
             .setURL(memberO.bannerURL(imgOpts)),
-        );
+        ]);
       }
 
       if (!ephemeralO) {
-        rows.push(
-          new ActionRow().addComponents(
-            new ButtonComponent()
-              .setLabel(st.__('GENERIC.COMPONENT.MESSAGE_DELETE'))
-              .setEmoji({ name: '🧹' })
-              .setStyle(ButtonStyle.Danger)
-              .setCustomId('generic_message_delete'),
-          ),
-        );
+        if (rows[0].components.length > 1) rows.push(new ActionRowBuilder().addComponents([mdBtn]));
+        else rows[0].addComponents([mdBtn]);
       }
 
-      await interaction.editReply({ components: rows, embeds: embs });
-
-      if (
-        interaction.inGuild() &&
-        !channel.permissionsFor(guild.roles.everyone).has(PermissionFlagsBits.UseExternalEmojis, false)
-      ) {
-        return interaction.followUp({
-          embeds: [
-            embed({ type: 'warning' }).setDescription(
-              st.__mf('PERM.ROLE_REQUIRES', { perm: st.__('PERM.USE_EXTERNAL_EMOJIS'), role: '@everyone' }),
-            ),
-          ],
-          ephemeral: true,
-        });
-      }
+      return interaction.editReply({ components: rows, embeds: embs });
     }
   }
 }

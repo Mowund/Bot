@@ -1,6 +1,6 @@
 {
   "env": {
-    "es6": true,
+    "es2022": true,
     "node": true
   },
   "extends": [
@@ -13,7 +13,8 @@
   },
   "plugins": [
     "import",
-    "json-format"
+    "json-format",
+    "sort-destructure-keys"
   ],
   "rules": {
     "accessor-pairs": "warn",
@@ -225,6 +226,7 @@
     "rest-spread-spacing": "error",
     "semi": "error",
     "semi-spacing": "error",
+    "sort-destructure-keys/sort-destructure-keys": 2,
     "sort-keys": [
       "error",
       "asc",
