@@ -5,8 +5,10 @@
   },
   "extends": [
     "eslint:recommended",
-    "plugin:prettier/recommended"
+    "plugin:prettier/recommended",
+    "plugin:@typescript-eslint/recommended"
   ],
+  "parser": "@typescript-eslint/parser",
   "parserOptions": {
     "ecmaVersion": "latest",
     "sourceType": "module"
@@ -14,9 +16,12 @@
   "plugins": [
     "import",
     "json-format",
-    "sort-destructure-keys"
+    "sort-destructure-keys",
+    "@typescript-eslint"
   ],
   "rules": {
+    "@typescript-eslint/no-explicit-any": "off",
+    "@typescript-eslint/no-shadow":"error",
     "accessor-pairs": "warn",
     "array-bracket-spacing": "error",
     "array-callback-return": "error",
@@ -75,7 +80,6 @@
     "handle-callback-err": "error",
     "import/order": "error",
     "key-spacing": "error",
-    "keyword-spacing": "error",
     "max-depth": [
       "error",
       10
@@ -102,7 +106,6 @@
         "allowElseIf": false
       }
     ],
-    "no-empty-function": "error",
     "no-floating-decimal": "error",
     "no-implied-eval": "error",
     "no-inline-comments": "error",
@@ -153,7 +156,6 @@
     "no-return-await": "error",
     "no-self-compare": "error",
     "no-sequences": "error",
-    "no-shadow": "error",
     "no-spaced-func": "error",
     "no-template-curly-in-string": "error",
     "no-throw-literal": "error",
@@ -254,29 +256,6 @@
     "template-curly-spacing": "error",
     "template-tag-spacing": "error",
     "unicode-bom": "error",
-    "valid-jsdoc": [
-      "error",
-      {
-        "prefer": {
-          "arg": "param",
-          "return": "returns"
-        },
-        "preferType": {
-          "array": "Array",
-          "Boolean": "boolean",
-          "date": "Date",
-          "error": "Error",
-          "function": "Function",
-          "null": "void",
-          "Number": "number",
-          "object": "Object",
-          "String": "string",
-          "Symbol": "symbol"
-        },
-        "requireReturn": false,
-        "requireReturnDescription": false
-      }
-    ],
     "wrap-iife": [
       "error",
       "inside"

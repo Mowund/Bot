@@ -1,0 +1,40 @@
+import { ApplicationCommandType, BaseInteraction } from 'discord.js';
+import { Command, CommandArgs } from '../../lib/util/Command.js';
+
+export default class DeleteResponse extends Command {
+  constructor() {
+    super([
+      {
+        name: 'DELETE_RESPONSE',
+        type: ApplicationCommandType.Message,
+      },
+    ]);
+  }
+
+  async run(args: CommandArgs, interaction: BaseInteraction<'cached'>): Promise<any> {
+    if (!interaction.isMessageContextMenuCommand()) return;
+
+    const { client, embed } = args,
+      { i18n } = client,
+      { options, user } = interaction,
+      messageO = options.getMessage('message');
+
+    if (
+      messageO.author.id !== client.user.id ||
+      (messageO.interaction?.user.id !== user.id &&
+        !new URLSearchParams(messageO.embeds[messageO.embeds.length - 1]?.footer?.iconURL)
+          .get('messageOwners')
+          ?.split('-')
+          .includes(user.id))
+    ) {
+      return interaction.reply({
+        embeds: [embed({ type: 'error' }).setDescription(i18n.__('ERROR.UNALLOWED.DELETE_RESPONSE'))],
+        ephemeral: true,
+      });
+    }
+
+    await interaction.deferReply();
+    await messageO.delete();
+    return interaction.deleteReply();
+  }
+}

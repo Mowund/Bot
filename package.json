@@ -20,24 +20,37 @@
   "type": "module",
   "main": "index.js",
   "scripts": {
+    "build": "yarn clean && yarn compile && yarn cpr",
+    "clean": "rimraf dist/",
+    "compile": "tsc",
+    "cpr": "copyfiles -u 1 src/**/*.json dist/",
+    "dev": "NODE_ENV=development yarn build && node dist/src/index.js",
     "lint": "eslint ./",
-    "start": "yarn upgrade mowund-i18n && node index.js"
+    "start": "NODE_ENV=production yarn build && node dist/src/index.js"
   },
   "dependencies": {
+    "@octokit/core": "^4.0.4",
     "chalk": "^5.0.0",
-    "discord.js": "^14.0.0-dev.1654906231-c7391db",
-    "firebase-admin": "^10.0.1",
+    "copyfiles": "^2.4.1",
+    "discord.js": "^14.0.4-dev.1658923505-0b61dbf.0",
+    "dotenv-extended": "^2.9.0",
+    "fast-fuzzy": "^1.11.2",
+    "firebase-admin": "^11.0.1",
     "git": "^0.1.5",
     "i18n": "^0.15.0",
     "log-timestamp": "^0.3.0",
-    "mowund-i18n": "Mowund/i18n",
+    "math.js": "^1.1.46",
     "murmurhash": "^2.0.0",
     "parse-duration": "^1.0.2",
+    "rimraf": "^3.0.2",
     "tinycolor2": "^1.4.2",
-    "twemoji-parser": "^14.0.0"
+    "twemoji-parser": "^14.0.0",
+    "typescript": "^4.7.3"
   },
   "devDependencies": {
-    "eslint": "^8.16.0",
+    "@typescript-eslint/eslint-plugin": "^5.27.1",
+    "@typescript-eslint/parser": "^5.27.1",
+    "eslint": "^8.17.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-import": "^2.25.4",
     "eslint-plugin-json": "^3.1.0",
