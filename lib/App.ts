@@ -19,11 +19,13 @@ import { Chalk, ChalkInstance } from 'chalk';
 import { defaultLocale, defaultSettings, supportServer } from '../src/defaults.js';
 import { removeEmpty, SearchOptions, testConditions } from '../src/utils.js';
 import { Command } from './util/Command.js';
+import { DatabaseManager } from './database/DatabaseManager.js';
 
 export class App extends Client {
   badDomains: Array<string>;
   chalk: ChalkInstance;
   commands: Collection<string, Command>;
+  database: DatabaseManager;
   dbCache: { guilds: Collection<string, any>; users: Collection<string, any> };
   experiments: { data: Experiment[]; lastUpdated: number };
   firestore: firestore.Firestore;
@@ -35,12 +37,9 @@ export class App extends Client {
   constructor(options: ClientOptions) {
     super(options);
 
-    firebase.initializeApp({
-      credential: firebase.credential.cert(JSON.parse(process.env.FIREBASE_TOKEN)),
-    });
-
     this.chalk = new Chalk({ level: 3 });
     this.commands = new Collection();
+    this.database = new DatabaseManager(this);
     this.dbCache = { guilds: new Collection(), users: new Collection() };
     this.firestore = firebase.firestore();
     this.i18n = i18n;

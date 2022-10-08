@@ -18,23 +18,6 @@ export default class ReminderFoundEvent extends Event {
       idTimestamp = SnowflakeUtil.timestampFrom(id);
 
     if (!user) return;
-
-    let recReminder;
-    if (isRecursive) {
-      const recReminderId = SnowflakeUtil.generate().toString();
-      recReminder = await client.dbSet(
-        user,
-        {
-          channelId: channelId,
-          content: content,
-          id: recReminderId,
-          timestamp: SnowflakeUtil.timestampFrom(recReminderId) + (SnowflakeUtil.timestampFrom(id) - timestamp),
-          userId: user.id,
-        },
-        { subCollections: [['reminders', recReminderId]] },
-      );
-    }
-
     const emb = new EmbedBuilder()
       .setColor(Colors.Yellow)
       .setTitle(`${emojis.bellRinging} ${i18n.__('REMINDER.NEW')}`)
@@ -61,6 +44,25 @@ export default class ReminderFoundEvent extends Event {
         }),
       })
       .setTimestamp(timestamp);
+
+    if (isRecursive) {
+      const recReminderId = SnowflakeUtil.generate().toString(),
+        recReminder = await client.dbSet(
+          user,
+          {
+            channelId: channelId,
+            content: content,
+            id: recReminderId,
+            timestamp: SnowflakeUtil.timestampFrom(recReminderId) + (SnowflakeUtil.timestampFrom(id) - timestamp),
+            userId: user.id,
+          },
+          { subCollections: [['reminders', recReminderId]] },
+        );
+      emb.addFields({
+        name: `🔁 ${i18n.__('REMINDER.RECURSIVE')}`,
+        value: i18n.__mf('REMINDER.RECURSIVE_DESCRIPTION', { timestamp: recReminder.timestamp }),
+      });
+    }
 
     if (channelId) {
       if (!channel) {

@@ -98,8 +98,8 @@ export default class Settings extends Command {
                 .setStyle(ButtonStyle.Link)
                 .setURL('https://crowdin.com/project/mowund'),
             );
-
-            console.log(await client.dbGet(guild));
+            client.guilds.cache.get(guild.id);
+            console.log(await client.database.guilds.cache.get(guild.id));
 
             return interaction.editReply({
               components: rows,

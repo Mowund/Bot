@@ -96,7 +96,7 @@ export interface SearchOptions {
   target: any;
 }
 
-export const decreaseSizeCDN = async (url: string, options?: { initialSize?: number; maxSize?: number }) => {
+export const decreaseSizeCDN = async (url: string, options: { initialSize?: number; maxSize?: number } = {}) => {
   const { initialSize, maxSize } = options,
     fileSize = (await fetchURL(url))?.data.length;
 
@@ -118,7 +118,10 @@ export const decreaseSizeCDN = async (url: string, options?: { initialSize?: num
  * @param options.recursion Whether to also recursively filter nested objects (Default: True)
  * @param options.removeFalsy Whether to remove all falsy values (Default: False)
  */
-export const removeEmpty = (object: Record<string, any>, options?: { removeFalsy?: boolean; recursion?: boolean }) =>
+export const removeEmpty = (
+  object: Record<string, any>,
+  options: { removeFalsy?: boolean; recursion?: boolean } = {},
+) =>
   Object.fromEntries(
     Object.entries(object)
       .filter(([, v]) => (options.removeFalsy ? !!v : v != null))

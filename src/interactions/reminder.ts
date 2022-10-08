@@ -5,6 +5,7 @@ import {
   ButtonBuilder,
   ButtonStyle,
   Colors,
+  EmbedBuilder,
   SelectMenuBuilder,
   SelectMenuOptionBuilder,
   SnowflakeUtil,
@@ -70,7 +71,6 @@ export default class Reminder extends Command {
 
           if (!msTime || msTime < 0) {
             return interaction.reply({
-              components: rows,
               embeds: [
                 embed({ type: 'error' }).setDescription(
                   i18n.__mf('ERROR.INVALID.TIME', {
@@ -121,6 +121,19 @@ export default class Reminder extends Command {
               },
             );
 
+          rows.push(
+            new ActionRowBuilder<ButtonBuilder>().addComponents(
+              new ButtonBuilder()
+                .setCustomId('reminder_recursive')
+                .setLabel(i18n.__('REMINDER.RECURSIVE'))
+                .setStyle(ButtonStyle.Primary),
+              new ButtonBuilder()
+                .setCustomId('reminder_delete')
+                .setLabel(i18n.__('GENERIC.DELETE'))
+                .setStyle(ButtonStyle.Danger),
+            ),
+          );
+
           return interaction.editReply({
             components: rows,
             embeds: [emb],
@@ -134,10 +147,10 @@ export default class Reminder extends Command {
               .setPlaceholder(i18n.__('REMINDER.COMPONENT.SELECT_LIST'))
               .setCustomId('reminder_select');
 
-          let emb;
+          let emb: EmbedBuilder;
           if (reminders.length) {
             emb = embed({ title: `🔔 ${i18n.__('REMINDER.LIST')}` });
-            reminders.forEach(r => {
+            reminders.forEach((r: Record<string, any>) => {
               selectMenu.addOptions({ description: truncate(r.content, 100), label: r.id, value: r.id });
               emb.addFields({
                 name: `**${r.id}**`,
@@ -171,20 +184,18 @@ export default class Reminder extends Command {
       }
 
       await interaction.deferUpdate();
-      await interaction.editReply({
-        components: disableComponents(message.components),
-      });
+      await interaction.editReply({ components: disableComponents(message.components) });
 
       const reminders = await client.dbGet(user, { subCollections: [['reminders']] }),
         selectMenu = new SelectMenuBuilder()
           .setPlaceholder(i18n.__('REMINDER.COMPONENT.SELECT_LIST'))
           .setCustomId('reminder_select');
 
-      let emb;
+      let emb: EmbedBuilder;
       if (reminders.length) {
         emb = embed({ title: `🔔 ${i18n.__('REMINDER.LIST')}` });
 
-        reminders.forEach(r => {
+        reminders.forEach((r: Record<string, any>) => {
           selectMenu.addOptions(
             new SelectMenuOptionBuilder().setLabel(r.id).setValue(r.id).setDescription(truncate(r.content, 100)),
           );
@@ -227,11 +238,11 @@ export default class Reminder extends Command {
       });
 
       const reminders = await client.dbGet(user, { subCollections: [['reminders']] }),
-        reminder = reminders.find?.(r => r.id === values[0]);
+        reminder = reminders.find?.((r: Record<string, any>) => r.id === values[0]);
 
       console.log(reminders);
 
-      let emb;
+      let emb: EmbedBuilder;
       if (reminder) {
         emb = embed({ title: `🔔 ${i18n.__('REMINDER.INFO')}` }).addFields(
           {
@@ -276,7 +287,7 @@ export default class Reminder extends Command {
 
         if (reminders.length) {
           emb = embed({ title: `🔔 ${i18n.__('REMINDER.LIST')}` });
-          reminders.forEach(r => {
+          reminders.forEach((r: Record<string, any>) => {
             selectMenu.addOptions(
               new SelectMenuOptionBuilder().setLabel(r.id).setValue(r.id).setDescription(truncate(r.content, 100)),
             );
