@@ -55,7 +55,7 @@ export default class Reminder extends Command {
   async run(args: CommandArgs, interaction: BaseInteraction<'cached'>): Promise<any> {
     const { client, embed } = args,
       { i18n } = client,
-      { channel, guild, user } = interaction,
+      { channel, user } = interaction,
       rows = [];
 
     if (interaction.isChatInputCommand()) {
@@ -87,18 +87,12 @@ export default class Reminder extends Command {
           await interaction.deferReply({ ephemeral: ephemeralO });
 
           const reminderId = SnowflakeUtil.generate().toString(),
-            reminder = await client.dbSet(
-              user,
-              {
-                channelId: interaction.guild ? channel.id : null,
-                content: reminderO,
-                guildId: guild?.id,
-                id: reminderId,
-                timestamp: summedTime,
-                userId: user.id,
-              },
-              { subCollections: [['reminders', reminderId]] },
-            ),
+            reminder = await client.database.reminders.set(reminderId, user.id, {
+              channelId: interaction.guild ? channel.id : null,
+              content: reminderO,
+              timestamp: summedTime,
+              userId: user.id,
+            }),
             emb = embed({ title: i18n.__('REMINDER.CREATED'), type: 'success' }).addFields(
               {
                 name: `📄 ${i18n.__('GENERIC.CONTENT')}`,
@@ -142,13 +136,13 @@ export default class Reminder extends Command {
         case 'list': {
           await interaction.deferReply({ ephemeral: ephemeralO });
 
-          const reminders = await client.dbGet(user, { subCollections: [['reminders']] }),
+          const reminders = await client.database.users.fetchAllReminders(user.id),
             selectMenu = new SelectMenuBuilder()
               .setPlaceholder(i18n.__('REMINDER.COMPONENT.SELECT_LIST'))
               .setCustomId('reminder_select');
 
           let emb: EmbedBuilder;
-          if (reminders.length) {
+          if (reminders.size) {
             emb = embed({ title: `🔔 ${i18n.__('REMINDER.LIST')}` });
             reminders.forEach((r: Record<string, any>) => {
               selectMenu.addOptions({ description: truncate(r.content, 100), label: r.id, value: r.id });
@@ -186,13 +180,13 @@ export default class Reminder extends Command {
       await interaction.deferUpdate();
       await interaction.editReply({ components: disableComponents(message.components) });
 
-      const reminders = await client.dbGet(user, { subCollections: [['reminders']] }),
+      const reminders = await client.database.users.fetchAllReminders(user.id),
         selectMenu = new SelectMenuBuilder()
           .setPlaceholder(i18n.__('REMINDER.COMPONENT.SELECT_LIST'))
           .setCustomId('reminder_select');
 
       let emb: EmbedBuilder;
-      if (reminders.length) {
+      if (reminders.size) {
         emb = embed({ title: `🔔 ${i18n.__('REMINDER.LIST')}` });
 
         reminders.forEach((r: Record<string, any>) => {
@@ -237,10 +231,8 @@ export default class Reminder extends Command {
         }),
       });
 
-      const reminders = await client.dbGet(user, { subCollections: [['reminders']] }),
-        reminder = reminders.find?.((r: Record<string, any>) => r.id === values[0]);
-
-      console.log(reminders);
+      const reminders = await client.database.users.fetchAllReminders(user.id),
+        reminder = reminders.find((r: Record<string, any>) => r.id === values[0]);
 
       let emb: EmbedBuilder;
       if (reminder) {
@@ -277,7 +269,7 @@ export default class Reminder extends Command {
               .setLabel(i18n.__('GENERIC.COMPONENT.BACK'))
               .setEmoji('↩️')
               .setStyle(ButtonStyle.Primary)
-              .setCustomId('reminderList'),
+              .setCustomId('reminder_list'),
           ),
         );
       } else {
@@ -285,7 +277,7 @@ export default class Reminder extends Command {
           .setPlaceholder(i18n.__('REMINDER.COMPONENT.SELECT_LIST'))
           .setCustomId('reminder_select');
 
-        if (reminders.length) {
+        if (reminders.size) {
           emb = embed({ title: `🔔 ${i18n.__('REMINDER.LIST')}` });
           reminders.forEach((r: Record<string, any>) => {
             selectMenu.addOptions(

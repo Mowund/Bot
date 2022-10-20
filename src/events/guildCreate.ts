@@ -9,9 +9,8 @@ export default class GuildCreateEvent extends Event {
   }
 
   async run(client: App, guild: Guild): Promise<any> {
-    const { chalk } = client;
-    console.log(await client.dbGet(guild, { searchOnly: 'cache' }));
-    const settings = await client.dbSet(guild, {}, { setFromCache: true });
+    const { chalk } = client,
+      settings = await client.database.guilds.set(guild, {}, { setFromCache: true });
     await client.updateMowundDescription();
 
     if (debugLevel) {

@@ -1,24 +1,22 @@
 /* eslint-disable @typescript-eslint/no-empty-function, @typescript-eslint/no-unused-vars */
 
-import process from 'node:process';
-import firebase from 'firebase-admin';
-import { CachedManager, Client } from 'discord.js';
-import { BaseDatabase } from './structures/BaseDatabase';
-import { GuildData } from './structures/GuildData';
-import { ReminderData } from './structures/ReminderData';
-import { UserData } from './structures/UserData';
-import { DatabaseGuildsManager } from './DatabaseGuildsManager';
+import { Base, CachedManager, Snowflake } from 'discord.js';
+import { App } from '../App.js';
+import { DatabaseGuildsManager } from './DatabaseGuildsManager.js';
+import { DatabaseRemindersManager } from './DatabaseRemindersManager.js';
+import { DatabaseUsersManager } from './DatabaseUsersManager.js';
 
-export class DatabaseManager extends CachedManager<string, BaseDatabase, GuildData | ReminderData | UserData> {
+export class DatabaseManager extends CachedManager<Snowflake, Base, Base> {
+  declare client: App;
   guilds: DatabaseGuildsManager;
+  reminders: DatabaseRemindersManager;
+  users: DatabaseUsersManager;
 
-  constructor(client: Client) {
-    super(client, BaseDatabase);
-
-    firebase.initializeApp({
-      credential: firebase.credential.cert(JSON.parse(process.env.FIREBASE_TOKEN)),
-    });
+  constructor(client: App) {
+    super(client, Base);
 
     this.guilds = new DatabaseGuildsManager(client);
+    this.reminders = new DatabaseRemindersManager(client);
+    this.users = new DatabaseUsersManager(client);
   }
 }

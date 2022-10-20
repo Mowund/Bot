@@ -10,7 +10,7 @@ export default class GuildDeleteEvent extends Event {
 
   async run(client: App, guild: Guild): Promise<any> {
     const { chalk } = client,
-      settings = await client.dbDelete(guild);
+      settings = (await client.database.guilds.delete(guild, { leaveCached: true })).get(guild.id);
     await client.updateMowundDescription();
 
     if (debugLevel) {

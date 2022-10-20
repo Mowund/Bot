@@ -57,7 +57,7 @@ export const disableComponents = (
             (c as SelectMenuComponent).options.forEach(
               (o, oI) =>
                 o.value === v.value &&
-                (rowsBuilder[rI].components[cI].data as SelectMenuBuilder).options[oI].setDefault(true),
+                (rowsBuilder[rI].components[cI].data as SelectMenuBuilder).options?.[oI].setDefault(true),
             ),
         );
       }

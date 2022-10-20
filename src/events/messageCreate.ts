@@ -17,10 +17,10 @@ export default class MessageCreateEvent extends Event {
     const scamReportTimeout = 15000;
     if (client.badDomains.some(w => message.content.includes(w))) {
       if (!message.author.lastScamTimestamp || Date.now() - message.author.lastScamTimestamp > scamReportTimeout) {
-        const guildSettings = await client.dbGet(message.guild);
+        const guildSettings = await client.database.guilds.fetch(message.guild.id);
 
         if (guildSettings.log.badDomains && guildSettings.log.channel) {
-          const logChannel = message.guild.channels.cache.get(guildSettings.logChannel) as TextChannel;
+          const logChannel = message.guild.channels.cache.get(guildSettings.log.channel) as TextChannel;
 
           logChannel.send(`Bad word: ${message.content}`);
           if (debugLevel) console.log(chalk.gray('Bad word detected: ') + chalk.red(message.content));

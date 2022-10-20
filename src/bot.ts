@@ -35,7 +35,7 @@ const __filename = fileURLToPath(import.meta.url),
   });
 
 process.on('uncaughtException', (err: DiscordAPIError) => {
-  if (err.code !== RESTJSONErrorCodes.UnknownInteraction) {
+  if (err.status !== RESTJSONErrorCodes.UnknownInteraction) {
     console.error(err);
     process.exit();
   }
@@ -112,16 +112,12 @@ client.on('ready', async () => {
     });
 
     await (async function findReminders() {
-      const reminders = await client.dbFind(
-        '/reminders',
-        [[{ field: 'timestamp', operator: '<=', target: Date.now() }]],
-        {
-          cacheReference: { collection: 'users', options: ['id'] },
-          findAndSet: 'delete',
-        },
-      );
+      const reminders = await client.database.reminders.find([
+        [{ field: 'timestamp', operator: '<=', target: Date.now() }],
+      ]);
 
-      reminders.forEach(reminder => client.emit('reminderFound', reminder[0]));
+      reminders.forEach(r => client.emit('reminderFound', r));
+
       setTimeout(findReminders, 5000);
     })();
   } catch (err) {

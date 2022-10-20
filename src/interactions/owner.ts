@@ -157,6 +157,7 @@ export default class Owner extends Command {
             ],
           });
         } catch (err) {
+          console.log(err);
           return interaction.editReply({
             embeds: [
               embed({ type: 'error' }).addFields({

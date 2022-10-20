@@ -10,11 +10,13 @@ export default class ReminderFoundEvent extends Event {
   }
 
   async run(client: App, reminder: any): Promise<any> {
+    await client.database.reminders.delete(reminder.id, reminder.userId);
+
     const { i18n } = client,
       { channelId, content, id, isRecursive, timestamp, userId } = reminder,
       channel = client.channels.cache.get(channelId) as GuildTextBasedChannel,
       member = channel?.guild.members.cache.get(userId),
-      user = userId && (await client.users.fetch(userId)),
+      user = await client.users.fetch(userId),
       idTimestamp = SnowflakeUtil.timestampFrom(id);
 
     if (!user) return;
@@ -47,17 +49,12 @@ export default class ReminderFoundEvent extends Event {
 
     if (isRecursive) {
       const recReminderId = SnowflakeUtil.generate().toString(),
-        recReminder = await client.dbSet(
-          user,
-          {
-            channelId: channelId,
-            content: content,
-            id: recReminderId,
-            timestamp: SnowflakeUtil.timestampFrom(recReminderId) + (SnowflakeUtil.timestampFrom(id) - timestamp),
-            userId: user.id,
-          },
-          { subCollections: [['reminders', recReminderId]] },
-        );
+        recReminder = await client.database.reminders.set(recReminderId, user.id, {
+          channelId: channelId,
+          content: content,
+          timestamp: SnowflakeUtil.timestampFrom(recReminderId) + (SnowflakeUtil.timestampFrom(id) - timestamp),
+          userId: user.id,
+        });
       emb.addFields({
         name: `🔁 ${i18n.__('REMINDER.RECURSIVE')}`,
         value: i18n.__mf('REMINDER.RECURSIVE_DESCRIPTION', { timestamp: recReminder.timestamp }),

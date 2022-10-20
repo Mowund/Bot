@@ -88,7 +88,7 @@ export default class Settings extends Command {
               });
             }
 
-            await client.dbSet(guild, { language: fLanguage });
+            await client.database.guilds.set(guild, { language: fLanguage });
             const m = p => ({ locale: fLanguage, phrase: p });
 
             rows[0].addComponents(
@@ -133,8 +133,6 @@ export default class Settings extends Command {
               .setStyle(ButtonStyle.Link)
               .setURL('https://crowdin.com/project/mowund'),
           );
-
-          console.log(await client.dbGet(guild));
 
           return interaction.editReply({
             components: rows,
