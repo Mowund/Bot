@@ -12,12 +12,12 @@ export default class MessageCreateEvent extends Event {
   async run(client: App, message: AppMessage): Promise<any> {
     const { chalk } = client;
     // TODO
-    if (!message.guild?.available || message.author.bot || message.guild.id !== '420007989261500418') return;
+    if (!message.guild?.available || message.author.bot || message.guildId !== '420007989261500418') return;
 
     const scamReportTimeout = 15000;
     if (client.badDomains.some(w => message.content.includes(w))) {
       if (!message.author.lastScamTimestamp || Date.now() - message.author.lastScamTimestamp > scamReportTimeout) {
-        const guildSettings = await client.database.guilds.fetch(message.guild.id);
+        const guildSettings = await client.database.guilds.fetch(message.guildId);
 
         if (guildSettings.log.badDomains && guildSettings.log.channel) {
           const logChannel = message.guild.channels.cache.get(guildSettings.log.channel) as TextChannel;

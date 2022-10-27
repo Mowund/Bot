@@ -2,12 +2,10 @@ import process from 'node:process';
 import { readFileSync } from 'node:fs';
 import {
   ActionRowBuilder,
-  ApplicationCommandData,
   ApplicationCommandOptionType,
   BaseInteraction,
   ButtonBuilder,
   ButtonStyle,
-  Collection,
   Colors,
   ShardClientUtil,
   version,
@@ -37,8 +35,8 @@ export default class Bot extends Command {
     if (!interaction.isChatInputCommand()) return;
 
     const { client, embed } = args,
-      { i18n } = client,
-      { guild, options } = interaction,
+      { globalCommandCount, i18n } = client,
+      { guild, guildId, options } = interaction,
       botMember = guild?.members.cache.get(client.user.id),
       ephemeralO = options?.getBoolean('ephemeral') ?? true,
       pkg = JSON.parse(readFileSync(new URL('../../../package.json', import.meta.url)).toString());
@@ -47,9 +45,8 @@ export default class Bot extends Command {
       case 'info': {
         await interaction.deferReply({ ephemeral: ephemeralO });
 
-        const guildCmds = interaction.guild
-            ? client.splitCmds(await client.application.commands.fetch({ guildId: interaction.guild.id }))
-            : (new Collection() as Collection<string, ApplicationCommandData>),
+        const guildCommandCount =
+            guildId && client.countCommands(await client.application.commands.fetch({ guildId: guildId })),
           embs = [
             embed({ title: i18n.__mf('BOT.OPTIONS.INFO.TITLE', { botName: client.user.username }) })
               .setColor(botMember?.displayColor || Colors.Blurple)
@@ -71,13 +68,13 @@ export default class Bot extends Command {
                 },
                 {
                   inline: true,
-                  name: `${emojis.commands} ${i18n.__('GENERIC.COMMANDS')} [${client.splitedCmds.size}${
-                    guildCmds.size ? ` + ${guildCmds.size}` : ''
+                  name: `${emojis.commands} ${i18n.__('GENERIC.COMMANDS')} [${globalCommandCount.sum.all}${
+                    guildCommandCount.sum.all ? ` + ${guildCommandCount.sum.all}` : ''
                   }]`,
-                  value: `${emojis.slashCommand} \`${client.splitedCmds.filter(c => c.type === 1).size}\`${
-                    guildCmds.filter(c => c.type === 1).size ? ` + \`${guildCmds.filter(c => c.type === 1).size}\`` : ''
-                  }\n${emojis.contextMenuCommand} \`${client.splitedCmds.filter(c => c.type > 1).size}\`${
-                    guildCmds.filter(c => c.type > 1).size ? ` + \`${guildCmds.filter(c => c.type > 1).size}\`` : ''
+                  value: `${emojis.slashCommand} \`${globalCommandCount.chatInput}\`${
+                    guildCommandCount.chatInput ? ` + \`${guildCommandCount.chatInput}\`` : ''
+                  }\n${emojis.contextMenuCommand} \`${globalCommandCount.sum.contextMenu}\`${
+                    guildCommandCount.sum.contextMenu ? ` + \`${guildCommandCount.sum.contextMenu}\`` : ''
                   }`,
                 },
                 {
@@ -126,7 +123,7 @@ export default class Bot extends Command {
             inline: true,
             name: `💎 ${i18n.__('PING.SHARD')}`,
             value: `**${i18n.__('GENERIC.CURRENT')}:** \`${ShardClientUtil.shardIdForGuildId(
-              guild.id,
+              guildId,
               client.shard.count,
             )}\`\n**${i18n.__('GENERIC.TOTAL')}:** \`${client.shard.count}\` `,
           });

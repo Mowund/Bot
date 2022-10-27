@@ -83,10 +83,10 @@ export default class Echo extends Command {
           {
             channelTypes: [
               ChannelType.GuildText,
-              ChannelType.GuildNews,
-              ChannelType.GuildNewsThread,
-              ChannelType.GuildPublicThread,
-              ChannelType.GuildPrivateThread,
+              ChannelType.GuildAnnouncement,
+              ChannelType.AnnouncementThread,
+              ChannelType.PublicThread,
+              ChannelType.PrivateThread,
               ChannelType.GuildVoice,
             ],
             description: 'ECHO.OPTIONS.CHANNEL.DESCRIPTION',

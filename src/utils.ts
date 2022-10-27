@@ -132,8 +132,12 @@ export const toUTS = (time = Date.now(), style: TimestampStylesString = Timestam
   `<t:${new Date(time).getTime().toString().slice(0, -3)}:${style}>`;
 
 export const fetchURL = async (input: RequestInfo, init?: RequestInit) => {
-  const res = await fetch(input, init);
-  if (res.ok) return res.json();
+  try {
+    const res = await fetch(input, init);
+    if (res.ok) return res.json();
+  } catch (e) {
+    return null;
+  }
 };
 
 /**

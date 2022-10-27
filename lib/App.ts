@@ -4,7 +4,11 @@ import process from 'node:process';
 import { Buffer } from 'node:buffer';
 import { Octokit } from '@octokit/core';
 import {
+  ApplicationCommand,
   ApplicationCommandData,
+  ApplicationCommandOptionType,
+  ApplicationCommandSubCommandData,
+  ApplicationCommandType,
   ChatInputApplicationCommandData,
   Client,
   ClientOptions,
@@ -22,13 +26,13 @@ export class App extends Client {
   badDomains: Array<string>;
   chalk: ChalkInstance;
   commands: Collection<string, Command>;
+  globalCommandCount: { chatInput: number; message: number; user: number; sum: { all: number; contextMenu: number } };
   database: DatabaseManager;
   experiments: { data: Experiment[]; lastUpdated: number };
   firestore: firestore.Firestore;
   i18n: any;
   octokit: Octokit;
   private otherLocales: string[];
-  splitedCmds: Collection<string, ApplicationCommandData>;
 
   constructor(options: ClientOptions) {
     super(options);
@@ -42,7 +46,6 @@ export class App extends Client {
     this.database = new DatabaseManager(this);
     this.firestore = firebase.firestore();
     this.i18n = i18n;
-    this.splitedCmds = new Collection();
   }
 
   async login(token?: string) {
@@ -76,9 +79,37 @@ export class App extends Client {
   autoLocalizeCommand = (data: Record<string, any>) => {
     if ('name' in data) this.autoLocalize(data, 'name');
     if ('description' in data) this.autoLocalize(data, 'description');
-
     if ('options' in data) for (const opt of data.options) this.autoLocalizeCommand(opt);
     if ('choices' in data) for (const ch of data.choices) this.autoLocalizeCommand(ch);
+  };
+
+  countCommands = (commands: Collection<string, ApplicationCommandData>) => {
+    const count = {
+      chatInput: commands
+        .filter(c => c.type === ApplicationCommandType.ChatInput)
+        .reduce(
+          (acc1, value1: ChatInputApplicationCommandData) =>
+            acc1 +
+            (value1.options?.reduce(
+              (acc2, value2) =>
+                acc2 +
+                (value2.type === ApplicationCommandOptionType.SubcommandGroup
+                  ? value2.options.reduce(acc3 => ++acc3, 0)
+                  : value2.type === ApplicationCommandOptionType.Subcommand
+                  ? 1
+                  : 0),
+              0,
+            ) || 1),
+          0,
+        ),
+      message: commands.filter(c => c.type === ApplicationCommandType.Message).size,
+      sum: {},
+      user: commands.filter(c => c.type === ApplicationCommandType.User).size,
+    } as typeof this.globalCommandCount;
+
+    count.sum.contextMenu = count.message + count.user;
+    count.sum.all = count.sum.contextMenu + count.chatInput;
+    return count;
   };
 
   /**
@@ -119,39 +150,12 @@ export class App extends Client {
     return list;
   }
 
-  /** Splits subcommands and groups as if they were also commands, used for counting
-   * @deprecated A new function for counting commands is coming soon
-   */
-  splitCmds = (commands: Collection<string, ApplicationCommandData>) => {
-    for (const cmd of commands) {
-      let i = 0;
-      if ((cmd[1] as ChatInputApplicationCommandData).options) {
-        for (let opt of (cmd[1] as ChatInputApplicationCommandData).options) {
-          if (opt.type === 1) {
-            commands.delete(cmd[0]);
-            // @ts-expect-error: Temporary solution
-            commands.set(`${cmd[0]} ${i++}`, opt);
-          } else if (opt.type === 2) {
-            for (opt of opt.options) {
-              if (opt.type === 1) {
-                commands.delete(cmd[0]);
-                // @ts-expect-error: Temporary solution
-                commands.set(`${cmd[0]} ${i++}`, opt);
-              }
-            }
-          }
-        }
-      }
-    }
-    return commands;
-  };
-
   /** Updates Mowund support server description */
   updateMowundDescription = () =>
     this.shard.broadcastEval(
       async (c: this, { serverId }) =>
         c.guilds.cache.get(serverId)?.edit({
-          description: `Mowund is a multi-purpose bot with ${c.splitedCmds.size} commands in ${(
+          description: `Mowund is a multi-purpose bot with ${c.globalCommandCount.sum.all} commands in ${(
             (await c.shard.fetchClientValues('guilds.cache.size')) as number[]
           ).reduce((acc, a) => acc + a, 0)} servers.`,
         }),

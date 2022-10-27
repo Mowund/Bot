@@ -257,7 +257,7 @@ export default class Owner extends Command {
               }
             });
 
-            client.splitedCmds = client.splitCmds(await appCmds.fetch());
+            client.globalCommandCount = client.countCommands(await appCmds.fetch());
 
             const cmdMap = (cmds, gOnly = false) =>
                 cmds

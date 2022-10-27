@@ -51,19 +51,18 @@ client.on('ready', async () => {
       status: PresenceUpdateStatus.Idle,
     });
 
-    client.splitedCmds = client.splitCmds(await client.application.commands.fetch());
-
     await (async function updateData() {
-      client.badDomains = await fetchURL('https://bad-domains.walshy.dev/domains.json');
+      client.badDomains = (await fetchURL('https://bad-domains.walshy.dev/domains.json')) ?? client.badDomains;
       client.experiments = {
-        data: await fetchURL('https://distools.app/api/datamining/experiments'),
+        data: (await fetchURL('https://distools.app/api/datamining/experiments')) ?? client.experiments?.data,
         lastUpdated: Date.now(),
       };
 
-      if (debugLevel) console.log(client.chalk.cyan('Data updated'));
+      if (debugLevel > 1) console.log(client.chalk.cyan('Data updated'));
       setTimeout(updateData, 300000);
     })();
 
+    client.globalCommandCount = client.countCommands(await client.application.commands.fetch());
     await client.updateMowundDescription();
 
     const appCmds = await client.application.commands.fetch({ withLocalizations: true });

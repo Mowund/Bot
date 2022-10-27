@@ -19,6 +19,7 @@ export default class InteractionCreateEvent extends Event {
         componentType,
         customId,
         guild,
+        guildId,
         member,
         options: opts,
         type,
@@ -96,7 +97,7 @@ export default class InteractionCreateEvent extends Event {
             (guild
               ? chalk.cyan(guild.name) +
                 chalk.gray(' (') +
-                chalk.cyan(guild.id) +
+                chalk.cyan(guildId) +
                 chalk.gray(') - ') +
                 chalk.green(`#${channel.name}`)
               : chalk.green('DM')) +

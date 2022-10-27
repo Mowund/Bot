@@ -68,7 +68,7 @@ export default class Rollout extends Command {
         experimentO = options?.getString('experiment'),
         guildO = options?.getString('guild'),
         ephemeralO = options?.getBoolean('ephemeral') ?? true,
-        guildId = guildO ?? interaction.guild.id;
+        guildId = guildO ?? interaction.guildId;
 
       await interaction.deferReply({ ephemeral: ephemeralO });
 

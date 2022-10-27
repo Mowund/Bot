@@ -30,10 +30,10 @@ export default class RoleMenu extends Command {
                 {
                   channelTypes: [
                     ChannelType.GuildText,
-                    ChannelType.GuildNews,
-                    ChannelType.GuildNewsThread,
-                    ChannelType.GuildPublicThread,
-                    ChannelType.GuildPrivateThread,
+                    ChannelType.GuildAnnouncement,
+                    ChannelType.AnnouncementThread,
+                    ChannelType.PublicThread,
+                    ChannelType.PrivateThread,
                     ChannelType.GuildVoice,
                   ],
                   description: 'ROLEMENU.OPTIONS.CREATE.OPTIONS.CHANNEL.DESCRIPTION',

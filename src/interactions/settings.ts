@@ -40,7 +40,7 @@ export default class Settings extends Command {
   async run(args: CommandArgs, interaction: BaseInteraction<'cached'>): Promise<any> {
     const { client, embed } = args,
       { i18n } = client,
-      { guild, member, memberPermissions, user } = interaction;
+      { guildId, member, memberPermissions, user } = interaction;
 
     if (interaction.isAutocomplete()) {
       const focused = interaction.options.getFocused();
@@ -88,7 +88,7 @@ export default class Settings extends Command {
               });
             }
 
-            await client.database.guilds.set(guild, { language: fLanguage });
+            await client.database.guilds.set(guildId, { language: fLanguage });
             const m = p => ({ locale: fLanguage, phrase: p });
 
             rows[0].addComponents(
@@ -98,8 +98,8 @@ export default class Settings extends Command {
                 .setStyle(ButtonStyle.Link)
                 .setURL('https://crowdin.com/project/mowund'),
             );
-            client.guilds.cache.get(guild.id);
-            console.log(await client.database.guilds.cache.get(guild.id));
+            client.guilds.cache.get(guildId);
+            console.log(await client.database.guilds.cache.get(guildId));
 
             return interaction.editReply({
               components: rows,
