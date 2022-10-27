@@ -17,11 +17,12 @@ import {
   ModalMessageModalSubmitInteraction,
   ButtonInteraction,
   Colors,
+  SelectMenuInteraction,
 } from 'discord.js';
 import { RawGuildData, RawGuildEmojiData } from 'discord.js/typings/rawDataTypes.js';
 import { collMap, toUTS, getFieldValue, decreaseSizeCDN, disableComponents } from '../utils.js';
-import { botOwners, emojis, imgOpts, premiumLimits } from '../defaults.js';
-import { Command, CommandArgs } from '../../lib/util/Command.js';
+import { emojis, imgOpts, premiumLimits } from '../defaults.js';
+import { Command, CommandArgs } from '../../lib/structures/Command.js';
 
 export default class Emoji extends Command {
   constructor() {
@@ -341,7 +342,7 @@ export default class Emoji extends Command {
       }
     }
 
-    if (interaction.isButton() || interaction.isModalSubmit()) {
+    if (interaction.isButton() || interaction.isSelectMenu() || interaction.isModalSubmit()) {
       const { message } = interaction;
 
       if (message.interaction.user.id !== user.id) {
@@ -530,7 +531,7 @@ export default class Emoji extends Command {
                   .setLabel(i18n.__('EMOJI.COMPONENT.ROLES.EDIT'))
                   .setEmoji('📜')
                   .setStyle(ButtonStyle.Secondary)
-                  .setCustomId('emoji_edit_role'),
+                  .setCustomId('emoji_edit_roles'),
               ),
               new ActionRowBuilder<ButtonBuilder>().addComponents(
                 new ButtonBuilder()
@@ -701,15 +702,58 @@ export default class Emoji extends Command {
             embeds: [emb.setColor(Colors.Green).setTitle(emjDisplay + i18n.__('EMOJI.RENAMED'))],
           });
         }
-        // TODO: Add edit emoji roles
-        case 'emoji_edit_role': {
-          if (!botOwners.includes(user.id)) {
-            return interaction.reply({
-              embeds: [embed({ type: 'wip' }).setDescription(i18n.__('GENERIC.WIP_FUNCTION'))],
-              ephemeral: true,
+        case 'emoji_reset_roles':
+        case 'emoji_edit_roles':
+        case 'emoji_edit_roles_submit': {
+          let title = 'EMOJI.EDITING_ROLES';
+
+          if (customId === 'emoji_edit_roles_submit') {
+            const { values } = interaction as SelectMenuInteraction,
+              roles = emj.roles.cache.map(r => r.id);
+
+            await emj.roles.set([...values.filter(r => !roles.includes(r)), ...roles.filter(r => !values.includes(r))]);
+
+            title = 'EMOJI.EDITED_ROLES';
+            emb.spliceFields(4, 1, {
+              name: `${emojis.role} ${i18n.__('GENERIC.ROLES')} [${emj.roles.cache.size}]`,
+              value: collMap(emj.roles.cache, emj.guild?.id !== guild?.id ? { mapValue: 'id' } : {}) || '@everyone',
             });
           }
-          return (interaction as ButtonInteraction).deferUpdate();
+          if (customId === 'emoji_reset_roles') {
+            await emj.roles.set([]);
+
+            title = 'EMOJI.RESETED_ROLES';
+            emb.spliceFields(4, 1, {
+              name: `${emojis.role} ${i18n.__('GENERIC.ROLES')} [0]`,
+              value: '@everyone',
+            });
+          }
+
+          return (interaction as ButtonInteraction | SelectMenuInteraction).update({
+            components: [
+              new ActionRowBuilder<ButtonBuilder>().addComponents(
+                new ButtonBuilder()
+                  .setLabel(i18n.__('GENERIC.COMPONENT.BACK'))
+                  .setEmoji('↩️')
+                  .setStyle(ButtonStyle.Primary)
+                  .setCustomId('emoji_edit'),
+                new ButtonBuilder()
+                  .setLabel(i18n.__('EMOJI.COMPONENT.RESET_ROLES'))
+                  .setEmoji('🔄')
+                  .setStyle(ButtonStyle.Primary)
+                  .setCustomId('emoji_reset_roles')
+                  .setDisabled(!emj.roles.cache.size),
+              ),
+              /* new ActionRowBuilder<RoleSelectMenuBuilder>().addComponents(
+                new RoleSelectMenuBuilder()
+                  .setPlaceholder(i18n.__('EMOJI.COMPONENT.SELECT_ROLES'))
+                  .setMinValues(0)
+                  .setMaxValues(25)
+                  .setCustomId('emoji_edit_roles_submit'),
+              ),*/
+            ],
+            embeds: [emb.setColor(Colors.Orange).setTitle(emjDisplay + i18n.__(title))],
+          });
         }
       }
     }

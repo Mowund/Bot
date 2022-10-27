@@ -1,7 +1,7 @@
 import { Events, TextChannel } from 'discord.js';
-import { Event } from '../../lib/util/Event.js';
+import { Event } from '../../lib/structures/Event.js';
 import { App } from '../../lib/App.js';
-import { AppMessage } from '../../lib/util/Message.js';
+import { AppMessage } from '../../lib/structures/Message.js';
 import { debugLevel } from '../defaults.js';
 
 export default class MessageCreateEvent extends Event {

@@ -14,7 +14,7 @@ import {
   ChatInputApplicationCommandData,
 } from 'discord.js';
 import { App } from '../lib/App.js';
-import { Command } from '../lib/util/Command.js';
+import { Command } from '../lib/structures/Command.js';
 import { debugLevel } from './defaults.js';
 import { fetchURL } from './utils.js';
 import 'log-timestamp';
@@ -111,12 +111,11 @@ client.on('ready', async () => {
       status: PresenceUpdateStatus.Online,
     });
 
-    await (async function findReminders() {
-      const reminders = await client.database.reminders.find([
+    (async function findReminders() {
+      for (const r of await client.database.reminders.find([
         [{ field: 'timestamp', operator: '<=', target: Date.now() }],
-      ]);
-
-      reminders.forEach(r => client.emit('reminderFound', r));
+      ]))
+        client.emit('reminderFound', r[1]);
 
       setTimeout(findReminders, 5000);
     })();

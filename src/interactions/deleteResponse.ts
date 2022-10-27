@@ -1,5 +1,5 @@
 import { ApplicationCommandType, BaseInteraction } from 'discord.js';
-import { Command, CommandArgs } from '../../lib/util/Command.js';
+import { Command, CommandArgs } from '../../lib/structures/Command.js';
 
 export default class DeleteResponse extends Command {
   constructor() {
@@ -33,7 +33,7 @@ export default class DeleteResponse extends Command {
       });
     }
 
-    await interaction.deferReply();
+    await interaction.deferReply({ ephemeral: true });
     await messageO.delete();
     return interaction.deleteReply();
   }

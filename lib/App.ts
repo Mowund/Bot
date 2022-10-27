@@ -9,24 +9,20 @@ import {
   Client,
   ClientOptions,
   Collection,
-  Guild,
   Snowflake,
-  User,
 } from 'discord.js';
 import firebase, { firestore } from 'firebase-admin';
 import i18n from 'i18n';
 import { Chalk, ChalkInstance } from 'chalk';
-import { defaultLocale, defaultSettings, supportServer } from '../src/defaults.js';
-import { removeEmpty, SearchOptions, testConditions } from '../src/utils.js';
-import { Command } from './util/Command.js';
-import { DatabaseManager } from './database/DatabaseManager.js';
+import { defaultLocale, supportServer } from '../src/defaults.js';
+import { Command } from './structures/Command.js';
+import { DatabaseManager } from './managers/DatabaseManager.js';
 
 export class App extends Client {
   badDomains: Array<string>;
   chalk: ChalkInstance;
   commands: Collection<string, Command>;
   database: DatabaseManager;
-  dbCache: { guilds: Collection<string, any>; users: Collection<string, any> };
   experiments: { data: Experiment[]; lastUpdated: number };
   firestore: firestore.Firestore;
   i18n: any;
@@ -44,7 +40,6 @@ export class App extends Client {
     this.chalk = new Chalk({ level: 3 });
     this.commands = new Collection();
     this.database = new DatabaseManager(this);
-    this.dbCache = { guilds: new Collection(), users: new Collection() };
     this.firestore = firebase.firestore();
     this.i18n = i18n;
     this.splitedCmds = new Collection();

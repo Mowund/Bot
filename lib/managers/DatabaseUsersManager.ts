@@ -1,19 +1,11 @@
 /* eslint-disable @typescript-eslint/no-empty-function, @typescript-eslint/no-unused-vars */
 
 import { firestore } from 'firebase-admin';
-import {
-  CachedManager,
-  Collection,
-  DiscordjsErrorCodes,
-  DiscordjsTypeError,
-  Snowflake,
-  User,
-  UserResolvable,
-} from 'discord.js';
+import { CachedManager, Collection, DiscordjsErrorCodes, DiscordjsTypeError, Snowflake, User } from 'discord.js';
 import { App } from '../App.js';
 import { removeEmpty, SearchOptions, testConditions } from '../../src/utils.js';
-import { UserData, UserDataSetOptions } from './structures/UserData.js';
-import { ReminderData } from './structures/ReminderData.js';
+import { UserData, UserDataSetOptions } from '../structures/UserData.js';
+import { ReminderData } from '../structures/ReminderData.js';
 
 export class DatabaseUsersManager extends CachedManager<Snowflake, UserData, UsersDatabaseResolvable> {
   declare client: App;

@@ -1,5 +1,5 @@
 import { ShardClientUtil, BaseInteraction } from 'discord.js';
-import { Command, CommandArgs } from '../../lib/util/Command.js';
+import { Command, CommandArgs } from '../../lib/structures/Command.js';
 
 export default class Ping extends Command {
   constructor() {

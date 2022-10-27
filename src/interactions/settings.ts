@@ -6,7 +6,7 @@ import {
   PermissionFlagsBits,
   BaseInteraction,
 } from 'discord.js';
-import { Command, CommandArgs } from '../../lib/util/Command.js';
+import { Command, CommandArgs } from '../../lib/structures/Command.js';
 import { botOwners, imgOpts, emojis } from '../defaults.js';
 import { simplify } from '../utils.js';
 

@@ -3,7 +3,7 @@ import { inspect } from 'node:util';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 import { ApplicationCommandOptionType, ApplicationCommandType, BaseInteraction, Colors, Guild } from 'discord.js';
-import { Command, CommandArgs } from '../../lib/util/Command.js';
+import { Command, CommandArgs } from '../../lib/structures/Command.js';
 import { botOwners } from '../defaults.js';
 import { truncate } from '../utils.js';
 

@@ -1,5 +1,5 @@
 import { ApplicationCommandOptionType, BaseInteraction, Colors } from 'discord.js';
-import { Command, CommandArgs } from '../../lib/util/Command.js';
+import { Command, CommandArgs } from '../../lib/structures/Command.js';
 import { imgOpts } from '../defaults.js';
 
 export default class Kill extends Command {

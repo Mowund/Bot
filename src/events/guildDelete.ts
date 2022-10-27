@@ -1,6 +1,6 @@
 import { Events, Guild } from 'discord.js';
 import { App } from '../../lib/App.js';
-import { Event } from '../../lib/util/Event.js';
+import { Event } from '../../lib/structures/Event.js';
 import { debugLevel } from '../defaults.js';
 
 export default class GuildDeleteEvent extends Event {

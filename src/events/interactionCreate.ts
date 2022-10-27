@@ -1,5 +1,5 @@
 import { Colors, EmbedBuilder, Events, InteractionType } from 'discord.js';
-import { Event } from '../../lib/util/Event.js';
+import { Event } from '../../lib/structures/Event.js';
 import { App } from '../../lib/App.js';
 import { debugLevel, imgOpts, defaultLocale } from '../defaults.js';
 import { addSearchParams } from '../utils.js';

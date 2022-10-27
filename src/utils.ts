@@ -177,7 +177,7 @@ export const monthDiff = (dateFrom: Date, dateTo = new Date()) =>
  * @param limit The limit of characters to be displayed until truncated (Default: 1020)
  */
 export const truncate = (input: string, limit = 1020) =>
-  input.length > limit ? `${input.substring(0, limit - 3)}...` : input;
+  input?.length > limit ? `${input.substring(0, limit - 3)}...` : input;
 
 /**
  * @returns The mapped collections

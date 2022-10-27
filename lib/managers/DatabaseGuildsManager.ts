@@ -1,19 +1,10 @@
 /* eslint-disable @typescript-eslint/no-empty-function, @typescript-eslint/no-unused-vars */
 
 import { firestore } from 'firebase-admin';
-import {
-  CachedManager,
-  Collection,
-  DiscordjsErrorCodes,
-  DiscordjsTypeError,
-  Guild,
-  GuildResolvable,
-  Snowflake,
-} from 'discord.js';
+import { CachedManager, Collection, DiscordjsErrorCodes, DiscordjsTypeError, Guild, Snowflake } from 'discord.js';
 import { App } from '../App.js';
 import { removeEmpty, SearchOptions, testConditions } from '../../src/utils.js';
-import { GuildData, GuildDataSetOptions } from './structures/GuildData.js';
-import { ReminderData } from './structures/ReminderData.js';
+import { GuildData, GuildDataSetOptions } from '../structures/GuildData.js';
 
 export class DatabaseGuildsManager extends CachedManager<Snowflake, GuildData, GuildsDatabaseResolvable> {
   declare client: App;

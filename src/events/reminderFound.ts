@@ -1,17 +1,16 @@
 import { EmbedBuilder, SnowflakeUtil, GuildTextBasedChannel, Colors } from 'discord.js';
-import { AppEvents, Event } from '../../lib/util/Event.js';
-import { App } from '../../lib/App.js';
 import { emojis, imgOpts } from '../defaults.js';
 import { toUTS } from '../utils.js';
+import { AppEvents, Event } from '../../lib/structures/Event.js';
+import { App } from '../../lib/App.js';
+import { ReminderData } from '../../lib/structures/ReminderData.js';
 
 export default class ReminderFoundEvent extends Event {
   constructor() {
     super(AppEvents.ReminderFound);
   }
 
-  async run(client: App, reminder: any): Promise<any> {
-    await client.database.reminders.delete(reminder.id, reminder.userId);
-
+  async run(client: App, reminder: ReminderData): Promise<any> {
     const { i18n } = client,
       { channelId, content, id, isRecursive, timestamp, userId } = reminder,
       channel = client.channels.cache.get(channelId) as GuildTextBasedChannel,
@@ -19,7 +18,8 @@ export default class ReminderFoundEvent extends Event {
       user = await client.users.fetch(userId),
       idTimestamp = SnowflakeUtil.timestampFrom(id);
 
-    if (!user) return;
+    await client.database.reminders.delete(id, userId);
+
     const emb = new EmbedBuilder()
       .setColor(Colors.Yellow)
       .setTitle(`${emojis.bellRinging} ${i18n.__('REMINDER.NEW')}`)
@@ -52,9 +52,11 @@ export default class ReminderFoundEvent extends Event {
         recReminder = await client.database.reminders.set(recReminderId, user.id, {
           channelId: channelId,
           content: content,
-          timestamp: SnowflakeUtil.timestampFrom(recReminderId) + (SnowflakeUtil.timestampFrom(id) - timestamp),
+          isRecursive,
+          timestamp: SnowflakeUtil.timestampFrom(recReminderId) + idTimestamp - timestamp,
           userId: user.id,
         });
+
       emb.addFields({
         name: `🔁 ${i18n.__('REMINDER.RECURSIVE')}`,
         value: i18n.__mf('REMINDER.RECURSIVE_DESCRIPTION', { timestamp: recReminder.timestamp }),

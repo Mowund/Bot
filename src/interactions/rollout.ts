@@ -3,7 +3,7 @@ import { ApplicationCommandOptionType, BaseInteraction, Guild } from 'discord.js
 import murmurhash from 'murmurhash';
 import { search } from 'fast-fuzzy';
 import { ExperimentRollout } from '../../lib/App.js';
-import { Command, CommandArgs } from '../../lib/util/Command.js';
+import { Command, CommandArgs } from '../../lib/structures/Command.js';
 import { emojis } from '../defaults.js';
 import { fetchURL, toUTS, truncate } from '../utils.js';
 

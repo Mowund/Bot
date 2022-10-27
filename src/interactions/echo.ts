@@ -5,11 +5,11 @@ import {
   Colors,
   EmbedBuilder,
   GuildTextBasedChannel,
-  MessageOptions,
   PermissionFlagsBits,
+  MessageCreateOptions,
 } from 'discord.js';
 import tc from 'tinycolor2';
-import { Command, CommandArgs } from '../../lib/util/Command.js';
+import { Command, CommandArgs } from '../../lib/structures/Command.js';
 import { botOwners, imgOpts } from '../defaults.js';
 import { isValidImage } from '../utils.js';
 
@@ -167,7 +167,7 @@ export default class Echo extends Command {
                 },
               ]
             : [],
-        } as MessageOptions;
+        } as MessageCreateOptions;
 
       if (contentO) eMsg.content = contentO;
       if (ttsO) eMsg.tts = ttsO;

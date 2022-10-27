@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-empty-function, @typescript-eslint/no-unused-vars */
 
 import { Base, Client, Collection, Snowflake } from 'discord.js';
-import { DatabaseRemindersManager } from '../DatabaseRemindersManager.js';
 import { ReminderData } from './ReminderData.js';
 
 export class UserData extends Base {

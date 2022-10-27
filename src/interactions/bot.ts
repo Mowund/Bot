@@ -14,7 +14,7 @@ import {
 } from 'discord.js';
 import { emojis, supportServer } from '../defaults.js';
 import { toUTS, botInvite, msToTime } from '../utils.js';
-import { Command, CommandArgs } from '../../lib/util/Command.js';
+import { Command, CommandArgs } from '../../lib/structures/Command.js';
 
 export default class Bot extends Command {
   constructor() {

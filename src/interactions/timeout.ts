@@ -1,6 +1,6 @@
 import { ApplicationCommandOptionType, BaseInteraction, PermissionFlagsBits } from 'discord.js';
 import parseDur from 'parse-duration';
-import { Command, CommandArgs } from '../../lib/util/Command.js';
+import { Command, CommandArgs } from '../../lib/structures/Command.js';
 import { msToTime } from '../utils.js';
 
 export default class Timeout extends Command {

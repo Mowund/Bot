@@ -7,15 +7,15 @@ import {
   Colors,
   EmbedBuilder,
   SelectMenuBuilder,
+  SelectMenuInteraction,
   SelectMenuOptionBuilder,
   SnowflakeUtil,
 } from 'discord.js';
 import parseDur from 'parse-duration';
-import { Command, CommandArgs } from '../../lib/util/Command.js';
+import { Command, CommandArgs } from '../../lib/structures/Command.js';
 import { emojis } from '../defaults.js';
-import { disableComponents, msToTime, toUTS, truncate } from '../utils.js';
+import { disableComponents, getFieldValue, msToTime, toUTS, truncate } from '../utils.js';
 
-// TODO
 export default class Reminder extends Command {
   constructor() {
     super([
@@ -67,7 +67,8 @@ export default class Reminder extends Command {
       switch (options?.getSubcommand()) {
         case 'create': {
           const msTime = parseDur(timeO),
-            summedTime = msTime + Date.now();
+            reminderId = SnowflakeUtil.generate().toString(),
+            summedTime = msTime + SnowflakeUtil.timestampFrom(reminderId);
 
           if (!msTime || msTime < 0) {
             return interaction.reply({
@@ -86,8 +87,7 @@ export default class Reminder extends Command {
 
           await interaction.deferReply({ ephemeral: ephemeralO });
 
-          const reminderId = SnowflakeUtil.generate().toString(),
-            reminder = await client.database.reminders.set(reminderId, user.id, {
+          const reminder = await client.database.reminders.set(reminderId, user.id, {
               channelId: interaction.guild ? channel.id : null,
               content: reminderO,
               timestamp: summedTime,
@@ -118,13 +118,15 @@ export default class Reminder extends Command {
           rows.push(
             new ActionRowBuilder<ButtonBuilder>().addComponents(
               new ButtonBuilder()
-                .setCustomId('reminder_recursive')
-                .setLabel(i18n.__('REMINDER.RECURSIVE'))
-                .setStyle(ButtonStyle.Primary),
+                .setLabel(i18n.__('REMINDER.COMPONENT.LIST'))
+                .setEmoji('🗒️')
+                .setStyle(ButtonStyle.Primary)
+                .setCustomId('reminder_list'),
               new ButtonBuilder()
-                .setCustomId('reminder_delete')
-                .setLabel(i18n.__('GENERIC.DELETE'))
-                .setStyle(ButtonStyle.Danger),
+                .setLabel(i18n.__('GENERIC.COMPONENT.EDIT'))
+                .setEmoji('📝')
+                .setStyle(ButtonStyle.Secondary)
+                .setCustomId('reminder_edit'),
             ),
           );
 
@@ -167,8 +169,9 @@ export default class Reminder extends Command {
           });
         }
       }
-    } else if (interaction.isButton()) {
+    } else if (interaction.isButton() || interaction.isSelectMenu()) {
       const { message } = interaction;
+      let { customId } = interaction;
 
       if (message.interaction.user.id !== user.id) {
         return interaction.reply({
@@ -177,140 +180,212 @@ export default class Reminder extends Command {
         });
       }
 
-      await interaction.deferUpdate();
-      await interaction.editReply({ components: disableComponents(message.components) });
+      const reminderId =
+          interaction instanceof SelectMenuInteraction
+            ? interaction.values[0]
+            : getFieldValue(message.embeds[0], i18n.__('GENERIC.ID'))?.replaceAll('`', ''),
+        reminder = reminderId ? await client.database.reminders.fetch(reminderId, user.id) : null,
+        isList = customId === 'reminder_list';
 
-      const reminders = await client.database.users.fetchAllReminders(user.id),
-        selectMenu = new SelectMenuBuilder()
-          .setPlaceholder(i18n.__('REMINDER.COMPONENT.SELECT_LIST'))
-          .setCustomId('reminder_select');
+      if (!reminder && !isList) customId = 'reminder_list_forced';
 
-      let emb: EmbedBuilder;
-      if (reminders.size) {
-        emb = embed({ title: `🔔 ${i18n.__('REMINDER.LIST')}` });
-
-        reminders.forEach((r: Record<string, any>) => {
-          selectMenu.addOptions(
-            new SelectMenuOptionBuilder().setLabel(r.id).setValue(r.id).setDescription(truncate(r.content, 100)),
-          );
-          emb.addFields({
-            name: `**${r.id}**`,
-            value: `📄 **${i18n.__('GENERIC.CONTENT')}:** ${truncate(r.content, 300)}\n📅 **${i18n.__(
-              'GENERIC.TIMESTAMP',
-            )}:** ${toUTS(r.timestamp)}`,
-          });
-        });
-
-        rows.push(new ActionRowBuilder().addComponents(selectMenu));
-      } else {
-        emb = embed({ title: `🔕 ${i18n.__('REMINDER.LIST')}` })
-          .setColor(Colors.Red)
-          .setDescription(i18n.__('ERROR.REMINDER.EMPTY'));
-      }
-
-      return interaction.editReply({
-        components: rows,
-        embeds: [emb],
-      });
-    }
-
-    if (interaction.isSelectMenu()) {
-      const { message, values } = interaction;
-
-      if (message.interaction.user.id !== user.id) {
-        return interaction.reply({
-          embeds: [embed({ type: 'error' }).setDescription(i18n.__('ERROR.UNALLOWED.COMMAND'))],
-          ephemeral: true,
-        });
-      }
-
-      await interaction.deferUpdate();
-      await interaction.editReply({
-        components: disableComponents(message.components, {
-          defaultValues: [{ customId: 'reminder_select', value: values[0] }],
-        }),
-      });
-
-      const reminders = await client.database.users.fetchAllReminders(user.id),
-        reminder = reminders.find((r: Record<string, any>) => r.id === values[0]);
-
-      let emb: EmbedBuilder;
-      if (reminder) {
-        emb = embed({ title: `🔔 ${i18n.__('REMINDER.INFO')}` }).addFields(
-          {
-            name: `📄 ${i18n.__('GENERIC.CONTENT')}`,
-            value: reminder.content,
-          },
-          {
-            inline: true,
-            name: `🪪 ${i18n.__('GENERIC.ID')}`,
-            value: `\`${reminder.id}\``,
-          },
-          {
-            inline: true,
-            name: `${emojis.channelText} ${i18n.__('GENERIC.CHANNEL')}`,
-            value: reminder.channelId ? `<#${reminder.channelId}> - \`${reminder.channelId}\`` : 'DM',
-          },
-          {
-            inline: true,
-            name: `📅 ${i18n.__('GENERIC.TIMESTAMP')}`,
-            value: toUTS(reminder.timestamp),
-          },
-          {
-            inline: true,
-            name: `📅 ${i18n.__('GENERIC.CREATION_DATE')}`,
-            value: toUTS(SnowflakeUtil.timestampFrom(reminder.id)),
-          },
-        );
-
-        rows.push(
-          new ActionRowBuilder().addComponents(
-            new ButtonBuilder()
-              .setLabel(i18n.__('GENERIC.COMPONENT.BACK'))
-              .setEmoji('↩️')
-              .setStyle(ButtonStyle.Primary)
-              .setCustomId('reminder_list'),
-          ),
-        );
-      } else {
-        const selectMenu = new SelectMenuBuilder()
-          .setPlaceholder(i18n.__('REMINDER.COMPONENT.SELECT_LIST'))
-          .setCustomId('reminder_select');
-
-        if (reminders.size) {
-          emb = embed({ title: `🔔 ${i18n.__('REMINDER.LIST')}` });
-          reminders.forEach((r: Record<string, any>) => {
-            selectMenu.addOptions(
-              new SelectMenuOptionBuilder().setLabel(r.id).setValue(r.id).setDescription(truncate(r.content, 100)),
+      const emb =
+        isList || customId === 'reminder_list_forced'
+          ? embed()
+          : embed({ title: `🔔 ${i18n.__('REMINDER.INFO')}` }).addFields(
+              {
+                name: `📄 ${i18n.__('GENERIC.CONTENT')}`,
+                value: reminder.content,
+              },
+              {
+                inline: true,
+                name: `🪪 ${i18n.__('GENERIC.ID')}`,
+                value: `\`${reminder.id}\``,
+              },
+              {
+                inline: true,
+                name: `${emojis.channelText} ${i18n.__('GENERIC.CHANNEL')}`,
+                value: reminder.channelId ? `<#${reminder.channelId}> - \`${reminder.channelId}\`` : 'DM',
+              },
+              {
+                inline: true,
+                name: `📅 ${i18n.__('GENERIC.TIMESTAMP')}`,
+                value: toUTS(reminder.timestamp),
+              },
+              {
+                inline: true,
+                name: `📅 ${i18n.__('GENERIC.CREATION_DATE')}`,
+                value: toUTS(SnowflakeUtil.timestampFrom(reminder.id)),
+              },
             );
-            emb.addFields({
-              name: `**${r.id}**`,
-              value: `📄 **${i18n.__('GENERIC.CONTENT')}:** ${truncate(r.content, 300)}\n📅 **${i18n.__(
-                'GENERIC.TIMESTAMP',
-              )}:** ${toUTS(r.timestamp)}`,
-            });
+
+      switch (customId) {
+        case 'reminder_list':
+        case 'reminder_list_forced':
+        case 'reminder_select':
+        case 'reminder_view': {
+          await interaction.deferUpdate();
+          await interaction.editReply({
+            components: disableComponents(message.components, {
+              defaultValues: [{ customId: 'reminder_select', value: reminderId }],
+            }),
           });
 
-          rows.push(new ActionRowBuilder().addComponents(selectMenu));
-        } else {
-          emb = embed({ title: `🔕 ${i18n.__('REMINDER.LIST')}` })
-            .setColor(Colors.Red)
-            .setDescription(i18n.__('ERROR.REMINDER.EMPTY'));
+          if (!isList && reminder) {
+            console.log(reminder);
+            rows.push(
+              new ActionRowBuilder().addComponents(
+                new ButtonBuilder()
+                  .setLabel(i18n.__('GENERIC.COMPONENT.BACK'))
+                  .setEmoji('↩️')
+                  .setStyle(ButtonStyle.Primary)
+                  .setCustomId('reminder_list'),
+                new ButtonBuilder()
+                  .setEmoji('📝')
+                  .setLabel(i18n.__('GENERIC.COMPONENT.EDIT'))
+                  .setStyle(ButtonStyle.Secondary)
+                  .setCustomId('reminder_edit'),
+              ),
+            );
+          } else {
+            const reminders = await client.database.users.fetchAllReminders(user.id),
+              selectMenu = new SelectMenuBuilder()
+                .setPlaceholder(i18n.__('REMINDER.COMPONENT.SELECT_LIST'))
+                .setCustomId('reminder_select');
+
+            if (reminders.size) {
+              reminders.forEach((r: Record<string, any>) => {
+                selectMenu.addOptions(
+                  new SelectMenuOptionBuilder().setLabel(r.id).setValue(r.id).setDescription(truncate(r.content, 100)),
+                );
+                emb.addFields({
+                  name: `**${r.id}**`,
+                  value: `📄 **${i18n.__('GENERIC.CONTENT')}:** ${truncate(r.content, 300)}\n📅 **${i18n.__(
+                    'GENERIC.TIMESTAMP',
+                  )}:** ${toUTS(r.timestamp)}`,
+                });
+              });
+
+              rows.push(new ActionRowBuilder().addComponents(selectMenu));
+            } else {
+              emb
+                .setTitle(`🔕 ${i18n.__('REMINDER.LIST')}`)
+                .setColor(Colors.Red)
+                .setDescription(i18n.__('ERROR.REMINDER.EMPTY'));
+            }
+          }
+
+          if (!isList && !reminder) {
+            await interaction.followUp({
+              embeds: [
+                embed({ type: 'error' }).setDescription(
+                  i18n.__mf('ERROR.REMINDER.NOT_FOUND', { reminderId: reminderId }),
+                ),
+              ],
+              ephemeral: true,
+            });
+          }
+
+          return interaction.editReply({
+            components: rows,
+            embeds: [emb],
+          });
         }
-      }
+        case 'reminder_edit': {
+          rows.push(
+            new ActionRowBuilder().addComponents(
+              new ButtonBuilder()
+                .setLabel(i18n.__('GENERIC.COMPONENT.BACK'))
+                .setEmoji('↩️')
+                .setStyle(ButtonStyle.Primary)
+                .setCustomId('reminder_view'),
+              new ButtonBuilder()
+                .setLabel(i18n.__('REMINDER.RECURSIVE'))
+                .setEmoji('🔁')
+                .setStyle(reminder.isRecursive ? ButtonStyle.Success : ButtonStyle.Secondary)
+                .setCustomId(`reminder_recursive_${reminder.isRecursive ? 'unset' : 'set'}`),
+              new ButtonBuilder()
+                .setLabel(i18n.__('GENERIC.DELETE'))
+                .setEmoji('🗑️')
+                .setStyle(ButtonStyle.Danger)
+                .setCustomId('reminder_delete'),
+            ),
+          );
 
-      await interaction.editReply({
-        components: rows,
-        embeds: [emb],
-      });
-
-      if (!reminder) {
-        return interaction.followUp({
-          embeds: [
-            embed({ type: 'error' }).setDescription(i18n.__mf('ERROR.REMINDER.NOT_FOUND', { reminderId: values[0] })),
-          ],
-          ephemeral: true,
-        });
+          return interaction.update({
+            components: rows,
+            embeds: [emb.setTitle(`🔔 ${i18n.__('REMINDER.EDITING')}`).setColor(Colors.Yellow)],
+          });
+        }
+        case 'reminder_recursive_set':
+        case 'reminder_recursive_unset': {
+          await client.database.reminders.set(reminderId, user.id, { isRecursive: !reminder.isRecursive });
+          rows.push(
+            new ActionRowBuilder().addComponents(
+              new ButtonBuilder()
+                .setLabel(i18n.__('GENERIC.COMPONENT.BACK'))
+                .setEmoji('↩️')
+                .setStyle(ButtonStyle.Primary)
+                .setCustomId('reminder_view'),
+              new ButtonBuilder()
+                .setLabel(i18n.__('REMINDER.RECURSIVE'))
+                .setEmoji('🔁')
+                .setStyle(reminder.isRecursive ? ButtonStyle.Success : ButtonStyle.Secondary)
+                .setCustomId(`reminder_recursive_${reminder.isRecursive ? 'unset' : 'set'}`),
+              new ButtonBuilder()
+                .setLabel(i18n.__('GENERIC.DELETE'))
+                .setEmoji('🗑️')
+                .setStyle(ButtonStyle.Danger)
+                .setCustomId('reminder_delete'),
+            ),
+          );
+          return interaction.update({
+            components: rows,
+            embeds: [
+              emb
+                .setTitle(`🔔 ${i18n.__('REMINDER.EDITED')}`)
+                .setDescription(i18n.__(`REMINDER.RECURSIVE_${reminder.isRecursive ? 'SET' : 'UNSET'}`))
+                .setColor(Colors.Yellow),
+            ],
+          });
+        }
+        case 'reminder_delete': {
+          rows.push(
+            new ActionRowBuilder().addComponents(
+              new ButtonBuilder()
+                .setLabel(i18n.__('GENERIC.COMPONENT.BACK'))
+                .setEmoji('↩️')
+                .setStyle(ButtonStyle.Primary)
+                .setCustomId('reminder_edit'),
+              new ButtonBuilder()
+                .setLabel(i18n.__('GENERIC.YES'))
+                .setEmoji('✅')
+                .setStyle(ButtonStyle.Success)
+                .setCustomId('reminder_delete_confirm'),
+            ),
+          );
+          return interaction.update({
+            components: rows,
+            embeds: [
+              emb
+                .setTitle(`🔔 ${i18n.__('REMINDER.DELETING')}`)
+                .setDescription(i18n.__('REMINDER.DELETING_DESCRIPTION'))
+                .setColor(Colors.Orange),
+            ],
+          });
+        }
+        case 'reminder_delete_confirm': {
+          await client.database.reminders.delete(reminderId, user.id);
+          return interaction.update({
+            components: [],
+            embeds: [
+              emb
+                .setTitle(`🔕 ${i18n.__('REMINDER.DELETED')}`)
+                .setDescription(null)
+                .setColor(Colors.Red),
+            ],
+          });
+        }
       }
     }
   }
