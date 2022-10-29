@@ -17,7 +17,6 @@ import {
   ModalMessageModalSubmitInteraction,
   ButtonInteraction,
   Colors,
-  SelectMenuInteraction,
 } from 'discord.js';
 import { RawGuildData, RawGuildEmojiData } from 'discord.js/typings/rawDataTypes.js';
 import { collMap, toUTS, getFieldValue, decreaseSizeCDN, disableComponents } from '../utils.js';
@@ -342,7 +341,7 @@ export default class Emoji extends Command {
       }
     }
 
-    if (interaction.isButton() || interaction.isSelectMenu() || interaction.isModalSubmit()) {
+    if (interaction.isButton() || interaction.isModalSubmit()) {
       const { message } = interaction;
 
       if (message.interaction.user.id !== user.id) {
@@ -535,7 +534,7 @@ export default class Emoji extends Command {
               ),
               new ActionRowBuilder<ButtonBuilder>().addComponents(
                 new ButtonBuilder()
-                  .setLabel(i18n.__('EMOJI.COMPONENT.DELETE'))
+                  .setLabel(i18n.__('GENERIC.DELETE'))
                   .setEmoji('🗑️')
                   .setStyle(ButtonStyle.Danger)
                   .setCustomId('emoji_edit_delete'),
@@ -606,7 +605,7 @@ export default class Emoji extends Command {
             components: [
               new ActionRowBuilder<ButtonBuilder>().addComponents(
                 new ButtonBuilder()
-                  .setLabel(i18n.__('GENERIC.COMPONENT.BACK'))
+                  .setLabel(i18n.__('GENERIC.BACK'))
                   .setEmoji('↩️')
                   .setStyle(ButtonStyle.Primary)
                   .setCustomId('emoji_edit'),

@@ -70,7 +70,7 @@ export default class Reminder extends Command {
             reminderId = SnowflakeUtil.generate().toString(),
             summedTime = msTime + SnowflakeUtil.timestampFrom(reminderId);
 
-          if (!msTime || msTime < 0) {
+          if (!msTime || msTime < 180000) {
             return interaction.reply({
               embeds: [
                 embed({ type: 'error' }).setDescription(
@@ -123,7 +123,7 @@ export default class Reminder extends Command {
                 .setStyle(ButtonStyle.Primary)
                 .setCustomId('reminder_list'),
               new ButtonBuilder()
-                .setLabel(i18n.__('GENERIC.COMPONENT.EDIT'))
+                .setLabel(i18n.__('GENERIC.EDIT'))
                 .setEmoji('📝')
                 .setStyle(ButtonStyle.Secondary)
                 .setCustomId('reminder_edit'),
@@ -236,13 +236,13 @@ export default class Reminder extends Command {
             rows.push(
               new ActionRowBuilder().addComponents(
                 new ButtonBuilder()
-                  .setLabel(i18n.__('GENERIC.COMPONENT.BACK'))
+                  .setLabel(i18n.__('GENERIC.BACK'))
                   .setEmoji('↩️')
                   .setStyle(ButtonStyle.Primary)
                   .setCustomId('reminder_list'),
                 new ButtonBuilder()
                   .setEmoji('📝')
-                  .setLabel(i18n.__('GENERIC.COMPONENT.EDIT'))
+                  .setLabel(i18n.__('GENERIC.EDIT'))
                   .setStyle(ButtonStyle.Secondary)
                   .setCustomId('reminder_edit'),
               ),
@@ -295,12 +295,12 @@ export default class Reminder extends Command {
           rows.push(
             new ActionRowBuilder().addComponents(
               new ButtonBuilder()
-                .setLabel(i18n.__('GENERIC.COMPONENT.BACK'))
+                .setLabel(i18n.__('GENERIC.BACK'))
                 .setEmoji('↩️')
                 .setStyle(ButtonStyle.Primary)
                 .setCustomId('reminder_view'),
               new ButtonBuilder()
-                .setLabel(i18n.__('REMINDER.RECURSIVE'))
+                .setLabel(i18n.__('GENERIC.RECURSIVE'))
                 .setEmoji('🔁')
                 .setStyle(reminder.isRecursive ? ButtonStyle.Success : ButtonStyle.Secondary)
                 .setCustomId(`reminder_recursive_${reminder.isRecursive ? 'unset' : 'set'}`),
@@ -323,12 +323,12 @@ export default class Reminder extends Command {
           rows.push(
             new ActionRowBuilder().addComponents(
               new ButtonBuilder()
-                .setLabel(i18n.__('GENERIC.COMPONENT.BACK'))
+                .setLabel(i18n.__('GENERIC.BACK'))
                 .setEmoji('↩️')
                 .setStyle(ButtonStyle.Primary)
                 .setCustomId('reminder_view'),
               new ButtonBuilder()
-                .setLabel(i18n.__('REMINDER.RECURSIVE'))
+                .setLabel(i18n.__('GENERIC.RECURSIVE'))
                 .setEmoji('🔁')
                 .setStyle(reminder.isRecursive ? ButtonStyle.Success : ButtonStyle.Secondary)
                 .setCustomId(`reminder_recursive_${reminder.isRecursive ? 'unset' : 'set'}`),
@@ -344,7 +344,7 @@ export default class Reminder extends Command {
             embeds: [
               emb
                 .setTitle(`🔔 ${i18n.__('REMINDER.EDITED')}`)
-                .setDescription(i18n.__(`REMINDER.RECURSIVE_${reminder.isRecursive ? 'SET' : 'UNSET'}`))
+                .setDescription(i18n.__(`REMINDER.RECURSIVE.${reminder.isRecursive ? 'SET' : 'UNSET'}`))
                 .setColor(Colors.Yellow),
             ],
           });
@@ -353,7 +353,7 @@ export default class Reminder extends Command {
           rows.push(
             new ActionRowBuilder().addComponents(
               new ButtonBuilder()
-                .setLabel(i18n.__('GENERIC.COMPONENT.BACK'))
+                .setLabel(i18n.__('GENERIC.BACK'))
                 .setEmoji('↩️')
                 .setStyle(ButtonStyle.Primary)
                 .setCustomId('reminder_edit'),
