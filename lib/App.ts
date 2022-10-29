@@ -26,7 +26,7 @@ export class App extends Client {
   badDomains: Array<string>;
   chalk: ChalkInstance;
   commands: Collection<string, Command>;
-  globalCommandCount: { chatInput: number; message: number; user: number; sum: { all: number; contextMenu: number } };
+  globalCommandCount: { chatInput: number; message: number; sum: { all: number; contextMenu: number }; user: number };
   database: DatabaseManager;
   experiments: { data: Experiment[]; lastUpdated: number };
   firestore: firestore.Firestore;
@@ -84,8 +84,7 @@ export class App extends Client {
   };
 
   countCommands = (commands: Collection<string, ApplicationCommandData>) => {
-    const count = {
-      chatInput: commands
+    const chatInput = commands
         .filter(c => c.type === ApplicationCommandType.ChatInput)
         .reduce(
           (acc1, value1: ChatInputApplicationCommandData) =>
@@ -102,14 +101,19 @@ export class App extends Client {
             ) || 1),
           0,
         ),
-      message: commands.filter(c => c.type === ApplicationCommandType.Message).size,
-      sum: {},
-      user: commands.filter(c => c.type === ApplicationCommandType.User).size,
-    } as typeof this.globalCommandCount;
+      message = commands.filter(c => c.type === ApplicationCommandType.Message).size,
+      user = commands.filter(c => c.type === ApplicationCommandType.User).size,
+      contextMenu = message + user;
 
-    count.sum.contextMenu = count.message + count.user;
-    count.sum.all = count.sum.contextMenu + count.chatInput;
-    return count;
+    return {
+      chatInput,
+      message,
+      sum: {
+        all: contextMenu + chatInput,
+        contextMenu,
+      },
+      user,
+    };
   };
 
   /**
