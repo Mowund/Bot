@@ -58,8 +58,8 @@ export default class ReminderFoundEvent extends Event {
         });
 
       emb.addFields({
-        name: `🔁 ${i18n.__('REMINDER.RECURSIVE')}`,
-        value: i18n.__mf('REMINDER.RECURSIVE_DESCRIPTION', { timestamp: toUTS(recReminder.timestamp) }),
+        name: `🔁 ${i18n.__('GENERIC.RECURSIVE')}`,
+        value: i18n.__mf('REMINDER.RECURSIVE.DESCRIPTION', { timestamp: toUTS(recReminder.timestamp) }),
       });
     }
 
