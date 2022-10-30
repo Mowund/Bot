@@ -111,10 +111,10 @@ export default class Reminder extends Command {
                 name: `🔁 ${i18n.__('GENERIC.NOT_RECURSIVE')}`,
                 value:
                   reminder.msTime < minimumRecursiveTime
-                    ? i18n.__('REMINDER.RECURSIVE.OFF')
-                    : i18n.__mf('REMINDER.RECURSIVE.DISABLED', {
+                    ? i18n.__mf('REMINDER.RECURSIVE.DISABLED', {
                         time: i18n.__mf('GENERIC.TIME.MINUTES', { count: minimumRecursiveTime / 60000 }),
-                      }),
+                      })
+                    : i18n.__('REMINDER.RECURSIVE.OFF'),
               },
               {
                 inline: true,
@@ -239,10 +239,10 @@ export default class Reminder extends Command {
                   name: `🔁 ${i18n.__('GENERIC.NOT_RECURSIVE')}`,
                   value:
                     reminder.msTime < minimumRecursiveTime
-                      ? i18n.__('REMINDER.RECURSIVE.OFF')
-                      : i18n.__mf('REMINDER.RECURSIVE.DISABLED', {
+                      ? i18n.__mf('REMINDER.RECURSIVE.DISABLED', {
                           time: i18n.__mf('GENERIC.TIME.MINUTES', { count: minimumRecursiveTime / 60000 }),
-                        }),
+                        })
+                      : i18n.__('REMINDER.RECURSIVE.OFF'),
                 },
             {
               inline: true,
