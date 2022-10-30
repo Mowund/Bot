@@ -311,7 +311,7 @@ export default class Emoji extends Command {
       if (editBtnVsby) {
         rows[0].addComponents(
           new ButtonBuilder()
-            .setLabel(i18n.__('EMOJI.COMPONENT.EDIT'))
+            .setLabel(i18n.__('GENERIC.EDIT'))
             .setEmoji('📝')
             .setStyle(ButtonStyle.Primary)
             .setCustomId('emoji_edit')
@@ -574,7 +574,7 @@ export default class Emoji extends Command {
           if (editBtnVsby) {
             rows[0].addComponents(
               new ButtonBuilder()
-                .setLabel(i18n.__('EMOJI.COMPONENT.EDIT'))
+                .setLabel(i18n.__('GENERIC.EDIT'))
                 .setEmoji('📝')
                 .setStyle(ButtonStyle.Primary)
                 .setCustomId('emoji_edit')

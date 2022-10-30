@@ -21,11 +21,13 @@ export default class DeleteResponse extends Command {
 
     if (
       messageO.author.id !== client.user.id ||
-      (messageO.interaction?.user.id !== user.id &&
-        !new URLSearchParams(messageO.embeds[messageO.embeds.length - 1]?.footer?.iconURL)
+      !(
+        messageO.interaction?.user.id === user.id ||
+        new URLSearchParams(messageO.embeds[messageO.embeds.length - 1]?.footer?.iconURL)
           .get('messageOwners')
           ?.split('-')
-          .includes(user.id))
+          .includes(user.id)
+      )
     ) {
       return interaction.reply({
         embeds: [embed({ type: 'error' }).setDescription(i18n.__('ERROR.UNALLOWED.DELETE_RESPONSE'))],

@@ -7,6 +7,7 @@ export class ReminderData extends Base {
   channelId: Snowflake;
   content: string;
   isRecursive?: boolean;
+  msTime: number;
   timestamp: number;
   userId: Snowflake;
 
@@ -17,6 +18,7 @@ export class ReminderData extends Base {
     this.channelId = data.channelId;
     this.content = data.content;
     this.isRecursive = data.isRecursive;
+    this.msTime = data.msTime;
     this.timestamp = data.timestamp;
     this.userId = data.userId;
   }
@@ -25,6 +27,7 @@ export class ReminderData extends Base {
     if ('channelId' in data) this.channelId = data.channelId;
     if ('content' in data) this.content = data.content;
     if ('isRecursive' in data) this.isRecursive = data.isRecursive;
+    if ('msTime' in data) this.msTime = data.msTime;
     if ('timestamp' in data) this.timestamp = data.timestamp;
     if ('userId' in data) this.userId = data.userId;
     return data;
@@ -35,6 +38,7 @@ export interface ReminderDataSetOptions {
   channelId?: Snowflake;
   content?: string;
   isRecursive?: boolean;
+  msTime?: number;
   timestamp?: number;
   userId?: Snowflake;
 }

@@ -13,12 +13,18 @@ import {
   Client,
   ClientOptions,
   Collection,
+  ColorResolvable,
+  Colors,
+  EmbedBuilder,
+  GuildMember,
   Snowflake,
+  User,
 } from 'discord.js';
 import firebase, { firestore } from 'firebase-admin';
 import i18n from 'i18n';
 import { Chalk, ChalkInstance } from 'chalk';
-import { defaultLocale, supportServer } from '../src/defaults.js';
+import { defaultLocale, imgOpts, supportServer } from '../src/defaults.js';
+import { addSearchParams } from '../src/utils.js';
 import { Command } from './structures/Command.js';
 import { DatabaseManager } from './managers/DatabaseManager.js';
 
@@ -26,10 +32,10 @@ export class App extends Client {
   badDomains: Array<string>;
   chalk: ChalkInstance;
   commands: Collection<string, Command>;
-  globalCommandCount: { chatInput: number; message: number; sum: { all: number; contextMenu: number }; user: number };
   database: DatabaseManager;
   experiments: { data: Experiment[]; lastUpdated: number };
   firestore: firestore.Firestore;
+  globalCommandCount: { chatInput: number; message: number; sum: { all: number; contextMenu: number }; user: number };
   i18n: any;
   octokit: Octokit;
   private otherLocales: string[];
@@ -47,7 +53,6 @@ export class App extends Client {
     this.firestore = firebase.firestore();
     this.i18n = i18n;
   }
-
   async login(token?: string) {
     this.octokit = new Octokit({ auth: process.env.GITHUB_TOKEN });
 
@@ -115,6 +120,45 @@ export class App extends Client {
       user,
     };
   };
+
+  embedBuilder(options: {
+    addParams?: Record<string, string>;
+    color?: ColorResolvable;
+    footer?: 'interacted' | 'requested' | 'none';
+    member?: GuildMember;
+    timestamp?: number;
+    title?: string;
+    type?: 'error' | 'success' | 'warning' | 'wip';
+    user: User;
+  }) {
+    const emb = new EmbedBuilder().setTimestamp(options.timestamp ?? Date.now());
+
+    if (options.footer !== 'none') {
+      emb.setFooter({
+        iconURL: addSearchParams(new URL((options.member ?? options.user).displayAvatarURL(imgOpts)), options.addParams)
+          .href,
+        text: i18n.__mf(`GENERIC.${options.footer === 'interacted' ? 'INTERACTED_BY' : 'REQUESTED_BY'}`, {
+          userName: options.member?.displayName ?? options.user.username,
+        }),
+      });
+    }
+
+    switch (options.type) {
+      case 'error':
+        return emb.setColor(Colors.Red).setTitle(`❌ ${options.title || i18n.__('GENERIC.ERROR')}`);
+      case 'success':
+        return emb.setColor(Colors.Green).setTitle(`✅ ${options.title || i18n.__('GENERIC.SUCCESS')}`);
+      case 'warning':
+        return emb.setColor(Colors.Yellow).setTitle(`⚠️ ${options.title || i18n.__('GENERIC.WARNING')}`);
+      case 'wip':
+        return emb
+          .setColor(Colors.Orange)
+          .setTitle(`🔨 ${options.title || i18n.__('GENERIC.WIP')}`)
+          .setDescription(i18n.__('GENERIC.WIP_COMMAND'));
+      default:
+        return (options.title ? emb.setTitle(options.title) : emb).setColor(options.color ?? null);
+    }
+  }
 
   /**
    * @returns The bot static catalog or supported languages

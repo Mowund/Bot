@@ -35,7 +35,7 @@ const __filename = fileURLToPath(import.meta.url),
   });
 
 process.on('uncaughtException', (err: DiscordAPIError) => {
-  if (err.status !== RESTJSONErrorCodes.UnknownInteraction) {
+  if (!(err instanceof DiscordAPIError) || err.code !== RESTJSONErrorCodes.UnknownInteraction) {
     console.error(err);
     process.exit();
   }

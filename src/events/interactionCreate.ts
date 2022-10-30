@@ -1,8 +1,7 @@
-import { Colors, EmbedBuilder, Events, InteractionType } from 'discord.js';
+import { ColorResolvable, Colors, EmbedBuilder, Events, InteractionType } from 'discord.js';
 import { Event } from '../../lib/structures/Event.js';
 import { App } from '../../lib/App.js';
-import { debugLevel, imgOpts, defaultLocale } from '../defaults.js';
-import { addSearchParams } from '../utils.js';
+import { debugLevel, defaultLocale } from '../defaults.js';
 
 export default class InteractionCreateEvent extends Event {
   constructor() {
@@ -39,40 +38,16 @@ export default class InteractionCreateEvent extends Event {
 
     i18n.setLocale(language);
 
-    const embed = (options?: {
-      type?: 'error' | 'success' | 'warning' | 'wip';
-      addParams?: Record<string, string>;
-      footer?: 'interacted' | 'requested' | 'none';
-      title?: string;
-    }): EmbedBuilder => {
-      const emb = new EmbedBuilder().setTimestamp(Date.now());
-      options ??= {};
-
-      if (options.footer !== 'none') {
-        emb.setFooter({
-          iconURL: addSearchParams(new URL((member ?? user).displayAvatarURL(imgOpts)), options.addParams).href,
-          text: i18n.__mf(`GENERIC.${options.footer === 'interacted' ? 'INTERACTED_BY' : 'REQUESTED_BY'}`, {
-            userName: member?.displayName ?? user.username,
-          }),
-        });
-      }
-
-      switch (options.type) {
-        case 'error':
-          return emb.setColor(Colors.Red).setTitle(`❌ ${options.title || i18n.__('GENERIC.ERROR')}`);
-        case 'success':
-          return emb.setColor(Colors.Green).setTitle(`✅ ${options.title || i18n.__('GENERIC.SUCCESS')}`);
-        case 'warning':
-          return emb.setColor(Colors.Yellow).setTitle(`⚠️ ${options.title || i18n.__('GENERIC.WARNING')}`);
-        case 'wip':
-          return emb
-            .setColor(Colors.Orange)
-            .setTitle(`🔨 ${options.title || i18n.__('GENERIC.WIP')}`)
-            .setDescription(i18n.__('GENERIC.WIP_COMMAND'));
-        default:
-          return (options.title ? emb.setTitle(options.title) : emb).setColor(embColor);
-      }
-    };
+    const embed = (
+      options: {
+        addParams?: Record<string, string>;
+        color?: ColorResolvable;
+        footer?: 'interacted' | 'requested' | 'none';
+        timestamp?: number;
+        title?: string;
+        type?: 'error' | 'success' | 'warning' | 'wip';
+      } = {},
+    ): EmbedBuilder => client.embedBuilder({ ...options, color: options.color ?? embColor, member, user });
 
     try {
       return command.run({ client, embed }, interaction);

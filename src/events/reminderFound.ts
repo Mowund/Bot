@@ -1,5 +1,13 @@
-import { EmbedBuilder, SnowflakeUtil, GuildTextBasedChannel, Colors } from 'discord.js';
-import { emojis, imgOpts } from '../defaults.js';
+import {
+  SnowflakeUtil,
+  GuildTextBasedChannel,
+  Colors,
+  ActionRowBuilder,
+  ButtonBuilder,
+  ButtonStyle,
+  Snowflake,
+} from 'discord.js';
+import { emojis } from '../defaults.js';
 import { toUTS } from '../utils.js';
 import { AppEvents, Event } from '../../lib/structures/Event.js';
 import { App } from '../../lib/App.js';
@@ -12,7 +20,7 @@ export default class ReminderFoundEvent extends Event {
 
   async run(client: App, reminder: ReminderData): Promise<any> {
     const { i18n } = client,
-      { channelId, content, id, isRecursive, timestamp, userId } = reminder,
+      { channelId, content, id, isRecursive, msTime, timestamp, userId } = reminder,
       channel = client.channels.cache.get(channelId) as GuildTextBasedChannel,
       member = channel?.guild.members.cache.get(userId),
       user = await client.users.fetch(userId),
@@ -20,10 +28,14 @@ export default class ReminderFoundEvent extends Event {
 
     await client.database.reminders.delete(id, userId);
 
-    const emb = new EmbedBuilder()
-      .setColor(Colors.Yellow)
-      .setTitle(`${emojis.bellRinging} ${i18n.__('REMINDER.NEW')}`)
-      .addFields(
+    const row = new ActionRowBuilder<ButtonBuilder>().addComponents(
+        new ButtonBuilder()
+          .setLabel(i18n.__('REMINDER.COMPONENT.LIST'))
+          .setEmoji('🗒️')
+          .setStyle(ButtonStyle.Primary)
+          .setCustomId('reminder_list'),
+      ),
+      fields = [
         {
           name: `📄 ${i18n.__('GENERIC.CONTENT')}`,
           value: content,
@@ -38,14 +50,8 @@ export default class ReminderFoundEvent extends Event {
           name: `📅 ${i18n.__('GENERIC.CREATION_DATE')}`,
           value: toUTS(idTimestamp),
         },
-      )
-      .setFooter({
-        iconURL: `${(member ?? user).displayAvatarURL(imgOpts)}&messageOwners=${userId}`,
-        text: i18n.__mf(`REMINDER.TO`, {
-          userName: member?.displayName ?? user.username,
-        }),
-      })
-      .setTimestamp(timestamp);
+      ],
+      params: { messageOwners: Snowflake; reminderId?: Snowflake } = { messageOwners: userId };
 
     if (isRecursive) {
       const recReminderId = SnowflakeUtil.generate().toString(),
@@ -53,19 +59,41 @@ export default class ReminderFoundEvent extends Event {
           channelId: channelId,
           content: content,
           isRecursive,
-          timestamp: SnowflakeUtil.timestampFrom(recReminderId) + idTimestamp - timestamp,
+          msTime,
+          timestamp: SnowflakeUtil.timestampFrom(recReminderId) + msTime,
           userId: user.id,
         });
 
-      emb.addFields({
+      params.reminderId = recReminderId;
+      fields.push({
         name: `🔁 ${i18n.__('GENERIC.RECURSIVE')}`,
         value: i18n.__mf('REMINDER.RECURSIVE.DESCRIPTION', { timestamp: toUTS(recReminder.timestamp) }),
       });
+
+      row.addComponents(
+        new ButtonBuilder()
+          .setLabel(i18n.__('GENERIC.EDIT'))
+          .setEmoji('📝')
+          .setStyle(ButtonStyle.Secondary)
+          .setCustomId('reminder_edit'),
+      );
     }
+
+    const emb = client
+      .embedBuilder({
+        addParams: params,
+        color: Colors.Yellow,
+        member,
+        timestamp,
+        title: `${emojis.bellRinging} ${i18n.__('REMINDER.NEW')}`,
+        user,
+      })
+      .addFields(fields);
 
     if (channelId) {
       if (!channel) {
         return user.send({
+          components: [row],
           embeds: [
             emb.setDescription(
               `You asked me to remind you in a specific channel (\`${channelId}\`) but it was not found`,
@@ -75,12 +103,14 @@ export default class ReminderFoundEvent extends Event {
       }
       return channel.send({
         allowedMentions: { users: [user.id] },
+        components: [row],
         content: `${user}`,
         embeds: [emb.setDescription(`You asked me to remind you here`)],
       });
     }
 
     return user.send({
+      components: [row],
       embeds: [emb.setDescription(`You asked me to remind you here`)],
     });
   }
