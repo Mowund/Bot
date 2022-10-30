@@ -108,16 +108,6 @@ export default class Reminder extends Command {
               },
               {
                 inline: true,
-                name: `🔁 ${i18n.__('GENERIC.NOT_RECURSIVE')}`,
-                value:
-                  reminder.msTime < minimumRecursiveTime
-                    ? i18n.__mf('REMINDER.RECURSIVE.DISABLED', {
-                        time: i18n.__mf('GENERIC.TIME.MINUTES', { count: minimumRecursiveTime / 60000 }),
-                      })
-                    : i18n.__('REMINDER.RECURSIVE.OFF'),
-              },
-              {
-                inline: true,
                 name: `${emojis.channelText} ${i18n.__('GENERIC.CHANNEL')}`,
                 value: reminder.channelId ? `<#${reminder.channelId}> - \`${reminder.channelId}\`` : 'DM',
               },
@@ -125,6 +115,16 @@ export default class Reminder extends Command {
                 inline: true,
                 name: `📅 ${i18n.__('GENERIC.TIMESTAMP')}`,
                 value: i18n.__mf('REMINDER.TIMESTAMP_DESCRIPTION', { timestamp: toUTS(reminder.timestamp) }),
+              },
+              {
+                inline: true,
+                name: `🔁 ${i18n.__('GENERIC.NOT_RECURSIVE')}`,
+                value:
+                  reminder.msTime < minimumRecursiveTime
+                    ? i18n.__mf('REMINDER.RECURSIVE.DISABLED', {
+                        time: i18n.__mf('GENERIC.TIME.MINUTES', { count: minimumRecursiveTime / 60000 }),
+                      })
+                    : i18n.__('REMINDER.RECURSIVE.OFF'),
               },
             );
 
