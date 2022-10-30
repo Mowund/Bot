@@ -3,7 +3,7 @@ import { inspect } from 'node:util';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 import { ApplicationCommandOptionType, ApplicationCommandType, BaseInteraction, Colors, Guild } from 'discord.js';
-import { Command, CommandArgs } from '../../lib/util/Command.js';
+import { Command, CommandArgs } from '../../lib/structures/Command.js';
 import { botOwners } from '../defaults.js';
 import { truncate } from '../utils.js';
 
@@ -157,6 +157,7 @@ export default class Owner extends Command {
             ],
           });
         } catch (err) {
+          console.log(err);
           return interaction.editReply({
             embeds: [
               embed({ type: 'error' }).addFields({
@@ -256,7 +257,7 @@ export default class Owner extends Command {
               }
             });
 
-            client.splitedCmds = client.splitCmds(await appCmds.fetch());
+            client.globalCommandCount = client.countCommands(await appCmds.fetch());
 
             const cmdMap = (cmds, gOnly = false) =>
                 cmds

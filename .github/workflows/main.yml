@@ -8,10 +8,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Install Node v18
+      - name: Install Node v19
         uses: actions/setup-node@v2
         with:
-          node-version: 18
+          node-version: 19
           cache: 'yarn'
 
       - name: Install Dependencies

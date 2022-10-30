@@ -9,7 +9,7 @@ import {
   CommandInteractionOptionResolver,
   PermissionFlagsBits,
 } from 'discord.js';
-import { Command, CommandArgs } from '../../lib/util/Command.js';
+import { Command, CommandArgs } from '../../lib/structures/Command.js';
 import { botOwners } from '../defaults.js';
 
 export default class Clear extends Command {

@@ -14,7 +14,7 @@ import {
   ChatInputApplicationCommandData,
 } from 'discord.js';
 import { App } from '../lib/App.js';
-import { Command } from '../lib/util/Command.js';
+import { Command } from '../lib/structures/Command.js';
 import { debugLevel } from './defaults.js';
 import { fetchURL } from './utils.js';
 import 'log-timestamp';
@@ -35,7 +35,7 @@ const __filename = fileURLToPath(import.meta.url),
   });
 
 process.on('uncaughtException', (err: DiscordAPIError) => {
-  if (err.code !== RESTJSONErrorCodes.UnknownInteraction) {
+  if (!(err instanceof DiscordAPIError) || err.code !== RESTJSONErrorCodes.UnknownInteraction) {
     console.error(err);
     process.exit();
   }
@@ -51,19 +51,18 @@ client.on('ready', async () => {
       status: PresenceUpdateStatus.Idle,
     });
 
-    client.splitedCmds = client.splitCmds(await client.application.commands.fetch());
-
     await (async function updateData() {
-      client.badDomains = await fetchURL('https://bad-domains.walshy.dev/domains.json');
+      client.badDomains = (await fetchURL('https://bad-domains.walshy.dev/domains.json')) ?? client.badDomains;
       client.experiments = {
-        data: await fetchURL('https://distools.app/api/datamining/experiments'),
+        data: (await fetchURL('https://distools.app/api/datamining/experiments')) ?? client.experiments?.data,
         lastUpdated: Date.now(),
       };
 
-      if (debugLevel) console.log(client.chalk.cyan('Data updated'));
+      if (debugLevel > 1) console.log(client.chalk.cyan('Data updated'));
       setTimeout(updateData, 300000);
     })();
 
+    client.globalCommandCount = client.countCommands(await client.application.commands.fetch());
     await client.updateMowundDescription();
 
     const appCmds = await client.application.commands.fetch({ withLocalizations: true });
@@ -111,17 +110,12 @@ client.on('ready', async () => {
       status: PresenceUpdateStatus.Online,
     });
 
-    await (async function findReminders() {
-      const reminders = await client.dbFind(
-        '/reminders',
-        [[{ field: 'timestamp', operator: '<=', target: Date.now() }]],
-        {
-          cacheReference: { collection: 'users', options: ['id'] },
-          findAndSet: 'delete',
-        },
-      );
+    (async function findReminders() {
+      for (const r of await client.database.reminders.find([
+        [{ field: 'timestamp', operator: '<=', target: Date.now() }],
+      ]))
+        client.emit('reminderFound', r[1]);
 
-      reminders.forEach(reminder => client.emit('reminderFound', reminder[0]));
       setTimeout(findReminders, 5000);
     })();
   } catch (err) {

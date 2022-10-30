@@ -21,7 +21,7 @@ import {
 import { RawGuildData, RawGuildEmojiData } from 'discord.js/typings/rawDataTypes.js';
 import { collMap, toUTS, getFieldValue, decreaseSizeCDN, disableComponents } from '../utils.js';
 import { botOwners, emojis, imgOpts, premiumLimits } from '../defaults.js';
-import { Command, CommandArgs } from '../../lib/util/Command.js';
+import { Command, CommandArgs } from '../../lib/structures/Command.js';
 
 export default class Emoji extends Command {
   constructor() {
@@ -311,7 +311,7 @@ export default class Emoji extends Command {
       if (editBtnVsby) {
         rows[0].addComponents(
           new ButtonBuilder()
-            .setLabel(i18n.__('EMOJI.COMPONENT.EDIT'))
+            .setLabel(i18n.__('GENERIC.EDIT'))
             .setEmoji('📝')
             .setStyle(ButtonStyle.Primary)
             .setCustomId('emoji_edit')
@@ -530,11 +530,11 @@ export default class Emoji extends Command {
                   .setLabel(i18n.__('EMOJI.COMPONENT.ROLES.EDIT'))
                   .setEmoji('📜')
                   .setStyle(ButtonStyle.Secondary)
-                  .setCustomId('emoji_edit_role'),
+                  .setCustomId('emoji_edit_roles'),
               ),
               new ActionRowBuilder<ButtonBuilder>().addComponents(
                 new ButtonBuilder()
-                  .setLabel(i18n.__('EMOJI.COMPONENT.DELETE'))
+                  .setLabel(i18n.__('GENERIC.DELETE'))
                   .setEmoji('🗑️')
                   .setStyle(ButtonStyle.Danger)
                   .setCustomId('emoji_edit_delete'),
@@ -574,7 +574,7 @@ export default class Emoji extends Command {
           if (editBtnVsby) {
             rows[0].addComponents(
               new ButtonBuilder()
-                .setLabel(i18n.__('EMOJI.COMPONENT.EDIT'))
+                .setLabel(i18n.__('GENERIC.EDIT'))
                 .setEmoji('📝')
                 .setStyle(ButtonStyle.Primary)
                 .setCustomId('emoji_edit')
@@ -605,7 +605,7 @@ export default class Emoji extends Command {
             components: [
               new ActionRowBuilder<ButtonBuilder>().addComponents(
                 new ButtonBuilder()
-                  .setLabel(i18n.__('GENERIC.COMPONENT.BACK'))
+                  .setLabel(i18n.__('GENERIC.BACK'))
                   .setEmoji('↩️')
                   .setStyle(ButtonStyle.Primary)
                   .setCustomId('emoji_edit'),
@@ -701,8 +701,8 @@ export default class Emoji extends Command {
             embeds: [emb.setColor(Colors.Green).setTitle(emjDisplay + i18n.__('EMOJI.RENAMED'))],
           });
         }
-        // TODO: Add edit emoji roles
-        case 'emoji_edit_role': {
+        // TODO: Add emoji edit roles
+        case 'emoji_edit_roles': {
           if (!botOwners.includes(user.id)) {
             return interaction.reply({
               embeds: [embed({ type: 'wip' }).setDescription(i18n.__('GENERIC.WIP_FUNCTION'))],

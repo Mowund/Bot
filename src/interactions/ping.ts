@@ -1,5 +1,5 @@
 import { ShardClientUtil, BaseInteraction } from 'discord.js';
-import { Command, CommandArgs } from '../../lib/util/Command.js';
+import { Command, CommandArgs } from '../../lib/structures/Command.js';
 
 export default class Ping extends Command {
   constructor() {
@@ -16,7 +16,7 @@ export default class Ping extends Command {
 
     const { client, embed } = args,
       { i18n } = client,
-      { guild, options } = interaction,
+      { guildId, options } = interaction,
       ephemeralO = options?.getBoolean('ephemeral') ?? true,
       itc = await interaction.deferReply({ ephemeral: ephemeralO, fetchReply: true }),
       emb = embed({ title: `🏓 ${i18n.__('PING.TITLE')}` }).addFields(
@@ -36,7 +36,7 @@ export default class Ping extends Command {
       emb.addFields({
         name: `💎 ${i18n.__('PING.SHARD')}`,
         value: `**${i18n.__('GENERIC.CURRENT')}:** \`${ShardClientUtil.shardIdForGuildId(
-          guild.id,
+          guildId,
           client.shard.count,
         )}\`\n**${i18n.__('GENERIC.TOTAL')}:** \`${client.shard.count}\``,
       });

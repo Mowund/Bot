@@ -1,5 +1,5 @@
 import { ApplicationCommandType, BaseInteraction } from 'discord.js';
-import { Command, CommandArgs } from '../../lib/util/Command.js';
+import { Command, CommandArgs } from '../../lib/structures/Command.js';
 
 export default class DeleteResponse extends Command {
   constructor() {
@@ -21,11 +21,13 @@ export default class DeleteResponse extends Command {
 
     if (
       messageO.author.id !== client.user.id ||
-      (messageO.interaction?.user.id !== user.id &&
-        !new URLSearchParams(messageO.embeds[messageO.embeds.length - 1]?.footer?.iconURL)
+      !(
+        messageO.interaction?.user.id === user.id ||
+        new URLSearchParams(messageO.embeds[messageO.embeds.length - 1]?.footer?.iconURL)
           .get('messageOwners')
           ?.split('-')
-          .includes(user.id))
+          .includes(user.id)
+      )
     ) {
       return interaction.reply({
         embeds: [embed({ type: 'error' }).setDescription(i18n.__('ERROR.UNALLOWED.DELETE_RESPONSE'))],
@@ -33,7 +35,7 @@ export default class DeleteResponse extends Command {
       });
     }
 
-    await interaction.deferReply();
+    await interaction.deferReply({ ephemeral: true });
     await messageO.delete();
     return interaction.deleteReply();
   }

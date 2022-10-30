@@ -9,7 +9,7 @@ import {
   GuildTextBasedChannel,
   SelectMenuBuilder,
 } from 'discord.js';
-import { Command, CommandArgs } from '../../lib/util/Command.js';
+import { Command, CommandArgs } from '../../lib/structures/Command.js';
 import { botOwners } from '../defaults.js';
 import { collMap } from '../utils.js';
 
@@ -30,10 +30,10 @@ export default class RoleMenu extends Command {
                 {
                   channelTypes: [
                     ChannelType.GuildText,
-                    ChannelType.GuildNews,
-                    ChannelType.GuildNewsThread,
-                    ChannelType.GuildPublicThread,
-                    ChannelType.GuildPrivateThread,
+                    ChannelType.GuildAnnouncement,
+                    ChannelType.AnnouncementThread,
+                    ChannelType.PublicThread,
+                    ChannelType.PrivateThread,
                     ChannelType.GuildVoice,
                   ],
                   description: 'ROLEMENU.OPTIONS.CREATE.OPTIONS.CHANNEL.DESCRIPTION',

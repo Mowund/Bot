@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-empty-function, @typescript-eslint/no-unused-vars */
+
 import { ApplicationCommandData, BaseInteraction, EmbedBuilder } from 'discord.js';
 import { App } from '../App';
 

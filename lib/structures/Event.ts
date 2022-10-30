@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-empty-function, @typescript-eslint/no-unused-vars */
-import { ChalkInstance } from 'chalk';
+
 import { Events } from 'discord.js';
 import { App } from '../App';
 

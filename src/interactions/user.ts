@@ -9,7 +9,7 @@ import {
   CommandInteractionOptionResolver,
   Colors,
 } from 'discord.js';
-import { Command, CommandArgs } from '../../lib/util/Command.js';
+import { Command, CommandArgs } from '../../lib/structures/Command.js';
 import { emojis, imgOpts } from '../defaults.js';
 import { toUTS, userFlagToEmoji, collMap, monthDiff } from '../utils.js';
 

@@ -57,7 +57,7 @@ export const disableComponents = (
             (c as SelectMenuComponent).options.forEach(
               (o, oI) =>
                 o.value === v.value &&
-                (rowsBuilder[rI].components[cI].data as SelectMenuBuilder).options[oI].setDefault(true),
+                (rowsBuilder[rI].components[cI].data as SelectMenuBuilder).options?.[oI].setDefault(true),
             ),
         );
       }
@@ -96,7 +96,7 @@ export interface SearchOptions {
   target: any;
 }
 
-export const decreaseSizeCDN = async (url: string, options?: { initialSize?: number; maxSize?: number }) => {
+export const decreaseSizeCDN = async (url: string, options: { initialSize?: number; maxSize?: number } = {}) => {
   const { initialSize, maxSize } = options,
     fileSize = (await fetchURL(url))?.data.length;
 
@@ -118,7 +118,10 @@ export const decreaseSizeCDN = async (url: string, options?: { initialSize?: num
  * @param options.recursion Whether to also recursively filter nested objects (Default: True)
  * @param options.removeFalsy Whether to remove all falsy values (Default: False)
  */
-export const removeEmpty = (object: Record<string, any>, options?: { removeFalsy?: boolean; recursion?: boolean }) =>
+export const removeEmpty = (
+  object: Record<string, any>,
+  options: { removeFalsy?: boolean; recursion?: boolean } = {},
+) =>
   Object.fromEntries(
     Object.entries(object)
       .filter(([, v]) => (options.removeFalsy ? !!v : v != null))
@@ -129,8 +132,12 @@ export const toUTS = (time = Date.now(), style: TimestampStylesString = Timestam
   `<t:${new Date(time).getTime().toString().slice(0, -3)}:${style}>`;
 
 export const fetchURL = async (input: RequestInfo, init?: RequestInit) => {
-  const res = await fetch(input, init);
-  if (res.ok) return res.json();
+  try {
+    const res = await fetch(input, init);
+    if (res.ok) return res.json();
+  } catch (e) {
+    return null;
+  }
 };
 
 /**
@@ -174,7 +181,7 @@ export const monthDiff = (dateFrom: Date, dateTo = new Date()) =>
  * @param limit The limit of characters to be displayed until truncated (Default: 1020)
  */
 export const truncate = (input: string, limit = 1020) =>
-  input.length > limit ? `${input.substring(0, limit - 3)}...` : input;
+  input?.length > limit ? `${input.substring(0, limit - 3)}...` : input;
 
 /**
  * @returns The mapped collections

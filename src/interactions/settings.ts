@@ -6,7 +6,7 @@ import {
   PermissionFlagsBits,
   BaseInteraction,
 } from 'discord.js';
-import { Command, CommandArgs } from '../../lib/util/Command.js';
+import { Command, CommandArgs } from '../../lib/structures/Command.js';
 import { botOwners, imgOpts, emojis } from '../defaults.js';
 import { simplify } from '../utils.js';
 
@@ -40,7 +40,7 @@ export default class Settings extends Command {
   async run(args: CommandArgs, interaction: BaseInteraction<'cached'>): Promise<any> {
     const { client, embed } = args,
       { i18n } = client,
-      { guild, member, memberPermissions, user } = interaction;
+      { guildId, member, memberPermissions, user } = interaction;
 
     if (interaction.isAutocomplete()) {
       const focused = interaction.options.getFocused();
@@ -88,7 +88,7 @@ export default class Settings extends Command {
               });
             }
 
-            await client.dbSet(guild, { language: fLanguage });
+            await client.database.guilds.set(guildId, { language: fLanguage });
             const m = p => ({ locale: fLanguage, phrase: p });
 
             rows[0].addComponents(
@@ -98,8 +98,8 @@ export default class Settings extends Command {
                 .setStyle(ButtonStyle.Link)
                 .setURL('https://crowdin.com/project/mowund'),
             );
-
-            console.log(await client.dbGet(guild));
+            client.guilds.cache.get(guildId);
+            console.log(await client.database.guilds.cache.get(guildId));
 
             return interaction.editReply({
               components: rows,
@@ -133,8 +133,6 @@ export default class Settings extends Command {
               .setStyle(ButtonStyle.Link)
               .setURL('https://crowdin.com/project/mowund'),
           );
-
-          console.log(await client.dbGet(guild));
 
           return interaction.editReply({
             components: rows,
