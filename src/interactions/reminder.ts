@@ -108,13 +108,18 @@ export default class Reminder extends Command {
               },
               {
                 inline: true,
+                name: `🔁 ${i18n.__('GENERIC.NOT_RECURSIVE')}`,
+                value: i18n.__('REMINDER.RECURSIVE.OFF'),
+              },
+              {
+                inline: true,
                 name: `${emojis.channelText} ${i18n.__('GENERIC.CHANNEL')}`,
                 value: reminder.channelId ? `<#${reminder.channelId}> - \`${reminder.channelId}\`` : 'DM',
               },
               {
                 inline: true,
                 name: `📅 ${i18n.__('GENERIC.TIMESTAMP')}`,
-                value: toUTS(reminder.timestamp),
+                value: i18n.__mf('REMINDER.TIMESTAMP_DESCRIPTION', { timestamp: toUTS(reminder.timestamp) }),
               },
             );
 
@@ -216,8 +221,19 @@ export default class Reminder extends Command {
             {
               inline: true,
               name: `📅 ${i18n.__('GENERIC.TIMESTAMP')}`,
-              value: toUTS(reminder.timestamp),
+              value: i18n.__mf('REMINDER.TIMESTAMP_DESCRIPTION', { timestamp: toUTS(reminder.timestamp) }),
             },
+            reminder.isRecursive
+              ? {
+                  inline: true,
+                  name: `🔁 ${i18n.__('GENERIC.RECURSIVE')}`,
+                  value: i18n.__mf('REMINDER.RECURSIVE.ON', { timestamp: toUTS(reminder.timestamp + reminder.msTime) }),
+                }
+              : {
+                  inline: true,
+                  name: `🔁 ${i18n.__('GENERIC.NOT_RECURSIVE')}`,
+                  value: i18n.__('REMINDER.RECURSIVE.OFF'),
+                },
             {
               inline: true,
               name: `📅 ${i18n.__('GENERIC.CREATION_DATE')}`,
@@ -226,7 +242,7 @@ export default class Reminder extends Command {
           );
         } else {
           emb = EmbedBuilder.from(message.embeds[0])
-            .setTitle(`🔔 ${i18n.__('REMINDER.INFO')}`)
+            .setTitle(`🔕 ${i18n.__('REMINDER.INFO')}`)
             .setColor(Colors.Red);
           customId = 'reminder_view';
         }
@@ -342,7 +358,10 @@ export default class Reminder extends Command {
         }
         case 'reminder_recursive_set':
         case 'reminder_recursive_unset': {
-          await client.database.reminders.set(reminderId, user.id, { isRecursive: !reminder.isRecursive });
+          const updReminder = await client.database.reminders.set(reminderId, user.id, {
+            isRecursive: !reminder.isRecursive,
+          });
+
           rows.push(
             new ActionRowBuilder().addComponents(
               new ButtonBuilder()
@@ -351,11 +370,11 @@ export default class Reminder extends Command {
                 .setStyle(ButtonStyle.Primary)
                 .setCustomId('reminder_view'),
               new ButtonBuilder()
-                .setLabel(i18n.__(`GENERIC.${reminder.isRecursive ? 'RECURSIVE' : 'NOT_RECURSIVE'}`))
+                .setLabel(i18n.__(`GENERIC.${updReminder.isRecursive ? 'RECURSIVE' : 'NOT_RECURSIVE'}`))
                 .setEmoji('🔁')
-                .setStyle(reminder.isRecursive ? ButtonStyle.Success : ButtonStyle.Secondary)
-                .setCustomId(`reminder_recursive_${reminder.isRecursive ? 'unset' : 'set'}`)
-                .setDisabled(reminder.msTime < minimumRecursiveTime),
+                .setStyle(updReminder.isRecursive ? ButtonStyle.Success : ButtonStyle.Secondary)
+                .setCustomId(`reminder_recursive_${updReminder.isRecursive ? 'unset' : 'set'}`)
+                .setDisabled(updReminder.msTime < minimumRecursiveTime),
               new ButtonBuilder()
                 .setLabel(i18n.__('GENERIC.DELETE'))
                 .setEmoji('🗑️')
@@ -363,14 +382,31 @@ export default class Reminder extends Command {
                 .setCustomId('reminder_delete'),
             ),
           );
+
+          emb
+            .setTitle(`🔔 ${i18n.__('REMINDER.EDITED')}`)
+            .spliceFields(
+              4,
+              1,
+              updReminder.isRecursive
+                ? {
+                    inline: true,
+                    name: `🔁 ${i18n.__('GENERIC.RECURSIVE')}`,
+                    value: i18n.__mf('REMINDER.RECURSIVE.ON', {
+                      timestamp: toUTS(updReminder.timestamp + updReminder.msTime),
+                    }),
+                  }
+                : {
+                    inline: true,
+                    name: `🔁 ${i18n.__('GENERIC.NOT_RECURSIVE')}`,
+                    value: i18n.__('REMINDER.RECURSIVE.OFF'),
+                  },
+            )
+            .setColor(Colors.Yellow);
+
           return interaction.update({
             components: rows,
-            embeds: [
-              emb
-                .setTitle(`🔔 ${i18n.__('REMINDER.EDITED')}`)
-                .setDescription(i18n.__(`REMINDER.RECURSIVE.${reminder.isRecursive ? 'SET' : 'UNSET'}`))
-                .setColor(Colors.Yellow),
-            ],
+            embeds: [emb],
           });
         }
         case 'reminder_delete': {
