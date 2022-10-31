@@ -35,6 +35,7 @@ export default class Reminder extends Command {
                 type: ApplicationCommandOptionType.String,
               },
               {
+                autocomplete: true,
                 description: 'REMINDER.OPTIONS.CREATE.OPTIONS.TIME.DESCRIPTION',
                 name: 'REMINDER.OPTIONS.CREATE.OPTIONS.TIME.NAME',
                 required: true,
@@ -57,10 +58,32 @@ export default class Reminder extends Command {
     const { client, embed } = args,
       { i18n } = client,
       { channel, user } = interaction,
-      minimumTime = 1000 * 60 * 3,
-      maximumTime = 1000 * 60 * 60 * 24 * 365.25 * 100,
-      minimumRecursiveTime = minimumTime * 10,
+      minTime = 1000 * 60 * 3,
+      maxTime = 1000 * 60 * 60 * 24 * 365.25 * 100,
+      minimumRecursiveTime = minTime * 10,
       rows = [];
+
+    if (interaction.isAutocomplete()) {
+      const focused = interaction.options.getFocused(),
+        msTime = parseDur(focused);
+
+      return interaction.respond([
+        {
+          name:
+            !msTime || msTime < minTime || msTime > maxTime
+              ? i18n.__mf('ERROR.INVALID.TIME_AUTOCOMPLETE', {
+                  condition: msTime && (msTime > maxTime ? 'greater' : 'less'),
+                  input: msToTime(msTime),
+                  time:
+                    msTime > maxTime
+                      ? i18n.__mf('GENERIC.TIME.YEARS', { count: maxTime / 365.25 / 24 / 60 / 60000 })
+                      : i18n.__mf('GENERIC.TIME.MINUTES', { count: minTime / 60000 }),
+                })
+              : msToTime(msTime),
+          value: focused,
+        },
+      ]);
+    }
 
     if (interaction.isChatInputCommand()) {
       const { options } = interaction,
@@ -74,17 +97,17 @@ export default class Reminder extends Command {
             reminderId = SnowflakeUtil.generate().toString(),
             summedTime = msTime + SnowflakeUtil.timestampFrom(reminderId);
 
-          if (!msTime || msTime < minimumTime || msTime > maximumTime) {
+          if (!msTime || msTime < minTime || msTime > maxTime) {
             return interaction.reply({
               embeds: [
                 embed({ type: 'error' }).setDescription(
                   i18n.__mf('ERROR.INVALID.TIME', {
-                    condition: msTime && (msTime > maximumTime ? 'greater' : 'less'),
+                    condition: msTime && (msTime > maxTime ? 'greater' : 'less'),
                     input: msTime ? msToTime(msTime) : timeO,
                     time:
-                      msTime > maximumTime
-                        ? i18n.__mf('GENERIC.TIME.YEARS', { count: maximumTime / 365.25 / 24 / 60 / 60000 })
-                        : i18n.__mf('GENERIC.TIME.MINUTES', { count: minimumTime / 60000 }),
+                      msTime > maxTime
+                        ? i18n.__mf('GENERIC.TIME.YEARS', { count: maxTime / 365.25 / 24 / 60 / 60000 })
+                        : i18n.__mf('GENERIC.TIME.MINUTES', { count: minTime / 60000 }),
                   }),
                 ),
               ],

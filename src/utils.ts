@@ -257,13 +257,15 @@ export const userFlagToEmoji = (flag: keyof typeof UserFlags) => {
 };
 
 export const msToTime = (ms: number) => {
-  const days = Math.floor(ms / 86400000),
+  const years = Math.floor(ms / 31536000000),
+    days = Math.floor((ms % 31536000000) / 86400000),
     hours = Math.floor((ms % 86400000) / 3600000),
     minutes = Math.floor((ms % 3600000) / 60000),
     secs = Math.floor((ms % 60000) / 1000),
     miliSecs = Math.floor(ms % 1000);
 
   let str = '';
+  if (years) str += `${years}y `;
   if (days) str += `${days}d `;
   if (hours) str += `${hours}h `;
   if (minutes) str += `${minutes}m `;
