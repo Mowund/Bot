@@ -8,8 +8,8 @@ import {
   EmbedBuilder,
   SelectMenuBuilder,
   SelectMenuInteraction,
-  SelectMenuOptionBuilder,
   SnowflakeUtil,
+  TimestampStyles,
 } from 'discord.js';
 import parseDur from 'parse-duration';
 import { Command, CommandArgs } from '../../lib/structures/Command.js';
@@ -29,6 +29,7 @@ export default class Reminder extends Command {
             options: [
               {
                 description: 'REMINDER.OPTIONS.CREATE.OPTIONS.REMINDER.DESCRIPTION',
+                max_length: 1024,
                 name: 'REMINDER.OPTIONS.CREATE.OPTIONS.REMINDER.NAME',
                 required: true,
                 type: ApplicationCommandOptionType.String,
@@ -56,13 +57,14 @@ export default class Reminder extends Command {
     const { client, embed } = args,
       { i18n } = client,
       { channel, user } = interaction,
-      minimumTime = 180000,
-      minimumRecursiveTime = 1800000,
+      minimumTime = 1000 * 60 * 3,
+      maximumTime = 1000 * 60 * 60 * 24 * 365.25 * 100,
+      minimumRecursiveTime = minimumTime * 10,
       rows = [];
 
     if (interaction.isChatInputCommand()) {
       const { options } = interaction,
-        reminderO = options?.getString('reminder'),
+        reminderO = options?.getString('reminder').replace(/(\\n(\s*)?)+/g, '\n'),
         timeO = options?.getString('time'),
         ephemeralO = options?.getBoolean('ephemeral') ?? true;
 
@@ -72,14 +74,17 @@ export default class Reminder extends Command {
             reminderId = SnowflakeUtil.generate().toString(),
             summedTime = msTime + SnowflakeUtil.timestampFrom(reminderId);
 
-          if (!msTime || msTime < minimumTime) {
+          if (!msTime || msTime < minimumTime || msTime > maximumTime) {
             return interaction.reply({
               embeds: [
                 embed({ type: 'error' }).setDescription(
                   i18n.__mf('ERROR.INVALID.TIME', {
-                    condition: msTime && 'less',
-                    input: msToTime(msTime),
-                    time: i18n.__mf('GENERIC.TIME.MINUTES', { count: 1 }),
+                    condition: msTime && (msTime > maximumTime ? 'greater' : 'less'),
+                    input: msTime ? msToTime(msTime) : timeO,
+                    time:
+                      msTime > maximumTime
+                        ? i18n.__mf('GENERIC.TIME.YEARS', { count: maximumTime / 365.25 / 24 / 60 / 60000 })
+                        : i18n.__mf('GENERIC.TIME.MINUTES', { count: minimumTime / 60000 }),
                   }),
                 ),
               ],
@@ -112,12 +117,13 @@ export default class Reminder extends Command {
                 value: reminder.channelId ? `<#${reminder.channelId}> - \`${reminder.channelId}\`` : 'DM',
               },
               {
-                inline: true,
                 name: `📅 ${i18n.__('GENERIC.TIMESTAMP')}`,
-                value: i18n.__mf('REMINDER.TIMESTAMP_DESCRIPTION', { timestamp: toUTS(reminder.timestamp) }),
+                value: `${i18n.__mf('REMINDER.TIMESTAMP', { timestamp: toUTS(reminder.timestamp) })}\n${i18n.__mf(
+                  'REMINDER.CREATED_AT',
+                  { timestamp: toUTS(SnowflakeUtil.timestampFrom(reminder.id)) },
+                )}`,
               },
               {
-                inline: true,
                 name: `🔁 ${i18n.__('GENERIC.NOT_RECURSIVE')}`,
                 value:
                   reminder.msTime < minimumRecursiveTime
@@ -153,21 +159,25 @@ export default class Reminder extends Command {
 
           const reminders = await client.database.users.fetchAllReminders(user.id),
             selectMenu = new SelectMenuBuilder()
-              .setPlaceholder(i18n.__('REMINDER.COMPONENT.SELECT_LIST'))
+              .setPlaceholder(i18n.__('REMINDER.SELECT_LIST'))
               .setCustomId('reminder_select');
 
           let emb: EmbedBuilder;
           if (reminders.size) {
             emb = embed({ title: `🔔 ${i18n.__('REMINDER.LIST')}` });
-            reminders.forEach((r: Record<string, any>) => {
-              selectMenu.addOptions({ description: truncate(r.content, 100), label: r.id, value: r.id });
-              emb.addFields({
-                name: `**${r.id}**`,
-                value: `📄 **${i18n.__('GENERIC.CONTENT')}:** ${truncate(r.content, 300)}\n📅 **${i18n.__(
-                  'GENERIC.TIMESTAMP',
-                )}:** ${toUTS(r.timestamp)}`,
+            reminders
+              .sort((a, b) => a.timestamp - b.timestamp)
+              .forEach((r: Record<string, any>) => {
+                selectMenu.addOptions({
+                  description: truncate(r.content, 100),
+                  label: new Date(r.timestamp).toLocaleString(i18n.locale),
+                  value: r.id,
+                });
+                emb.addFields({
+                  name: toUTS(r.timestamp, TimestampStyles.ShortDateTime),
+                  value: truncate(r.content, 300),
+                });
               });
-            });
 
             rows.push(new ActionRowBuilder().addComponents(selectMenu));
           } else {
@@ -183,11 +193,15 @@ export default class Reminder extends Command {
         }
       }
     } else if (interaction.isButton() || interaction.isSelectMenu()) {
-      const { message } = interaction,
-        urlArgs = new URLSearchParams(message.embeds[message.embeds.length - 1]?.footer?.iconURL);
       let { customId } = interaction;
+      const { message } = interaction,
+        urlArgs = new URLSearchParams(message.embeds[message.embeds.length - 1]?.footer?.iconURL),
+        isList = customId === 'reminder_list';
 
-      if (!(message.interaction?.user.id === user.id || urlArgs.get('messageOwners') === user.id)) {
+      if (
+        !(message.interaction?.user.id === user.id || urlArgs.get('messageOwners') === user.id) &&
+        !(!message.interaction && isList)
+      ) {
         return interaction.reply({
           embeds: [embed({ type: 'error' }).setDescription(i18n.__('ERROR.UNALLOWED.COMMAND'))],
           ephemeral: true,
@@ -198,12 +212,11 @@ export default class Reminder extends Command {
           interaction instanceof SelectMenuInteraction
             ? interaction.values[0]
             : urlArgs.get('reminderId') || getFieldValue(message.embeds[0], i18n.__('GENERIC.ID'))?.replaceAll('`', ''),
-        reminder = reminderId ? await client.database.reminders.fetch(reminderId, user.id) : null,
-        isList = customId === 'reminder_list';
+        reminder = reminderId ? await client.database.reminders.fetch(reminderId, user.id) : null;
       let emb = embed(
         message.interaction?.user.id === client.user.id || !message.interaction
-          ? { addParams: { messageOwners: user.id } }
-          : {},
+          ? { addParams: { messageOwners: user.id }, footer: 'interacted' }
+          : { footer: 'interacted' },
       );
 
       if (!isList) {
@@ -224,18 +237,18 @@ export default class Reminder extends Command {
               value: reminder.channelId ? `<#${reminder.channelId}> - \`${reminder.channelId}\`` : 'DM',
             },
             {
-              inline: true,
               name: `📅 ${i18n.__('GENERIC.TIMESTAMP')}`,
-              value: i18n.__mf('REMINDER.TIMESTAMP_DESCRIPTION', { timestamp: toUTS(reminder.timestamp) }),
+              value: `${i18n.__mf('REMINDER.TIMESTAMP', { timestamp: toUTS(reminder.timestamp) })}\n${i18n.__mf(
+                'REMINDER.CREATED_AT',
+                { timestamp: toUTS(SnowflakeUtil.timestampFrom(reminder.id)) },
+              )}`,
             },
             reminder.isRecursive
               ? {
-                  inline: true,
                   name: `🔁 ${i18n.__('GENERIC.RECURSIVE')}`,
                   value: i18n.__mf('REMINDER.RECURSIVE.ON', { timestamp: toUTS(reminder.timestamp + reminder.msTime) }),
                 }
               : {
-                  inline: true,
                   name: `🔁 ${i18n.__('GENERIC.NOT_RECURSIVE')}`,
                   value:
                     reminder.msTime < minimumRecursiveTime
@@ -244,11 +257,6 @@ export default class Reminder extends Command {
                         })
                       : i18n.__('REMINDER.RECURSIVE.OFF'),
                 },
-            {
-              inline: true,
-              name: `📅 ${i18n.__('GENERIC.CREATION_DATE')}`,
-              value: toUTS(SnowflakeUtil.timestampFrom(reminder.id)),
-            },
           );
         } else {
           emb = EmbedBuilder.from(message.embeds[0])
@@ -290,21 +298,24 @@ export default class Reminder extends Command {
           } else {
             const reminders = await client.database.users.fetchAllReminders(user.id),
               selectMenu = new SelectMenuBuilder()
-                .setPlaceholder(i18n.__('REMINDER.COMPONENT.SELECT_LIST'))
+                .setPlaceholder(i18n.__('REMINDER.SELECT_LIST'))
                 .setCustomId('reminder_select');
 
             if (reminders.size) {
-              reminders.forEach((r: Record<string, any>) => {
-                selectMenu.addOptions(
-                  new SelectMenuOptionBuilder().setLabel(r.id).setValue(r.id).setDescription(truncate(r.content, 100)),
-                );
-                emb.addFields({
-                  name: `**${r.id}**`,
-                  value: `📄 **${i18n.__('GENERIC.CONTENT')}:** ${truncate(r.content, 300)}\n📅 **${i18n.__(
-                    'GENERIC.TIMESTAMP',
-                  )}:** ${toUTS(r.timestamp)}`,
+              emb.setTitle(`🔔 ${i18n.__('REMINDER.LIST')}`);
+              reminders
+                .sort((a, b) => a.timestamp - b.timestamp)
+                .forEach((r: Record<string, any>) => {
+                  selectMenu.addOptions({
+                    description: truncate(r.content, 100),
+                    label: new Date(r.timestamp).toLocaleString(i18n.locale),
+                    value: r.id,
+                  });
+                  emb.addFields({
+                    name: toUTS(r.timestamp, TimestampStyles.ShortDateTime),
+                    value: truncate(r.content, 300),
+                  });
                 });
-              });
 
               rows.push(new ActionRowBuilder().addComponents(selectMenu));
             } else {
@@ -400,14 +411,12 @@ export default class Reminder extends Command {
               1,
               updReminder.isRecursive
                 ? {
-                    inline: true,
                     name: `🔁 ${i18n.__('GENERIC.RECURSIVE')}`,
                     value: i18n.__mf('REMINDER.RECURSIVE.ON', {
                       timestamp: toUTS(updReminder.timestamp + updReminder.msTime),
                     }),
                   }
                 : {
-                    inline: true,
                     name: `🔁 ${i18n.__('GENERIC.NOT_RECURSIVE')}`,
                     value: i18n.__('REMINDER.RECURSIVE.OFF'),
                   },

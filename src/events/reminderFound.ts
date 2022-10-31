@@ -21,14 +21,22 @@ export default class ReminderFoundEvent extends Event {
   async run(client: App, reminder: ReminderData): Promise<any> {
     const { i18n } = client,
       { channelId, content, id, isRecursive, msTime, timestamp, userId } = reminder,
-      channel = client.channels.cache.get(channelId) as GuildTextBasedChannel,
-      member = channel?.guild.members.cache.get(userId),
-      user = await client.users.fetch(userId),
-      idTimestamp = SnowflakeUtil.timestampFrom(id);
+      channel = client.channels.cache.get(channelId) as GuildTextBasedChannel;
+
+    if (
+      !channel &&
+      (await client.shard.broadcastEval((c, { cI }) => c.channels.cache.get(cI), { context: { cI: channelId } })).find(
+        c => c,
+      )
+    )
+      return;
 
     await client.database.reminders.delete(id, userId);
 
-    const row = new ActionRowBuilder<ButtonBuilder>().addComponents(
+    const member = channel?.guild.members.cache.get(userId),
+      user = await client.users.fetch(userId),
+      idTimestamp = SnowflakeUtil.timestampFrom(id),
+      row = new ActionRowBuilder<ButtonBuilder>().addComponents(
         new ButtonBuilder()
           .setLabel(i18n.__('REMINDER.COMPONENT.LIST'))
           .setEmoji('🗒️')
@@ -91,7 +99,7 @@ export default class ReminderFoundEvent extends Event {
       .addFields(fields);
 
     if (channelId) {
-      if (!channel) {
+      if (!channel && client.shard.ids.includes(0)) {
         return user.send({
           components: [row],
           embeds: [
@@ -109,9 +117,11 @@ export default class ReminderFoundEvent extends Event {
       });
     }
 
-    return user.send({
-      components: [row],
-      embeds: [emb.setDescription(`You asked me to remind you here`)],
-    });
+    if (client.shard.ids.includes(0)) {
+      return user.send({
+        components: [row],
+        embeds: [emb.setDescription(`You asked me to remind you here`)],
+      });
+    }
   }
 }
