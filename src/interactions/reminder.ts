@@ -478,6 +478,15 @@ export default class Reminder extends Command {
         }
         case 'reminder_delete_confirm': {
           await client.database.reminders.delete(reminderId, user.id);
+          rows.push(
+            new ActionRowBuilder().addComponents(
+              new ButtonBuilder()
+                .setLabel(i18n.__('REMINDER.COMPONENT.LIST'))
+                .setEmoji('🗒️')
+                .setStyle(ButtonStyle.Primary)
+                .setCustomId('reminder_list'),
+            ),
+          );
           return interaction.update({
             components: [],
             embeds: [emb.setTitle(`🔕 ${i18n.__('REMINDER.DELETED')}`).setColor(Colors.Red)],
