@@ -4,7 +4,7 @@ import murmurhash from 'murmurhash';
 import { search } from 'fast-fuzzy';
 import { ExperimentRollout } from '../../lib/App.js';
 import { Command, CommandArgs } from '../../lib/structures/Command.js';
-import { emojis } from '../defaults.js';
+import { botOwners, emojis } from '../defaults.js';
 import { fetchURL, toUTS, truncate } from '../utils.js';
 
 // TODO: Add info about all treatments and their rollouts and overrides, along with checking if the guild actually is in the experiment
@@ -33,6 +33,8 @@ export default class Rollout extends Command {
   }
 
   async run(args: CommandArgs, interaction: BaseInteraction<'cached'>): Promise<any> {
+    if (!botOwners.includes(interaction.user.id)) return;
+
     const { client, embed } = args,
       { i18n } = client,
       { experiments } = client;
