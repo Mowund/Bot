@@ -197,7 +197,7 @@ export default class Reminder extends Command {
                   value: r.id,
                 });
                 emb.addFields({
-                  name: toUTS(r.timestamp, TimestampStyles.ShortDateTime),
+                  name: `${toUTS(r.timestamp, TimestampStyles.ShortDateTime)}${r.isRecursive ? '🔁' : ''}`,
                   value: truncate(r.content, 300),
                 });
               });
@@ -335,7 +335,7 @@ export default class Reminder extends Command {
                     value: r.id,
                   });
                   emb.addFields({
-                    name: toUTS(r.timestamp, TimestampStyles.ShortDateTime),
+                    name: `${toUTS(r.timestamp, TimestampStyles.ShortDateTime)}${r.isRecursive ? ' 🔁' : ''}`,
                     value: truncate(r.content, 300),
                   });
                 });
