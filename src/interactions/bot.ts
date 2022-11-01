@@ -38,10 +38,10 @@ export default class Bot extends Command {
       { globalCommandCount, i18n } = client,
       { guild, guildId, options } = interaction,
       botMember = guild?.members.cache.get(client.user.id),
-      ephemeralO = options?.getBoolean('ephemeral') ?? true,
+      ephemeralO = options.getBoolean('ephemeral') ?? true,
       pkg = JSON.parse(readFileSync(new URL('../../../package.json', import.meta.url)).toString());
 
-    switch (options?.getSubcommand()) {
+    switch (options.getSubcommand()) {
       case 'info': {
         await interaction.deferReply({ ephemeral: ephemeralO });
 

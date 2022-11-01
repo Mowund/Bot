@@ -104,23 +104,23 @@ export default class Echo extends Command {
     const { client, embed } = args,
       { i18n } = client,
       { member, memberPermissions, options, user } = interaction,
-      contentO = options?.getString('content')?.replaceAll('\\n', '\n').trim(),
-      descriptionO = options?.getString('description')?.replaceAll('\\n', '\n').trim(),
-      titleO = options?.getString('title'),
-      urlO = options?.getString('url'),
-      authorO = options?.getUser('author'),
-      memberO = options?.getMember('author'),
-      footerO = options?.getString('footer'),
-      timestampO = options?.getBoolean('timestamp'),
-      attachmentO = options?.getAttachment('attachment'),
-      imageO = options?.getAttachment('image'),
-      thumbnailO = options?.getAttachment('thumbnail'),
-      colorO = tc(options?.getString('color')).isValid()
-        ? tc(options?.getString('color')).toHex()
+      contentO = options.getString('content')?.replaceAll('\\n', '\n').trim(),
+      descriptionO = options.getString('description')?.replaceAll('\\n', '\n').trim(),
+      titleO = options.getString('title'),
+      urlO = options.getString('url'),
+      authorO = options.getUser('author'),
+      memberO = options.getMember('author'),
+      footerO = options.getString('footer'),
+      timestampO = options.getBoolean('timestamp'),
+      attachmentO = options.getAttachment('attachment'),
+      imageO = options.getAttachment('image'),
+      thumbnailO = options.getAttachment('thumbnail'),
+      colorO = tc(options.getString('color')).isValid()
+        ? tc(options.getString('color')).toHex()
         : (memberO ?? member)?.displayColor ?? Colors.Blurple,
-      ttsO = options?.getBoolean('tts'),
-      channelO = options?.getChannel('channel') as GuildTextBasedChannel,
-      ephemeralO = options?.getBoolean('ephemeral') ?? true;
+      ttsO = options.getBoolean('tts'),
+      channelO = options.getChannel('channel') as GuildTextBasedChannel,
+      ephemeralO = options.getBoolean('ephemeral') ?? true;
 
     if (interaction.isChatInputCommand()) {
       const enableEmbed = descriptionO || titleO || authorO || footerO || imageO || thumbnailO;

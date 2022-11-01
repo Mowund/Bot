@@ -60,7 +60,7 @@ export default class Reminder extends Command {
       { channel, user } = interaction,
       minTime = 1000 * 60 * 3,
       maxTime = 1000 * 60 * 60 * 24 * 365.25 * 100,
-      minimumRecursiveTime = minTime * 10,
+      minRecursiveTime = minTime * 10,
       rows = [];
 
     if (interaction.isAutocomplete()) {
@@ -87,11 +87,11 @@ export default class Reminder extends Command {
 
     if (interaction.isChatInputCommand()) {
       const { options } = interaction,
-        reminderO = options?.getString('reminder').replace(/(\\n(\s*)?)+/g, '\n'),
-        timeO = options?.getString('time'),
-        ephemeralO = options?.getBoolean('ephemeral') ?? true;
+        reminderO = options.getString('reminder')?.replace(/(\\n(\s*)?)+/g, '\n'),
+        timeO = options.getString('time'),
+        ephemeralO = options.getBoolean('ephemeral') ?? true;
 
-      switch (options?.getSubcommand()) {
+      switch (options.getSubcommand()) {
         case 'create': {
           const msTime = parseDur(timeO),
             reminderId = SnowflakeUtil.generate().toString(),
@@ -149,9 +149,9 @@ export default class Reminder extends Command {
               {
                 name: `🔁 ${i18n.__('GENERIC.NOT_RECURSIVE')}`,
                 value:
-                  reminder.msTime < minimumRecursiveTime
+                  reminder.msTime < minRecursiveTime
                     ? i18n.__mf('REMINDER.RECURSIVE.DISABLED', {
-                        time: i18n.__mf('GENERIC.TIME.MINUTES', { count: minimumRecursiveTime / 60000 }),
+                        time: i18n.__mf('GENERIC.TIME.MINUTES', { count: minRecursiveTime / 60000 }),
                       })
                     : i18n.__('REMINDER.RECURSIVE.OFF'),
               },
@@ -274,9 +274,9 @@ export default class Reminder extends Command {
               : {
                   name: `🔁 ${i18n.__('GENERIC.NOT_RECURSIVE')}`,
                   value:
-                    reminder.msTime < minimumRecursiveTime
+                    reminder.msTime < minRecursiveTime
                       ? i18n.__mf('REMINDER.RECURSIVE.DISABLED', {
-                          time: i18n.__mf('GENERIC.TIME.MINUTES', { count: minimumRecursiveTime / 60000 }),
+                          time: i18n.__mf('GENERIC.TIME.MINUTES', { count: minRecursiveTime / 60000 }),
                         })
                       : i18n.__('REMINDER.RECURSIVE.OFF'),
                 },
@@ -385,7 +385,7 @@ export default class Reminder extends Command {
                 .setEmoji('🔁')
                 .setStyle(reminder.isRecursive ? ButtonStyle.Success : ButtonStyle.Secondary)
                 .setCustomId(`reminder_recursive_${reminder.isRecursive ? 'unset' : 'set'}`)
-                .setDisabled(reminder.msTime < minimumRecursiveTime),
+                .setDisabled(reminder.msTime < minRecursiveTime),
               new ButtonBuilder()
                 .setLabel(i18n.__('GENERIC.DELETE'))
                 .setEmoji('🗑️')
@@ -418,7 +418,7 @@ export default class Reminder extends Command {
                 .setEmoji('🔁')
                 .setStyle(updReminder.isRecursive ? ButtonStyle.Success : ButtonStyle.Secondary)
                 .setCustomId(`reminder_recursive_${updReminder.isRecursive ? 'unset' : 'set'}`)
-                .setDisabled(updReminder.msTime < minimumRecursiveTime),
+                .setDisabled(updReminder.msTime < minRecursiveTime),
               new ButtonBuilder()
                 .setLabel(i18n.__('GENERIC.DELETE'))
                 .setEmoji('🗑️')

@@ -107,9 +107,9 @@ export default class Owner extends Command {
     const { client, embed } = args,
       { chalk, i18n } = client,
       { options, user } = interaction,
-      ephemeralO = options?.getBoolean('ephemeral') ?? true,
-      idO = options?.getString('id'),
-      guildO = options?.getString('guild'),
+      ephemeralO = options.getBoolean('ephemeral') ?? true,
+      idO = options.getString('id'),
+      guildO = options.getString('guild'),
       __filename = fileURLToPath(import.meta.url),
       __dirname = dirname(__filename);
 
@@ -135,11 +135,11 @@ export default class Owner extends Command {
       });
     }
 
-    switch (options?.getSubcommand()) {
+    switch (options.getSubcommand()) {
       case 'eval': {
-        const scriptO = options?.getString('script'),
-          asyncO = options?.getBoolean('async') ?? true,
-          awaitO = options?.getBoolean('await') ?? true,
+        const scriptO = options.getString('script'),
+          asyncO = options.getBoolean('async') ?? true,
+          awaitO = options.getBoolean('await') ?? true,
           script = asyncO ? `(async () => {${scriptO}})()` : scriptO;
 
         try {
@@ -170,9 +170,9 @@ export default class Owner extends Command {
       }
     }
 
-    switch (options?.getSubcommandGroup()) {
+    switch (options.getSubcommandGroup()) {
       case 'command': {
-        switch (options?.getSubcommand()) {
+        switch (options.getSubcommand()) {
           case 'update': {
             const appCmds = client.application.commands,
               fAppCmds = await appCmds.fetch({ withLocalizations: true }),
@@ -332,11 +332,11 @@ export default class Owner extends Command {
         break;
       }
       case 'shard': {
-        switch (options?.getSubcommand()) {
+        switch (options.getSubcommand()) {
           case 'respawn-all': {
-            const shardDelayO = options?.getInteger('shard-delay') ?? 5000,
-              respawnDelayO = options?.getInteger('respawn-delay') ?? 500,
-              timeoutO = options?.getInteger('timeout') ?? 30000;
+            const shardDelayO = options.getInteger('shard-delay') ?? 5000,
+              respawnDelayO = options.getInteger('respawn-delay') ?? 500,
+              timeoutO = options.getInteger('timeout') ?? 30000;
 
             await interaction.editReply({
               embeds: [embed({ type: 'warning' }).setDescription(i18n.__('OWNER.SHARD.RESPAWNING'))],

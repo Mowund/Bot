@@ -75,10 +75,10 @@ export default class Timeout extends Command {
 
     if (interaction.isChatInputCommand()) {
       const { options } = interaction,
-        memberO = options?.getMember('user'),
-        durationO = options?.getString('duration'),
-        reasonO = options?.getString('reason'),
-        ephemeralO = options?.getBoolean('ephemeral');
+        memberO = options.getMember('user'),
+        durationO = options.getString('duration'),
+        reasonO = options.getString('reason'),
+        ephemeralO = options.getBoolean('ephemeral');
 
       if (!memberPermissions?.has(PermissionFlagsBits.ModerateMembers)) {
         return interaction.reply({

@@ -80,12 +80,12 @@ export default class Emoji extends Command {
 
     if (interaction.isChatInputCommand()) {
       const { options } = interaction,
-        ephemeralO = options?.getBoolean('ephemeral') ?? true;
+        ephemeralO = options.getBoolean('ephemeral') ?? true;
 
       await interaction.deferReply({ ephemeral: ephemeralO });
 
-      const isInfo = options?.getSubcommand() === 'info',
-        inputO = isInfo ? options?.getString('emoji') : options?.getString('name'),
+      const isInfo = options.getSubcommand() === 'info',
+        inputO = isInfo ? options.getString('emoji') : options.getString('name'),
         parsedEmoji = isInfo ? parseEmoji(inputO) : { animated: false, id: null, name: null };
 
       let emj: GuildEmoji | [RawGuildEmojiData, RawGuildData, string, number],
@@ -124,7 +124,7 @@ export default class Emoji extends Command {
             )
             .then(eA => eA.find(e => e))) as [RawGuildEmojiData, RawGuildData, string, number]);
       } else {
-        const imageO = options?.getAttachment('image'),
+        const imageO = options.getAttachment('image'),
           alphanumI = /[^\w]/g.test(inputO) && (inputO.length < 2 || inputO.length > 32 ? 'also' : 'only'),
           lengthI = inputO.length < 2 ? 'shorter' : inputO.length > 32 && 'longer';
 

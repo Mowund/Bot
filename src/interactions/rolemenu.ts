@@ -68,8 +68,8 @@ export default class RoleMenu extends Command {
 
     if (interaction.isChatInputCommand()) {
       const { options } = interaction,
-        channelO = (options?.getChannel('channel') ?? interaction.channel) as GuildTextBasedChannel,
-        ephemeralO = options?.getBoolean('ephemeral') ?? true;
+        channelO = (options.getChannel('channel') ?? interaction.channel) as GuildTextBasedChannel,
+        ephemeralO = options.getBoolean('ephemeral') ?? true;
 
       await interaction.deferReply({ ephemeral: ephemeralO });
 
@@ -79,7 +79,7 @@ export default class RoleMenu extends Command {
         });
       }
 
-      switch (options?.getSubcommand()) {
+      switch (options.getSubcommand()) {
         case 'create': {
           if (!channelO.permissionsFor(client.user).has(PermissionFlagsBits.SendMessages)) {
             return interaction.editReply({

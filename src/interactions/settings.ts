@@ -57,13 +57,13 @@ export default class Settings extends Command {
 
     if (interaction.isChatInputCommand()) {
       const { options } = interaction,
-        ephemeralO = options?.getBoolean('ephemeral') ?? true;
+        ephemeralO = options.getBoolean('ephemeral') ?? true;
 
       await interaction.deferReply({ ephemeral: ephemeralO });
 
-      switch (options?.getSubcommand()) {
+      switch (options.getSubcommand()) {
         case 'language': {
-          const languageO = options?.getString('language'),
+          const languageO = options.getString('language'),
             rows = [new ActionRowBuilder<ButtonBuilder>()];
 
           if (languageO) {

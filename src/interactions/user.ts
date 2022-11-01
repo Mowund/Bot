@@ -48,7 +48,7 @@ export default class User extends Command {
 
     if (interaction.isCommand()) {
       const { options } = interaction,
-        userO = await (options?.getUser('user') ?? user).fetch(),
+        userO = await (options.getUser('user') ?? user).fetch(),
         memberO = guild?.members.cache.get(userO.id),
         ephemeralO = (options as CommandInteractionOptionResolver)?.getBoolean('ephemeral') ?? true;
 

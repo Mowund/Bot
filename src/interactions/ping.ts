@@ -17,7 +17,7 @@ export default class Ping extends Command {
     const { client, embed } = args,
       { i18n } = client,
       { guildId, options } = interaction,
-      ephemeralO = options?.getBoolean('ephemeral') ?? true,
+      ephemeralO = options.getBoolean('ephemeral') ?? true,
       itc = await interaction.deferReply({ ephemeral: ephemeralO, fetchReply: true }),
       emb = embed({ title: `🏓 ${i18n.__('PING.TITLE')}` }).addFields(
         {
