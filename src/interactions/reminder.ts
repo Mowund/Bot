@@ -488,7 +488,7 @@ export default class Reminder extends Command {
             ),
           );
           return interaction.update({
-            components: [],
+            components: rows,
             embeds: [emb.setTitle(`🔕 ${i18n.__('REMINDER.DELETED')}`).setColor(Colors.Red)],
           });
         }
