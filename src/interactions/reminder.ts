@@ -28,7 +28,7 @@ export default class Reminder extends Command {
             name: 'REMINDER.OPTIONS.CREATE.NAME',
             options: [
               {
-                description: 'REMINDER.OPTIONS.CREATE.OPTIONS.REMINDER.DESCRIPTION',
+                description: 'REMINDER.OPTIONS.CREATE.OPTIONS.CONTENT.DESCRIPTION',
                 max_length: 1024,
                 name: 'REMINDER.OPTIONS.CREATE.OPTIONS.CONTENT.NAME',
                 required: true,
