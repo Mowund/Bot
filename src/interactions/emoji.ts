@@ -715,31 +715,32 @@ export default class Emoji extends Command {
               (message.components.at(-1).components.at(-1).customId === 'emoji_remove_roles_submit' ||
                 customId.startsWith('emoji_remove_roles')),
             isSubmit = customId.endsWith('_submit');
-          let title: string;
+          let changedCount: number, title: string;
 
           if (isSubmit) {
             const { roles } = interaction as RoleSelectMenuInteraction<'cached'>,
               emjRoles = emj.roles.cache;
-            let newEmj: GuildEmoji;
 
             if (isRemove) {
-              newEmj = await emj.roles.remove(roles);
+              emj = await emj.roles.remove(roles);
+              changedCount = emjRoles.size - emj.roles.cache.size;
               title = i18n.__mf('GENERIC.ROLES.REMOVING', {
-                count: emjRoles.size - newEmj.roles.cache.size,
+                count: changedCount,
               });
             } else {
-              newEmj = await emj.roles.add(roles);
+              emj = await emj.roles.add(roles);
+              changedCount = emj.roles.cache.size - emjRoles.size;
               title = i18n.__mf('GENERIC.ROLES.ADDING', {
-                count: newEmj.roles.cache.size - emjRoles.size,
+                count: changedCount,
               });
             }
 
             emb.spliceFields(4, 1, {
-              name: `${emojis.role} ${i18n.__('GENERIC.ROLES.ROLES')} [${newEmj.roles.cache.size}]`,
-              value: collMap(newEmj.roles.cache) || '@everyone',
+              name: `${emojis.role} ${i18n.__('GENERIC.ROLES.ROLES')} [${emj.roles.cache.size}]`,
+              value: collMap(emj.roles.cache) || '@everyone',
             });
           } else if (customId === 'emoji_reset_roles') {
-            await emj.roles.set([]);
+            emj = await emj.roles.set([]);
             title = i18n.__('GENERIC.ROLES.RESET');
             emb.spliceFields(4, 1, {
               name: `${emojis.role} ${i18n.__('GENERIC.ROLES.ROLES')} [0]`,
@@ -778,7 +779,7 @@ export default class Emoji extends Command {
                   .setEmoji('➖')
                   .setStyle(ButtonStyle.Danger)
                   .setCustomId('emoji_remove_roles')
-                  .setDisabled(!isEdit && isRemove),
+                  .setDisabled((!isEdit && isRemove) || !emj.roles.cache.size),
               ),
               new ActionRowBuilder<RoleSelectMenuBuilder>().addComponents(
                 new RoleSelectMenuBuilder()
@@ -794,10 +795,14 @@ export default class Emoji extends Command {
                   .setMinValues(1)
                   .setMaxValues(25)
                   .setCustomId(isRemove ? 'emoji_remove_roles_submit' : 'emoji_add_roles_submit')
-                  .setDisabled(isEdit),
+                  .setDisabled(isEdit || (isRemove && !emj.roles.cache.size)),
               ),
             ],
-            embeds: [emb.setColor(Colors.Orange).setTitle(emjDisplay + title)],
+            embeds: [
+              emb
+                .setColor(changedCount ? (isRemove ? Colors.Red : Colors.Green) : Colors.Orange)
+                .setTitle(emjDisplay + title),
+            ],
           });
         }
       }

@@ -7,9 +7,17 @@ import {
   Colors,
   EmbedBuilder,
   StringSelectMenuBuilder,
-  SelectMenuInteraction,
   SnowflakeUtil,
   TimestampStyles,
+  StringSelectMenuInteraction,
+  ChannelSelectMenuBuilder,
+  ChannelSelectMenuInteraction,
+  ChannelType,
+  ButtonInteraction,
+  ModalBuilder,
+  ModalMessageModalSubmitInteraction,
+  TextInputBuilder,
+  TextInputStyle,
 } from 'discord.js';
 import parseDur from 'parse-duration';
 import { Command, CommandArgs } from '../../lib/structures/Command.js';
@@ -89,7 +97,7 @@ export default class Reminder extends Command {
       const { options } = interaction,
         contentO = options
           .getString('content')
-          ?.replace(/(\\n(\s*)?)+/g, '\n')
+          ?.replace(/((\\n|\n)(\s*)?)+/g, '\n')
           .trim(),
         timeO = options.getString('time'),
         ephemeralO = options.getBoolean('ephemeral') ?? true;
@@ -136,7 +144,7 @@ export default class Reminder extends Command {
             }),
             emb = embed({ title: i18n.__('REMINDER.CREATED'), type: 'success' }).addFields(
               {
-                name: `📄 ${i18n.__('GENERIC.CONTENT')}`,
+                name: `📄 ${i18n.__('GENERIC.CONTENT.CONTENT')}`,
                 value: reminder.content,
               },
               {
@@ -146,8 +154,10 @@ export default class Reminder extends Command {
               },
               {
                 inline: true,
-                name: `${emojis.channelText} ${i18n.__('GENERIC.CHANNEL')}`,
-                value: reminder.channelId ? `<#${reminder.channelId}> - \`${reminder.channelId}\`` : 'DM',
+                name: `${emojis.channelText} ${i18n.__('GENERIC.CHANNEL.CHANNEL')}`,
+                value: reminder.channelId
+                  ? `<#${reminder.channelId}> - \`${reminder.channelId}\``
+                  : i18n.__('GENERIC.DIRECT_MESSAGE'),
               },
               {
                 name: `📅 ${i18n.__('GENERIC.TIMESTAMP')}`,
@@ -225,7 +235,12 @@ export default class Reminder extends Command {
           });
         }
       }
-    } else if (interaction.isButton() || interaction.isSelectMenu()) {
+    } else if (
+      interaction.isButton() ||
+      interaction.isChannelSelectMenu() ||
+      interaction.isStringSelectMenu() ||
+      interaction.isModalSubmit()
+    ) {
       let { customId } = interaction;
       const { message } = interaction,
         urlArgs = new URLSearchParams(message.embeds.at(-1)?.footer?.iconURL),
@@ -242,21 +257,22 @@ export default class Reminder extends Command {
       }
 
       const reminderId =
-          interaction instanceof SelectMenuInteraction
-            ? interaction.values[0]
-            : urlArgs.get('reminderId') || getFieldValue(message.embeds[0], i18n.__('GENERIC.ID'))?.replaceAll('`', ''),
-        reminder = reminderId ? await client.database.reminders.fetch(reminderId, user.id) : null;
-      let emb = embed(
-        message.interaction?.user.id === client.user.id || !message.interaction
-          ? { addParams: { messageOwners: user.id }, footer: 'interacted' }
-          : { footer: 'interacted' },
-      );
+        interaction instanceof StringSelectMenuInteraction
+          ? interaction.values[0]
+          : urlArgs.get('reminderId') || getFieldValue(message.embeds[0], i18n.__('GENERIC.ID'))?.replaceAll('`', '');
+
+      let reminder = reminderId ? await client.database.reminders.fetch(reminderId, user.id) : null,
+        emb = embed(
+          message.interaction?.user.id === client.user.id || !message.interaction
+            ? { addParams: { messageOwners: user.id }, footer: 'interacted' }
+            : { footer: 'interacted' },
+        );
 
       if (!isList) {
         if (reminder) {
           emb.setTitle(`🔔 ${i18n.__('REMINDER.INFO')}`).addFields(
             {
-              name: `📄 ${i18n.__('GENERIC.CONTENT')}`,
+              name: `📄 ${i18n.__('GENERIC.CONTENT.CONTENT')}`,
               value: reminder.content,
             },
             {
@@ -266,8 +282,10 @@ export default class Reminder extends Command {
             },
             {
               inline: true,
-              name: `${emojis.channelText} ${i18n.__('GENERIC.CHANNEL')}`,
-              value: reminder.channelId ? `<#${reminder.channelId}> - \`${reminder.channelId}\`` : 'DM',
+              name: `${emojis.channelText} ${i18n.__('GENERIC.CHANNEL.CHANNEL')}`,
+              value: reminder.channelId
+                ? `<#${reminder.channelId}> - \`${reminder.channelId}\``
+                : i18n.__('GENERIC.DIRECT_MESSAGE'),
             },
             {
               name: `📅 ${i18n.__('GENERIC.TIMESTAMP')}`,
@@ -386,15 +404,27 @@ export default class Reminder extends Command {
           rows.push(
             new ActionRowBuilder().addComponents(
               new ButtonBuilder()
-                .setLabel(i18n.__('GENERIC.BACK'))
-                .setEmoji('↩️')
+                .setLabel(i18n.__('GENERIC.VIEW'))
+                .setEmoji('🔎')
                 .setStyle(ButtonStyle.Primary)
                 .setCustomId('reminder_view'),
+              new ButtonBuilder()
+                .setLabel(i18n.__('GENERIC.CONTENT.EDIT'))
+                .setEmoji('✏️')
+                .setStyle(ButtonStyle.Secondary)
+                .setCustomId('reminder_edit_content'),
+              new ButtonBuilder()
+                .setLabel(i18n.__('GENERIC.CHANNEL.EDIT'))
+                .setEmoji(emojis.channelText)
+                .setStyle(ButtonStyle.Secondary)
+                .setCustomId('reminder_edit_channel'),
+            ),
+            new ActionRowBuilder().addComponents(
               new ButtonBuilder()
                 .setLabel(i18n.__(`GENERIC.${reminder.isRecursive ? 'RECURSIVE' : 'NOT_RECURSIVE'}`))
                 .setEmoji('🔁')
                 .setStyle(reminder.isRecursive ? ButtonStyle.Success : ButtonStyle.Secondary)
-                .setCustomId(`reminder_recursive_${reminder.isRecursive ? 'unset' : 'set'}`)
+                .setCustomId('reminder_recursive')
                 .setDisabled(reminder.msTime < minRecursiveTime),
               new ButtonBuilder()
                 .setLabel(i18n.__('GENERIC.DELETE'))
@@ -405,30 +435,29 @@ export default class Reminder extends Command {
           );
 
           if (!message.webhookId) return interaction.reply({ components: rows, embeds: [emb], ephemeral: true });
-          return interaction.update({
+          return (interaction as ButtonInteraction).update({
             components: rows,
             embeds: [emb],
           });
         }
-        case 'reminder_recursive_set':
-        case 'reminder_recursive_unset': {
-          const updReminder = await client.database.reminders.set(reminderId, user.id, {
+        case 'reminder_recursive': {
+          reminder = await client.database.reminders.set(reminderId, user.id, {
             isRecursive: !reminder.isRecursive,
           });
 
           rows.push(
             new ActionRowBuilder().addComponents(
               new ButtonBuilder()
-                .setLabel(i18n.__('GENERIC.BACK'))
-                .setEmoji('↩️')
+                .setLabel(i18n.__('GENERIC.VIEW'))
+                .setEmoji('🔎')
                 .setStyle(ButtonStyle.Primary)
                 .setCustomId('reminder_view'),
               new ButtonBuilder()
-                .setLabel(i18n.__(`GENERIC.${updReminder.isRecursive ? 'RECURSIVE' : 'NOT_RECURSIVE'}`))
+                .setLabel(i18n.__(`GENERIC.${reminder.isRecursive ? 'RECURSIVE' : 'NOT_RECURSIVE'}`))
                 .setEmoji('🔁')
-                .setStyle(updReminder.isRecursive ? ButtonStyle.Success : ButtonStyle.Secondary)
-                .setCustomId(`reminder_recursive_${updReminder.isRecursive ? 'unset' : 'set'}`)
-                .setDisabled(updReminder.msTime < minRecursiveTime),
+                .setStyle(reminder.isRecursive ? ButtonStyle.Success : ButtonStyle.Secondary)
+                .setCustomId('reminder_recursive')
+                .setDisabled(reminder.msTime < minRecursiveTime),
               new ButtonBuilder()
                 .setLabel(i18n.__('GENERIC.DELETE'))
                 .setEmoji('🗑️')
@@ -442,11 +471,11 @@ export default class Reminder extends Command {
             .spliceFields(
               4,
               1,
-              updReminder.isRecursive
+              reminder.isRecursive
                 ? {
                     name: `🔁 ${i18n.__('GENERIC.RECURSIVE')}`,
                     value: i18n.__mf('REMINDER.RECURSIVE.ON', {
-                      timestamp: toUTS(updReminder.timestamp + updReminder.msTime),
+                      timestamp: toUTS(reminder.timestamp + reminder.msTime),
                     }),
                   }
                 : {
@@ -456,7 +485,7 @@ export default class Reminder extends Command {
             )
             .setColor(Colors.Yellow);
 
-          return interaction.update({
+          return (interaction as ButtonInteraction).update({
             components: rows,
             embeds: [emb],
           });
@@ -476,7 +505,7 @@ export default class Reminder extends Command {
                 .setCustomId('reminder_delete_confirm'),
             ),
           );
-          return interaction.update({
+          return (interaction as ButtonInteraction).update({
             components: rows,
             embeds: [
               emb
@@ -497,9 +526,108 @@ export default class Reminder extends Command {
                 .setCustomId('reminder_list'),
             ),
           );
-          return interaction.update({
+          return (interaction as ButtonInteraction).update({
             components: rows,
             embeds: [emb.setTitle(`🔕 ${i18n.__('REMINDER.DELETED')}`).setColor(Colors.Red)],
+          });
+        }
+        case 'reminder_edit_content': {
+          return (interaction as ButtonInteraction).showModal(
+            new ModalBuilder()
+              .setTitle(i18n.__('GENERIC.CONTENT.EDITING'))
+              .setCustomId('reminder_edit_content_submit')
+              .addComponents(
+                new ActionRowBuilder<TextInputBuilder>().addComponents(
+                  new TextInputBuilder()
+                    .setCustomId('reminder_edit_content_input')
+                    .setLabel(i18n.__('GENERIC.CONTENT.EDITING_LABEL'))
+                    .setMinLength(1)
+                    .setMaxLength(1024)
+                    .setStyle(TextInputStyle.Paragraph)
+                    .setPlaceholder(reminder.content),
+                ),
+              ),
+          );
+        }
+        case 'reminder_edit_content_submit': {
+          const { fields } = interaction as ModalMessageModalSubmitInteraction,
+            inputF = fields
+              .getTextInputValue('reminder_edit_content_input')
+              ?.replace(/((\\n|\n)(\s*)?)+/g, '\n')
+              .trim();
+
+          if (!inputF) {
+            return interaction.reply({
+              embeds: [embed({ type: 'error' }).setDescription(i18n.__('ERROR.REMINDER.EMPTY_CONTENT'))],
+              ephemeral: true,
+            });
+          }
+
+          reminder = await client.database.reminders.set(reminderId, user.id, {
+            content: inputF,
+          });
+
+          return (interaction as ButtonInteraction).update({
+            embeds: [
+              emb
+                .setTitle(`🔔 ${i18n.__('GENERIC.CONTENT.EDITED')}`)
+                .spliceFields(0, 1, {
+                  name: `📄 ${i18n.__('GENERIC.CONTENT.CONTENT')}`,
+                  value: reminder.content,
+                })
+                .setColor(Colors.Green),
+            ],
+          });
+        }
+        case 'reminder_dm':
+        case 'reminder_edit_channel_submit':
+          reminder = await client.database.reminders.set(reminderId, user.id, {
+            channelId:
+              customId === 'reminder_dm' ? null : (interaction as ChannelSelectMenuInteraction).channels.first().id,
+          });
+        // eslint-disable-next-line no-fallthrough
+        case 'reminder_edit_channel': {
+          return (interaction as ButtonInteraction).update({
+            components: [
+              new ActionRowBuilder<ButtonBuilder>().addComponents(
+                new ButtonBuilder()
+                  .setLabel(i18n.__('GENERIC.BACK'))
+                  .setEmoji('↩️')
+                  .setStyle(ButtonStyle.Primary)
+                  .setCustomId('reminder_edit'),
+                new ButtonBuilder()
+                  .setLabel(i18n.__(`GENERIC.${reminder.channelId ? 'NOT_DIRECT_MESSAGE' : 'DIRECT_MESSAGE'}`))
+                  .setEmoji(emojis.user)
+                  .setStyle(reminder.channelId ? ButtonStyle.Secondary : ButtonStyle.Success)
+                  .setCustomId('reminder_dm')
+                  .setDisabled(!reminder.channelId),
+              ),
+              new ActionRowBuilder<ChannelSelectMenuBuilder>().addComponents(
+                new ChannelSelectMenuBuilder()
+                  .setPlaceholder(i18n.__('GENERIC.CHANNEL.SELECT_PLACEHOLDER'))
+                  .setChannelTypes(
+                    ChannelType.AnnouncementThread,
+                    ChannelType.GuildAnnouncement,
+                    ChannelType.GuildText,
+                    ChannelType.GuildVoice,
+                    ChannelType.PrivateThread,
+                    ChannelType.PublicThread,
+                  )
+                  .setCustomId('reminder_edit_channel_submit'),
+              ),
+            ],
+            embeds: [
+              emb
+                .setTitle(`🔔 ${i18n.__('REMINDER.EDITED')}`)
+                .spliceFields(2, 1, {
+                  inline: true,
+                  name: `${emojis.channelText} ${i18n.__('GENERIC.CHANNEL.CHANNEL')}`,
+                  value: reminder.channelId
+                    ? `<#${reminder.channelId}> - \`${reminder.channelId}\``
+                    : i18n.__('GENERIC.DIRECT_MESSAGE'),
+                })
+                .setColor(Colors.Green),
+            ],
           });
         }
       }

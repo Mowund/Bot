@@ -45,7 +45,7 @@ export default class ReminderFoundEvent extends Event {
       ),
       fields = [
         {
-          name: `📄 ${i18n.__('GENERIC.CONTENT')}`,
+          name: `📄 ${i18n.__('GENERIC.CONTENT.CONTENT')}`,
           value: content,
         },
         {

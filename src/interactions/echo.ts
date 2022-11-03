@@ -203,7 +203,7 @@ export default class Echo extends Command {
             embed({ title: i18n.__('ECHO.SENT'), type: 'success' })
               .setDescription(i18n.__mf('ECHO.GO_TO', { msgURL: msg.url }))
               .addFields({
-                name: i18n.__('GENERIC.CHANNEL'),
+                name: i18n.__('GENERIC.CHANNEL.CHANNEL'),
                 value: `${channelO} - \`${channelO.id}\``,
               }),
           ],
