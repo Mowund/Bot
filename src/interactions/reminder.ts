@@ -30,7 +30,7 @@ export default class Reminder extends Command {
               {
                 description: 'REMINDER.OPTIONS.CREATE.OPTIONS.REMINDER.DESCRIPTION',
                 max_length: 1024,
-                name: 'REMINDER.OPTIONS.CREATE.OPTIONS.REMINDER.NAME',
+                name: 'REMINDER.OPTIONS.CREATE.OPTIONS.CONTENT.NAME',
                 required: true,
                 type: ApplicationCommandOptionType.String,
               },
