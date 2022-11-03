@@ -6,7 +6,7 @@ import {
   ButtonStyle,
   Colors,
   EmbedBuilder,
-  SelectMenuBuilder,
+  StringSelectMenuBuilder,
   SelectMenuInteraction,
   SnowflakeUtil,
   TimestampStyles,
@@ -87,7 +87,10 @@ export default class Reminder extends Command {
 
     if (interaction.isChatInputCommand()) {
       const { options } = interaction,
-        reminderO = options.getString('reminder')?.replace(/(\\n(\s*)?)+/g, '\n'),
+        contentO = options
+          .getString('content')
+          ?.replace(/(\\n(\s*)?)+/g, '\n')
+          .trim(),
         timeO = options.getString('time'),
         ephemeralO = options.getBoolean('ephemeral') ?? true;
 
@@ -96,6 +99,13 @@ export default class Reminder extends Command {
           const msTime = parseDur(timeO),
             reminderId = SnowflakeUtil.generate().toString(),
             summedTime = msTime + SnowflakeUtil.timestampFrom(reminderId);
+
+          if (!contentO) {
+            return interaction.reply({
+              embeds: [embed({ type: 'error' }).setDescription(i18n.__('ERROR.REMINDER.EMPTY_CONTENT'))],
+              ephemeral: true,
+            });
+          }
 
           if (!msTime || msTime < minTime || msTime > maxTime) {
             return interaction.reply({
@@ -119,7 +129,7 @@ export default class Reminder extends Command {
 
           const reminder = await client.database.reminders.set(reminderId, user.id, {
               channelId: interaction.guild ? channel.id : null,
-              content: reminderO,
+              content: contentO,
               msTime,
               timestamp: summedTime,
               userId: user.id,
@@ -181,7 +191,7 @@ export default class Reminder extends Command {
           await interaction.deferReply({ ephemeral: ephemeralO });
 
           const reminders = await client.database.users.fetchAllReminders(user.id),
-            selectMenu = new SelectMenuBuilder()
+            selectMenu = new StringSelectMenuBuilder()
               .setPlaceholder(i18n.__('REMINDER.SELECT_LIST'))
               .setCustomId('reminder_select');
 
@@ -218,7 +228,7 @@ export default class Reminder extends Command {
     } else if (interaction.isButton() || interaction.isSelectMenu()) {
       let { customId } = interaction;
       const { message } = interaction,
-        urlArgs = new URLSearchParams(message.embeds[message.embeds.length - 1]?.footer?.iconURL),
+        urlArgs = new URLSearchParams(message.embeds.at(-1)?.footer?.iconURL),
         isList = customId === 'reminder_list';
 
       if (
@@ -320,7 +330,7 @@ export default class Reminder extends Command {
             );
           } else {
             const reminders = await client.database.users.fetchAllReminders(user.id),
-              selectMenu = new SelectMenuBuilder()
+              selectMenu = new StringSelectMenuBuilder()
                 .setPlaceholder(i18n.__('REMINDER.SELECT_LIST'))
                 .setCustomId('reminder_select');
 

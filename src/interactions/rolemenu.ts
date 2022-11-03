@@ -7,7 +7,7 @@ import {
   BaseInteraction,
   Role,
   GuildTextBasedChannel,
-  SelectMenuBuilder,
+  StringSelectMenuBuilder,
 } from 'discord.js';
 import { Command, CommandArgs } from '../../lib/structures/Command.js';
 import { botOwners } from '../defaults.js';
@@ -88,8 +88,8 @@ export default class RoleMenu extends Command {
           }
 
           const menuRows = [
-            new ActionRowBuilder<SelectMenuBuilder>().addComponents(
-              new SelectMenuBuilder()
+            new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(
+              new StringSelectMenuBuilder()
                 .setCustomId('rolemenu_giverole')
                 .setPlaceholder('Escolha um cargo')
                 .setMinValues(0)

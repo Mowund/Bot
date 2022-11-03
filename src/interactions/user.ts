@@ -116,7 +116,7 @@ export default class User extends Command {
         });
         if (mRoles.size) {
           embs[0].addFields({
-            name: `${emojis.role} ${i18n.__('GENERIC.ROLES')} [${mRoles.size}]`,
+            name: `${emojis.role} ${i18n.__('GENERIC.ROLES.ROLES')} [${mRoles.size}]`,
             value: collMap(mRoles),
           });
         }

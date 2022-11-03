@@ -17,10 +17,12 @@ import {
   ModalMessageModalSubmitInteraction,
   ButtonInteraction,
   Colors,
+  RoleSelectMenuBuilder,
+  RoleSelectMenuInteraction,
 } from 'discord.js';
 import { RawGuildData, RawGuildEmojiData } from 'discord.js/typings/rawDataTypes.js';
 import { collMap, toUTS, getFieldValue, decreaseSizeCDN, disableComponents } from '../utils.js';
-import { botOwners, emojis, imgOpts, premiumLimits } from '../defaults.js';
+import { emojis, imgOpts, premiumLimits } from '../defaults.js';
 import { Command, CommandArgs } from '../../lib/structures/Command.js';
 
 export default class Emoji extends Command {
@@ -278,7 +280,7 @@ export default class Emoji extends Command {
 
       if (emj) {
         emb.addFields({
-          name: `${emojis.role} ${i18n.__('GENERIC.ROLES')} [${emj[3] ?? (emj as GuildEmoji).roles?.cache.size}]`,
+          name: `${emojis.role} ${i18n.__('GENERIC.ROLES.ROLES')} [${emj[3] ?? (emj as GuildEmoji).roles?.cache.size}]`,
           value:
             (emj[2] ??
               collMap(
@@ -341,7 +343,7 @@ export default class Emoji extends Command {
       }
     }
 
-    if (interaction.isButton() || interaction.isModalSubmit()) {
+    if (interaction.isButton() || interaction.isModalSubmit() || interaction.isRoleSelectMenu()) {
       const { message } = interaction;
 
       if (message.interaction.user.id !== user.id) {
@@ -378,7 +380,7 @@ export default class Emoji extends Command {
         editBtnVsby = 1;
       }
 
-      const rows = [
+      const rows: ActionRowBuilder<ButtonBuilder | RoleSelectMenuBuilder>[] = [
         new ActionRowBuilder<ButtonBuilder>().addComponents(
           new ButtonBuilder()
             .setLabel(i18n.__('EMOJI.COMPONENT.LINK'))
@@ -412,7 +414,7 @@ export default class Emoji extends Command {
       }
       if (emj) {
         emb.addFields({
-          name: `${emojis.role} ${i18n.__('GENERIC.ROLES')} [${emj.roles.cache.size}]`,
+          name: `${emojis.role} ${i18n.__('GENERIC.ROLES.ROLES')} [${emj.roles.cache.size}]`,
           value: collMap(emj.roles.cache, emj.guild?.id !== guild?.id ? { mapValue: 'id' } : {}) || '@everyone',
         });
       }
@@ -508,7 +510,7 @@ export default class Emoji extends Command {
                   value: toUTS(emj.createdTimestamp),
                 },
                 {
-                  name: `${emojis.role} ${i18n.__('GENERIC.ROLES')} [0]`,
+                  name: `${emojis.role} ${i18n.__('GENERIC.ROLES.ROLES')} [0]`,
                   value: '@everyone',
                 },
               );
@@ -517,17 +519,17 @@ export default class Emoji extends Command {
             components: [
               new ActionRowBuilder<ButtonBuilder>().addComponents(
                 new ButtonBuilder()
-                  .setLabel(i18n.__('EMOJI.COMPONENT.VIEW'))
+                  .setLabel(i18n.__('GENERIC.VIEW'))
                   .setEmoji('🔎')
                   .setStyle(ButtonStyle.Primary)
                   .setCustomId('emoji_view'),
                 new ButtonBuilder()
-                  .setLabel(i18n.__('EMOJI.COMPONENT.RENAME'))
+                  .setLabel(i18n.__('GENERIC.RENAME'))
                   .setEmoji('✏️')
                   .setStyle(ButtonStyle.Secondary)
                   .setCustomId('emoji_rename'),
                 new ButtonBuilder()
-                  .setLabel(i18n.__('EMOJI.COMPONENT.ROLES.EDIT'))
+                  .setLabel(i18n.__('GENERIC.ROLES.EDIT'))
                   .setEmoji('📜')
                   .setStyle(ButtonStyle.Secondary)
                   .setCustomId('emoji_edit_roles'),
@@ -701,15 +703,102 @@ export default class Emoji extends Command {
             embeds: [emb.setColor(Colors.Green).setTitle(emjDisplay + i18n.__('EMOJI.RENAMED'))],
           });
         }
-        // TODO: Add emoji edit roles
-        case 'emoji_edit_roles': {
-          if (!botOwners.includes(user.id)) {
-            return interaction.reply({
-              embeds: [embed({ type: 'wip' }).setDescription(i18n.__('GENERIC.WIP_FUNCTION'))],
-              ephemeral: true,
+        case 'emoji_add_roles':
+        case 'emoji_add_roles_submit':
+        case 'emoji_edit_roles':
+        case 'emoji_remove_roles':
+        case 'emoji_remove_roles_submit':
+        case 'emoji_reset_roles': {
+          const isEdit = customId === 'emoji_edit_roles',
+            isRemove =
+              !customId.startsWith('emoji_add_roles') &&
+              (message.components.at(-1).components.at(-1).customId === 'emoji_remove_roles_submit' ||
+                customId.startsWith('emoji_remove_roles')),
+            isSubmit = customId.endsWith('_submit');
+          let title: string;
+
+          if (isSubmit) {
+            const { roles } = interaction as RoleSelectMenuInteraction<'cached'>,
+              emjRoles = emj.roles.cache;
+            let newEmj: GuildEmoji;
+
+            if (isRemove) {
+              newEmj = await emj.roles.remove(roles);
+              title = i18n.__mf('GENERIC.ROLES.REMOVING', {
+                count: emjRoles.size - newEmj.roles.cache.size,
+              });
+            } else {
+              newEmj = await emj.roles.add(roles);
+              title = i18n.__mf('GENERIC.ROLES.ADDING', {
+                count: newEmj.roles.cache.size - emjRoles.size,
+              });
+            }
+
+            emb.spliceFields(4, 1, {
+              name: `${emojis.role} ${i18n.__('GENERIC.ROLES.ROLES')} [${newEmj.roles.cache.size}]`,
+              value: collMap(newEmj.roles.cache) || '@everyone',
             });
+          } else if (customId === 'emoji_reset_roles') {
+            await emj.roles.set([]);
+            title = i18n.__('GENERIC.ROLES.RESET');
+            emb.spliceFields(4, 1, {
+              name: `${emojis.role} ${i18n.__('GENERIC.ROLES.ROLES')} [0]`,
+              value: '@everyone',
+            });
+          } else {
+            title = isEdit
+              ? i18n.__('GENERIC.ROLES.EDIT')
+              : i18n.__mf(isRemove ? 'GENERIC.ROLES.REMOVING' : 'GENERIC.ROLES.ADDING', { count: 0 });
           }
-          return (interaction as ButtonInteraction).deferUpdate();
+
+          return (interaction as ButtonInteraction | RoleSelectMenuInteraction).update({
+            components: [
+              new ActionRowBuilder<ButtonBuilder>().addComponents(
+                new ButtonBuilder()
+                  .setLabel(i18n.__('GENERIC.BACK'))
+                  .setEmoji('↩️')
+                  .setStyle(ButtonStyle.Primary)
+                  .setCustomId('emoji_edit'),
+                new ButtonBuilder()
+                  .setLabel(i18n.__('GENERIC.ROLES.RESET'))
+                  .setEmoji('🔄')
+                  .setStyle(ButtonStyle.Primary)
+                  .setCustomId('emoji_reset_roles')
+                  .setDisabled(!emj.roles.cache.size),
+              ),
+              new ActionRowBuilder<ButtonBuilder>().addComponents(
+                new ButtonBuilder()
+                  .setLabel(i18n.__('GENERIC.ROLES.ADD'))
+                  .setEmoji('➕')
+                  .setStyle(ButtonStyle.Success)
+                  .setCustomId('emoji_add_roles')
+                  .setDisabled(!isEdit && !isRemove),
+                new ButtonBuilder()
+                  .setLabel(i18n.__('GENERIC.ROLES.REMOVE'))
+                  .setEmoji('➖')
+                  .setStyle(ButtonStyle.Danger)
+                  .setCustomId('emoji_remove_roles')
+                  .setDisabled(!isEdit && isRemove),
+              ),
+              new ActionRowBuilder<RoleSelectMenuBuilder>().addComponents(
+                new RoleSelectMenuBuilder()
+                  .setPlaceholder(
+                    i18n.__(
+                      isEdit
+                        ? 'GENERIC.ROLES.SELECT.DEFAULT'
+                        : isRemove
+                        ? 'GENERIC.ROLES.SELECT.REMOVE'
+                        : 'GENERIC.ROLES.SELECT.ADD',
+                    ),
+                  )
+                  .setMinValues(1)
+                  .setMaxValues(25)
+                  .setCustomId(isRemove ? 'emoji_remove_roles_submit' : 'emoji_add_roles_submit')
+                  .setDisabled(isEdit),
+              ),
+            ],
+            embeds: [emb.setColor(Colors.Orange).setTitle(emjDisplay + title)],
+          });
         }
       }
     }
