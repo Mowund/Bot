@@ -102,8 +102,10 @@ export default class Echo extends Command {
     if (!interaction.isChatInputCommand()) return;
 
     const { client, embed } = args,
-      { i18n } = client,
+      { database, i18n } = client,
       { member, memberPermissions, options, user } = interaction,
+      settings = await database.users.fetch(user.id),
+      isEphemeral = settings?.ephemeralResponses,
       contentO = options.getString('content')?.replaceAll('\\n', '\n').trim(),
       descriptionO = options.getString('description')?.replaceAll('\\n', '\n').trim(),
       titleO = options.getString('title'),
@@ -119,8 +121,7 @@ export default class Echo extends Command {
         ? tc(options.getString('color')).toHex()
         : (memberO ?? member)?.displayColor ?? Colors.Blurple,
       ttsO = options.getBoolean('tts'),
-      channelO = options.getChannel('channel') as GuildTextBasedChannel,
-      ephemeralO = options.getBoolean('ephemeral') ?? true;
+      channelO = options.getChannel('channel') as GuildTextBasedChannel;
 
     if (interaction.isChatInputCommand()) {
       const enableEmbed = descriptionO || titleO || authorO || footerO || imageO || thumbnailO;
@@ -128,7 +129,7 @@ export default class Echo extends Command {
       if (
         !memberPermissions?.has(PermissionFlagsBits.ManageMessages) &&
         !botOwners.includes(user.id) &&
-        (ephemeralO === false || channelO) &&
+        (isEphemeral === false || channelO) &&
         interaction.guild
       ) {
         return interaction.reply({
@@ -155,7 +156,7 @@ export default class Echo extends Command {
         });
       }
 
-      await interaction.deferReply({ ephemeral: ephemeralO });
+      await interaction.deferReply({ ephemeral: isEphemeral });
 
       const eEmb = new EmbedBuilder().setColor(colorO),
         eMsg = {

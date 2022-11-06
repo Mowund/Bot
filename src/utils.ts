@@ -117,14 +117,15 @@ export const decreaseSizeCDN = async (url: string, options: { initialSize?: numb
  * @param options The function's options
  * @param options.recursion Whether to also recursively filter nested objects (Default: True)
  * @param options.removeFalsy Whether to remove all falsy values (Default: False)
+ * @param options.removeNull Whether to remove null values (Default: False)
  */
 export const removeEmpty = (
   object: Record<string, any>,
-  options: { removeFalsy?: boolean; recursion?: boolean } = {},
+  options: { removeFalsy?: boolean; removeNull?: boolean; recursion?: boolean } = {},
 ) =>
   Object.fromEntries(
     Object.entries(object)
-      .filter(([, v]) => (options.removeFalsy ? !!v : v != null))
+      .filter(([, v]) => (!options.removeNull && v === null) || (options.removeFalsy ? !!v : v != null))
       .map(([k, v]) => [k, v === ((options.recursion ?? true) && Object(v)) ? removeEmpty(v) : v]),
   );
 
@@ -178,9 +179,9 @@ export const monthDiff = (dateFrom: Date, dateTo = new Date()) =>
  * Truncates a string with ellipsis
  * @returns The string truncated with ellipsis
  * @param input The string to truncate
- * @param limit The limit of characters to be displayed until truncated (Default: 1020)
+ * @param limit The limit of characters to be displayed until truncated (Default: 1024)
  */
-export const truncate = (input: string, limit = 1020) =>
+export const truncate = (input: string, limit = 1024) =>
   input?.length > limit ? `${input.substring(0, limit - 3)}...` : input;
 
 /**

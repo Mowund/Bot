@@ -69,23 +69,4 @@ export const botOwners = process.env.OWNERS.split(','),
     3: { emojis: 250, stickers: 60 },
   },
   imgOpts = { format: 'png', size: 4096 } as const,
-  supportServer = { id: '420007989261500418', invite: 'https://discord.gg/f85rEGJ' },
-  defaultSettings = {
-    /** The default settings for guilds*/
-    guilds: {
-      /** Bot logging settings */
-      log: {
-        /** Whether to log messages containing bad domains */
-        badDomains: false,
-        /** The id of the channel used to send log messages from the bot */
-        channel: null,
-      },
-    },
-    /** The default settings for reminders */
-    reminders: {},
-    /** The default settings for users */
-    users: {
-      /** The users's set locale */
-      locale: null,
-    },
-  };
+  supportServer = { id: '420007989261500418', invite: 'https://discord.gg/f85rEGJ' };

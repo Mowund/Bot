@@ -36,8 +36,10 @@ export default class Rollout extends Command {
     if (!botOwners.includes(interaction.user.id)) return;
 
     const { client, embed } = args,
-      { i18n } = client,
-      { experiments } = client;
+      { database, experiments, i18n } = client,
+      { user } = interaction,
+      settings = await database.users.fetch(user.id),
+      isEphemeral = settings?.ephemeralResponses;
 
     if (interaction.isAutocomplete()) {
       const focused = interaction.options.getFocused(),
@@ -69,10 +71,9 @@ export default class Rollout extends Command {
       const { options } = interaction,
         experimentO = options.getString('experiment'),
         guildO = options.getString('guild'),
-        ephemeralO = options.getBoolean('ephemeral') ?? true,
         guildId = guildO ?? interaction.guildId;
 
-      await interaction.deferReply({ ephemeral: ephemeralO });
+      await interaction.deferReply({ ephemeral: isEphemeral });
 
       const guild = guildO
         ? await client.shard

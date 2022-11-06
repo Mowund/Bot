@@ -7,7 +7,7 @@ export default class Timeout extends Command {
   constructor() {
     super([
       {
-        defaultMemberPermissions: '1099511627776',
+        defaultMemberPermissions: PermissionFlagsBits.ModerateMembers,
         description: 'TIMEOUT.DESCRIPTION',
         dmPermission: false,
         name: 'TIMEOUT.NAME',
@@ -36,8 +36,10 @@ export default class Timeout extends Command {
 
   async run(args: CommandArgs, interaction: BaseInteraction<'cached'>): Promise<any> {
     const { client, embed } = args,
-      { i18n } = client,
+      { database, i18n } = client,
       { guild, member, memberPermissions, user } = interaction,
+      settings = await database.users.fetch(user.id),
+      isEphemeral = settings?.ephemeralResponses,
       maxDuration = 2419200000;
 
     if (interaction.isAutocomplete()) {
@@ -77,8 +79,7 @@ export default class Timeout extends Command {
       const { options } = interaction,
         memberO = options.getMember('user'),
         durationO = options.getString('duration'),
-        reasonO = options.getString('reason'),
-        ephemeralO = options.getBoolean('ephemeral');
+        reasonO = options.getString('reason');
 
       if (!memberPermissions?.has(PermissionFlagsBits.ModerateMembers)) {
         return interaction.reply({
@@ -134,7 +135,7 @@ export default class Timeout extends Command {
 
         return interaction.reply({
           embeds: [embed({ type: 'success' }).setDescription(`Removed timeout from ${memberO}`)],
-          ephemeral: ephemeralO,
+          ephemeral: isEphemeral,
         });
       }
 
@@ -160,7 +161,7 @@ export default class Timeout extends Command {
         embeds: [
           embed({ type: 'success' }).setDescription(`${memberO} has been timed out for \`${msToTime(msTime)}\``),
         ],
-        ephemeral: ephemeralO,
+        ephemeral: isEphemeral,
       });
     }
   }

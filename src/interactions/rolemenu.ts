@@ -15,63 +15,62 @@ import { collMap } from '../utils.js';
 
 export default class RoleMenu extends Command {
   constructor() {
-    super(
-      [
-        {
-          defaultMemberPermissions: '268435456',
-          description: 'ROLEMENU.DESCRIPTION',
-          dmPermission: false,
-          name: 'ROLEMENU.NAME',
-          options: [
-            {
-              description: 'ROLEMENU.OPTIONS.CREATE.DESCRIPTION',
-              name: 'ROLEMENU.OPTIONS.CREATE.NAME',
-              options: [
-                {
-                  channelTypes: [
-                    ChannelType.GuildText,
-                    ChannelType.GuildAnnouncement,
-                    ChannelType.AnnouncementThread,
-                    ChannelType.PublicThread,
-                    ChannelType.PrivateThread,
-                    ChannelType.GuildVoice,
-                  ],
-                  description: 'ROLEMENU.OPTIONS.CREATE.OPTIONS.CHANNEL.DESCRIPTION',
-                  name: 'ROLEMENU.OPTIONS.CREATE.OPTIONS.CHANNEL.NAME',
-                  type: ApplicationCommandOptionType.Channel,
-                },
-              ],
-              type: ApplicationCommandOptionType.Subcommand,
-            },
-            {
-              description: 'ROLEMENU.OPTIONS.EDIT.DESCRIPTION',
-              name: 'ROLEMENU.OPTIONS.EDIT.NAME',
-              options: [
-                {
-                  description: 'ROLEMENU.OPTIONS.EDIT.OPTIONS.ID.DESCRIPTION',
-                  name: 'ROLEMENU.OPTIONS.EDIT.OPTIONS.ID.NAME',
-                  type: ApplicationCommandOptionType.String,
-                },
-              ],
-              type: ApplicationCommandOptionType.Subcommand,
-            },
-          ],
-        },
-      ],
-      { guildOnly: ['420007989261500418'] },
-    );
+    super([
+      {
+        defaultMemberPermissions: PermissionFlagsBits.ManageRoles,
+        description: 'ROLEMENU.DESCRIPTION',
+        dmPermission: false,
+        name: 'ROLEMENU.NAME',
+        options: [
+          {
+            description: 'ROLEMENU.OPTIONS.CREATE.DESCRIPTION',
+            name: 'ROLEMENU.OPTIONS.CREATE.NAME',
+            options: [
+              {
+                channelTypes: [
+                  ChannelType.GuildText,
+                  ChannelType.GuildAnnouncement,
+                  ChannelType.AnnouncementThread,
+                  ChannelType.PublicThread,
+                  ChannelType.PrivateThread,
+                  ChannelType.GuildVoice,
+                ],
+                description: 'ROLEMENU.OPTIONS.CREATE.OPTIONS.CHANNEL.DESCRIPTION',
+                name: 'ROLEMENU.OPTIONS.CREATE.OPTIONS.CHANNEL.NAME',
+                type: ApplicationCommandOptionType.Channel,
+              },
+            ],
+            type: ApplicationCommandOptionType.Subcommand,
+          },
+          {
+            description: 'ROLEMENU.OPTIONS.EDIT.DESCRIPTION',
+            name: 'ROLEMENU.OPTIONS.EDIT.NAME',
+            options: [
+              {
+                description: 'ROLEMENU.OPTIONS.EDIT.OPTIONS.ID.DESCRIPTION',
+                name: 'ROLEMENU.OPTIONS.EDIT.OPTIONS.ID.NAME',
+                type: ApplicationCommandOptionType.String,
+              },
+            ],
+            type: ApplicationCommandOptionType.Subcommand,
+          },
+        ],
+      },
+    ]);
   }
 
   async run(args: CommandArgs, interaction: BaseInteraction<'cached'>): Promise<any> {
     const { client, embed } = args,
-      { guild, user } = interaction;
+      { database } = client,
+      { guild, user } = interaction,
+      settings = await database.users.fetch(user.id),
+      isEphemeral = settings?.ephemeralResponses;
 
     if (interaction.isChatInputCommand()) {
       const { options } = interaction,
-        channelO = (options.getChannel('channel') ?? interaction.channel) as GuildTextBasedChannel,
-        ephemeralO = options.getBoolean('ephemeral') ?? true;
+        channelO = (options.getChannel('channel') ?? interaction.channel) as GuildTextBasedChannel;
 
-      await interaction.deferReply({ ephemeral: ephemeralO });
+      await interaction.deferReply({ ephemeral: isEphemeral });
 
       if (!botOwners.includes(user.id)) {
         return interaction.editReply({

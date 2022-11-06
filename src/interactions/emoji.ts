@@ -73,18 +73,19 @@ export default class Emoji extends Command {
 
   async run(args: CommandArgs, interaction: BaseInteraction<'cached'>): Promise<any> {
     const { client, embed } = args,
-      { i18n } = client,
+      { database, i18n } = client,
       { appPermissions, guild, memberPermissions, user } = interaction,
+      settings = await database.users.fetch(user.id),
+      isEphemeral = settings?.ephemeralResponses,
       emojiLimit = premiumLimits[guild.premiumTier].emojis;
 
     let addBtnVsby = 0,
       editBtnVsby = 2;
 
     if (interaction.isChatInputCommand()) {
-      const { options } = interaction,
-        ephemeralO = options.getBoolean('ephemeral') ?? true;
+      const { options } = interaction;
 
-      await interaction.deferReply({ ephemeral: ephemeralO });
+      await interaction.deferReply({ ephemeral: isEphemeral });
 
       const isInfo = options.getSubcommand() === 'info',
         inputO = isInfo ? options.getString('emoji') : options.getString('name'),
@@ -668,21 +669,19 @@ export default class Emoji extends Command {
 
           if (inputF === emjName) return interaction.deferUpdate();
           if (alphanumI || lengthI) {
-            return (interaction as ModalMessageModalSubmitInteraction).update({
+            return (interaction as ModalMessageModalSubmitInteraction).reply({
               embeds: [
-                emb
-                  .setColor(Colors.Red)
-                  .setTitle(emjDisplay + i18n.__('ERROR.INVALID.NAME.SHORT'))
-                  .setDescription(
-                    i18n.__mf('ERROR.INVALID.NAME.LONG', {
-                      alphanum: alphanumI,
-                      condition: lengthI,
-                      input: inputF,
-                      maxLength: 32,
-                      minLength: 2,
-                    }),
-                  ),
+                embed({ type: 'error' }).setDescription(
+                  i18n.__mf('ERROR.INVALID.NAME', {
+                    alphanum: alphanumI,
+                    condition: lengthI,
+                    input: inputF,
+                    maxLength: 32,
+                    minLength: 2,
+                  }),
+                ),
               ],
+              ephemeral: true,
             });
           }
 

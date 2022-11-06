@@ -21,7 +21,7 @@ import {
   User,
 } from 'discord.js';
 import firebase, { firestore } from 'firebase-admin';
-import i18n from 'i18n';
+import i18n, { I18n } from 'i18n';
 import { Chalk, ChalkInstance } from 'chalk';
 import { defaultLocale, imgOpts, supportServer } from '../src/defaults.js';
 import { addSearchParams } from '../src/utils.js';
@@ -36,7 +36,7 @@ export class App extends Client {
   experiments: { data: Experiment[]; lastUpdated: number };
   firestore: firestore.Firestore;
   globalCommandCount: { chatInput: number; message: number; sum: { all: number; contextMenu: number }; user: number };
-  i18n: any;
+  i18n: I18n;
   octokit: Octokit;
   private otherLocales: string[];
 
@@ -69,7 +69,7 @@ export class App extends Client {
     return super.login(token);
   }
 
-  autoLocalize = (object: Record<string, any>, key: string) => {
+  localize = (object: Record<string, any>, key: string) => {
     object[`${key}Localizations`] ??= {};
 
     for (const locale of this.otherLocales) {
@@ -81,11 +81,11 @@ export class App extends Client {
     object[key] = i18n.__(object[key]);
   };
 
-  autoLocalizeCommand = (data: Record<string, any>) => {
-    if ('name' in data) this.autoLocalize(data, 'name');
-    if ('description' in data) this.autoLocalize(data, 'description');
-    if ('options' in data) for (const opt of data.options) this.autoLocalizeCommand(opt);
-    if ('choices' in data) for (const ch of data.choices) this.autoLocalizeCommand(ch);
+  localizeCommand = (data: Record<string, any>) => {
+    if ('name' in data) this.localize(data, 'name');
+    if ('description' in data) this.localize(data, 'description');
+    if ('options' in data) for (const opt of data.options) this.localizeCommand(opt);
+    if ('choices' in data) for (const ch of data.choices) this.localizeCommand(ch);
   };
 
   countCommands = (commands: Collection<string, ApplicationCommandData>) => {

@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-empty-function, @typescript-eslint/no-unused-vars */
 
-import { ApplicationCommandData, BaseInteraction, EmbedBuilder } from 'discord.js';
+import { ApplicationCommandData, BaseInteraction, ColorResolvable, EmbedBuilder } from 'discord.js';
 import { App } from '../App';
 
 export class Command {
@@ -31,9 +31,11 @@ export interface CommandArgs {
    * @param options.type The type of the embed
    */
   embed(options?: {
-    type?: 'error' | 'success' | 'warning' | 'wip';
     addParams?: Record<string, string>;
+    color?: ColorResolvable;
     footer?: 'interacted' | 'requested' | 'none';
+    timestamp?: number;
     title?: string;
+    type?: 'error' | 'success' | 'warning' | 'wip';
   }): EmbedBuilder;
 }

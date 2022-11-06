@@ -2,7 +2,14 @@ import { readdirSync } from 'node:fs';
 import { inspect } from 'node:util';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
-import { ApplicationCommandOptionType, ApplicationCommandType, BaseInteraction, Colors, Guild } from 'discord.js';
+import {
+  ApplicationCommandOptionType,
+  ApplicationCommandType,
+  BaseInteraction,
+  Colors,
+  Guild,
+  PermissionFlagsBits,
+} from 'discord.js';
 import { Command, CommandArgs } from '../../lib/structures/Command.js';
 import { botOwners } from '../defaults.js';
 import { truncate } from '../utils.js';
@@ -12,7 +19,7 @@ export default class Owner extends Command {
     super(
       [
         {
-          defaultMemberPermissions: '0',
+          defaultMemberPermissions: PermissionFlagsBits.Administrator,
           description: 'OWNER.DESCRIPTION',
           name: 'OWNER.NAME',
           options: [
@@ -72,18 +79,18 @@ export default class Owner extends Command {
                   name: 'OWNER.OPTIONS.SHARD.OPTIONS.RESPAWN_ALL.NAME',
                   options: [
                     {
-                      description: 'OWNER.OPTION.SHARD.OPTIONS.RESPAWN_ALL.OPTIONS.SHARD_DELAY.DESCRIPTION',
-                      name: 'OWNER.OPTION.SHARD.OPTIONS.RESPAWN_ALL.OPTIONS.SHARD_DELAY.NAME',
+                      description: 'OWNER.OPTIONS.SHARD.OPTIONS.RESPAWN_ALL.OPTIONS.SHARD_DELAY.DESCRIPTION',
+                      name: 'OWNER.OPTIONS.SHARD.OPTIONS.RESPAWN_ALL.OPTIONS.SHARD_DELAY.NAME',
                       type: ApplicationCommandOptionType.Integer,
                     },
                     {
-                      description: 'OWNER.OPTION.SHARD.OPTIONS.RESPAWN_ALL.OPTIONS.RESPAWN_DELAY.DESCRIPTION',
-                      name: 'OWNER.OPTION.SHARD.OPTIONS.RESPAWN_ALL.OPTIONS.RESPAWN_DELAY.NAME',
+                      description: 'OWNER.OPTIONS.SHARD.OPTIONS.RESPAWN_ALL.OPTIONS.RESPAWN_DELAY.DESCRIPTION',
+                      name: 'OWNER.OPTIONS.SHARD.OPTIONS.RESPAWN_ALL.OPTIONS.RESPAWN_DELAY.NAME',
                       type: ApplicationCommandOptionType.Integer,
                     },
                     {
-                      description: 'OWNER.OPTION.SHARD.OPTIONS.RESPAWN_ALL.OPTIONS.TIMEOUT.DESCRIPTION',
-                      name: 'OWNER.OPTION.SHARD.OPTIONS.RESPAWN_ALL.OPTIONS.TIMEOUT.NAME',
+                      description: 'OWNER.OPTIONS.SHARD.OPTIONS.RESPAWN_ALL.OPTIONS.TIMEOUT.DESCRIPTION',
+                      name: 'OWNER.OPTIONS.SHARD.OPTIONS.RESPAWN_ALL.OPTIONS.TIMEOUT.NAME',
                       type: ApplicationCommandOptionType.Integer,
                     },
                   ],
@@ -105,15 +112,16 @@ export default class Owner extends Command {
     if (!interaction.isChatInputCommand()) return;
 
     const { client, embed } = args,
-      { chalk, i18n } = client,
+      { chalk, database, i18n } = client,
       { options, user } = interaction,
-      ephemeralO = options.getBoolean('ephemeral') ?? true,
+      settings = await database.users.fetch(user.id),
+      isEphemeral = settings?.ephemeralResponses,
       idO = options.getString('id'),
       guildO = options.getString('guild'),
       __filename = fileURLToPath(import.meta.url),
       __dirname = dirname(__filename);
 
-    await interaction.deferReply({ ephemeral: ephemeralO });
+    await interaction.deferReply({ ephemeral: isEphemeral });
 
     if (!botOwners.includes(user.id)) {
       return interaction.editReply({
@@ -174,15 +182,14 @@ export default class Owner extends Command {
       case 'command': {
         switch (options.getSubcommand()) {
           case 'update': {
-            const appCmds = client.application.commands,
-              fAppCmds = await appCmds.fetch({ withLocalizations: true }),
-              embs = [];
-            let fGdCmds,
-              updCmds = [],
+            let updCmds = [],
               delCmds = [];
-
-            if (guild ?? interaction.guild)
-              fGdCmds = await appCmds.fetch({ guildId: (guild ?? interaction.guild).id, withLocalizations: true });
+            const embs = [],
+              appCmds = client.application.commands,
+              fAppCmds = await appCmds.fetch({ withLocalizations: true }),
+              fGdCmds =
+                (guild ?? interaction.guild) &&
+                (await appCmds.fetch({ guildId: (guild ?? interaction.guild).id, withLocalizations: true }));
 
             fAppCmds.each(c => (delCmds = delCmds.concat(c)));
             if (fGdCmds) fGdCmds.each(c => (delCmds = delCmds.concat(c)));
@@ -191,7 +198,7 @@ export default class Owner extends Command {
               for (const file of readdirSync(__dirname).filter(f => f.endsWith('.js'))) {
                 const event = new (await import(`./${file}`)).default() as Command;
                 for (const dt of event.structure) {
-                  client.autoLocalizeCommand(dt);
+                  client.localizeCommand(dt);
 
                   const gOnly = event.options?.guildOnly?.find(i => i === (guild ?? interaction.guild)?.id),
                     findCmd = idO
@@ -250,7 +257,9 @@ export default class Owner extends Command {
             delCmds.forEach(c => {
               if (c.guildId) {
                 (guild ?? interaction.guild).commands.delete(c.id);
-                console.log(`Deleted guild (${(guild ?? interaction.guild).id}) command: ${c.name} (${c.id})`);
+                console.log(
+                  chalk.red(`Deleted guild (${(guild ?? interaction.guild).id}) command: ${c.name} (${c.id})`),
+                );
               } else {
                 appCmds.delete(c.id);
                 console.log(chalk.red(`Deleted global command: ${c.name} (${c.id})`));
@@ -280,11 +289,11 @@ export default class Owner extends Command {
               delCmdGuild = cmdMap(delCmds, true);
 
             if (updCmds.length) {
-              const e = embed({ title: i18n.__('OWNER.COMMAND.COMMANDS.UPDATED'), type: 'success' });
+              const e = embed({ title: i18n.__('OWNER.OPTIONS.COMMAND.COMMANDS.UPDATED'), type: 'success' });
               if (updCmdGlobal) {
                 e.addFields({
                   inline: true,
-                  name: i18n.__('OWNER.COMMAND.COMMANDS.GLOBAL'),
+                  name: i18n.__('OWNER.OPTIONS.COMMAND.COMMANDS.GLOBAL'),
                   value: updCmdGlobal,
                 });
               }
@@ -293,19 +302,21 @@ export default class Owner extends Command {
                 e.addFields({
                   inline: true,
                   name: guild
-                    ? i18n.__mf('OWNER.COMMAND.COMMANDS.SPECIFIED_GUILD', { guildName: guild.name })
-                    : i18n.__('OWNER.COMMAND.COMMANDS.GUILD'),
+                    ? i18n.__mf('OWNER.OPTIONS.COMMAND.COMMANDS.SPECIFIED_GUILD', { guildName: guild.name })
+                    : i18n.__('OWNER.OPTIONS.COMMAND.COMMANDS.GUILD'),
                   value: updCmdGuild,
                 });
               }
               embs.push(e);
             }
             if (delCmds.length) {
-              const e = embed({ title: `🗑️ ${i18n.__('OWNER.COMMAND.COMMANDS.DELETED')}` }).setColor(Colors.Red);
+              const e = embed({ title: `🗑️ ${i18n.__('OWNER.OPTIONS.COMMAND.COMMANDS.DELETED')}` }).setColor(
+                Colors.Red,
+              );
               if (delCmdGlobal) {
                 e.addFields({
                   inline: true,
-                  name: i18n.__('OWNER.COMMAND.COMMANDS.GLOBAL'),
+                  name: i18n.__('OWNER.OPTIONS.COMMAND.COMMANDS.GLOBAL'),
                   value: delCmdGlobal,
                 });
               }
@@ -314,8 +325,8 @@ export default class Owner extends Command {
                 e.addFields({
                   inline: true,
                   name: guild
-                    ? i18n.__mf('OWNER.COMMAND.COMMANDS.SPECIFIED_GUILD', { guildName: guild.name })
-                    : i18n.__('OWNER.COMMAND.COMMANDS.GUILD'),
+                    ? i18n.__mf('OWNER.OPTIONS.COMMAND.COMMANDS.SPECIFIED_GUILD', { guildName: guild.name })
+                    : i18n.__('OWNER.OPTIONS.COMMAND.COMMANDS.GUILD'),
                   value: delCmdGuild,
                 });
               }
@@ -325,7 +336,7 @@ export default class Owner extends Command {
             return interaction.editReply({
               embeds: embs.length
                 ? embs
-                : [embed({ type: 'warning' }).setDescription(i18n.__('OWNER.COMMAND.NO_UPDATE'))],
+                : [embed({ type: 'warning' }).setDescription(i18n.__('OWNER.OPTIONS.COMMAND.NO_UPDATE'))],
             });
           }
         }

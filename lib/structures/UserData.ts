@@ -5,6 +5,7 @@ import { ReminderData } from './ReminderData.js';
 
 export class UserData extends Base {
   id: Snowflake;
+  ephemeralResponses?: boolean;
   locale?: string;
   reminders?: Collection<string, ReminderData>;
 
@@ -12,11 +13,13 @@ export class UserData extends Base {
     super(client);
 
     this.id = data.id;
+    this.ephemeralResponses = data.ephemeralResponses;
     this.locale = data.locale;
     this.reminders = data.reminders;
   }
 
   patch(data: any) {
+    if ('ephemeralResponses' in data) this.ephemeralResponses = data.ephemeralResponses;
     if ('locale' in data) this.locale = data.locale;
     if ('reminders' in data) this.reminders = data.reminders;
     return data;
@@ -25,4 +28,5 @@ export class UserData extends Base {
 
 export interface UserDataSetOptions {
   locale?: string;
+  ephemeralResponses?: boolean;
 }

@@ -16,13 +16,13 @@ export default class Clear extends Command {
   constructor() {
     super([
       {
-        defaultMemberPermissions: '8192',
+        defaultMemberPermissions: PermissionFlagsBits.ManageMessages,
         dmPermission: false,
         name: 'CLEAR.DELETE_AFTER_THIS',
         type: ApplicationCommandType.Message,
       },
       {
-        defaultMemberPermissions: '8192',
+        defaultMemberPermissions: PermissionFlagsBits.ManageMessages,
         description: 'CLEAR.DESCRIPTION',
         dmPermission: false,
         name: 'CLEAR.NAME',
@@ -47,8 +47,10 @@ export default class Clear extends Command {
 
   async run(args: CommandArgs, interaction: BaseInteraction<'cached'>): Promise<any> {
     const { client, embed } = args,
-      { i18n } = client,
-      { channel, memberPermissions, user } = interaction;
+      { database, i18n } = client,
+      { channel, memberPermissions, user } = interaction,
+      settings = await database.users.fetch(user.id),
+      isEphemeral = settings?.ephemeralResponses;
 
     // TODO: Create a confirmation menu
     // TODO: Delete user-specific messages
@@ -57,9 +59,8 @@ export default class Clear extends Command {
       const { options } = interaction,
         countO = (options as CommandInteractionOptionResolver)?.getInteger('count') ?? 100,
         delPinsO = (options as CommandInteractionOptionResolver)?.getBoolean('delete-pinned'),
-        ephemeralO = (options as CommandInteractionOptionResolver)?.getBoolean('ephemeral') ?? true,
         messageO = (options as CommandInteractionOptionResolver)?.getMessage('message'),
-        msg = await interaction.deferReply({ ephemeral: ephemeralO, fetchReply: true });
+        msg = await interaction.deferReply({ ephemeral: isEphemeral, fetchReply: true });
 
       if (!memberPermissions?.has(PermissionFlagsBits.ManageMessages) && !botOwners.includes(user.id)) {
         return interaction.editReply({

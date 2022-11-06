@@ -15,10 +15,11 @@ export default class Ping extends Command {
     if (!interaction.isChatInputCommand()) return;
 
     const { client, embed } = args,
-      { i18n } = client,
-      { guildId, options } = interaction,
-      ephemeralO = options.getBoolean('ephemeral') ?? true,
-      itc = await interaction.deferReply({ ephemeral: ephemeralO, fetchReply: true }),
+      { database, i18n } = client,
+      { guildId, user } = interaction,
+      settings = await database.users.fetch(user.id),
+      isEphemeral = settings?.ephemeralResponses,
+      itc = await interaction.deferReply({ ephemeral: isEphemeral, fetchReply: true }),
       emb = embed({ title: `🏓 ${i18n.__('PING.TITLE')}` }).addFields(
         {
           inline: true,

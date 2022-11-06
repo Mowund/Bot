@@ -6,12 +6,12 @@ import {
   ApplicationCommandOptionType,
   ApplicationCommandType,
   BaseInteraction,
-  CommandInteractionOptionResolver,
   Colors,
 } from 'discord.js';
 import { Command, CommandArgs } from '../../lib/structures/Command.js';
+import { UserData } from '../../lib/structures/UserData.js';
 import { emojis, imgOpts } from '../defaults.js';
-import { toUTS, userFlagToEmoji, collMap, monthDiff } from '../utils.js';
+import { toUTS, userFlagToEmoji, collMap, monthDiff, disableComponents } from '../utils.js';
 
 export default class User extends Command {
   constructor() {
@@ -36,6 +36,11 @@ export default class User extends Command {
             ],
             type: ApplicationCommandOptionType.Subcommand,
           },
+          {
+            description: 'USER.OPTIONS.SETTINGS.DESCRIPTION',
+            name: 'USER.OPTIONS.SETTINGS.NAME',
+            type: ApplicationCommandOptionType.Subcommand,
+          },
         ],
       },
     ]);
@@ -43,24 +48,53 @@ export default class User extends Command {
 
   async run(args: CommandArgs, interaction: BaseInteraction<'cached'>): Promise<any> {
     const { client, embed } = args,
-      { i18n } = client,
+      { database, i18n } = client,
       { guild, user } = interaction;
+    let settings = await database.users.fetch(user.id);
+    const isEphemeral = settings?.ephemeralResponses ?? true,
+      settingsComponents = (data: UserData) => [
+        new ActionRowBuilder<ButtonBuilder>().addComponents(
+          data?.ephemeralResponses
+            ? new ButtonBuilder()
+                .setLabel(i18n.__('GENERIC.EPHEMERAL'))
+                .setEmoji('👁️')
+                .setStyle(ButtonStyle.Success)
+                .setCustomId('user_settings_ephemeral')
+            : new ButtonBuilder()
+                .setLabel(i18n.__('GENERIC.NOT_EPHEMERAL'))
+                .setEmoji('👁️')
+                .setStyle(ButtonStyle.Secondary)
+                .setCustomId('user_settings_ephemeral'),
+        ),
+      ],
+      settingsFields = (data: UserData) => [
+        data?.ephemeralResponses
+          ? {
+              name: `${emojis.check} ${i18n.__('USER.OPTIONS.SETTINGS.EPHEMERAL_RESPONSES.NAME')}`,
+              value: i18n.__('USER.OPTIONS.SETTINGS.EPHEMERAL_RESPONSES.ENABLED'),
+            }
+          : {
+              name: `${emojis.no} ${i18n.__('USER.OPTIONS.SETTINGS.EPHEMERAL_RESPONSES.NAME')}`,
+              value: i18n.__('USER.OPTIONS.SETTINGS.EPHEMERAL_RESPONSES.DISABLED'),
+            },
+      ];
 
-    if (interaction.isCommand()) {
+    if (
+      (interaction.isChatInputCommand() && interaction.options.getSubcommand() === 'info') ||
+      interaction.isUserContextMenuCommand()
+    ) {
+      await interaction.deferReply({ ephemeral: isEphemeral });
+
       const { options } = interaction,
         userO = await (options.getUser('user') ?? user).fetch(),
         memberO = guild?.members.cache.get(userO.id),
-        ephemeralO = (options as CommandInteractionOptionResolver)?.getBoolean('ephemeral') ?? true;
-
-      await interaction.deferReply({ ephemeral: ephemeralO });
-
-      const flags = userO.system
-        ? [emojis.verifiedSystem]
-        : userO.bot
-        ? userO.flags.has(UserFlags.VerifiedBot)
-          ? [emojis.verifiedBot]
-          : [emojis.bot]
-        : [];
+        flags = userO.system
+          ? [emojis.verifiedSystem]
+          : userO.bot
+          ? userO.flags.has(UserFlags.VerifiedBot)
+            ? [emojis.verifiedBot]
+            : [emojis.bot]
+          : [];
 
       if (userO.id === guild?.ownerId) flags.push(emojis.serverOwner);
       if (memberO?.premiumSince) {
@@ -145,32 +179,40 @@ export default class User extends Command {
         rows[0].addComponents(button);
       }
 
-      /* if (memberO?.banner) {
-          if (userO.banner) {
-            embs[0].footer = null;
-            embs[0].timestamp = null;
-            embs.push(
-              embed()
-                .setColor(color)
-                .addFields({ name: `🖼️ ${i18n.__('USER.OPTIONS.INFO.MEMBER.BANNER')}`, value: '\u200B' })
-                .setImage(memberO.bannerURL(imgOpts)),
-            );
-          } else {
-            embs[0]
-              .addFields({ name: `🖼️ ${i18n.__('USER.OPTIONS.INFO.MEMBER.BANNER')}`, value: '\u200B' })
-              .setImage(memberO.bannerURL(imgOpts));
-          }
-
-          rows[0].addComponents(
-            new ButtonBuilder()
-              .setLabel(i18n.__('USER.OPTIONS.INFO.MEMBER.BANNER'))
-              .setEmoji('🖼️')
-              .setStyle(ButtonStyle.Link)
-              .setURL(memberO.bannerURL(imgOpts)),
-          );
-        }*/
-
       return interaction.editReply({ components: rows, embeds: embs });
+    }
+
+    if (interaction.isChatInputCommand()) {
+      await interaction.deferReply({ ephemeral: isEphemeral });
+      const { options } = interaction;
+
+      switch (options.getSubcommand()) {
+        case 'settings': {
+          return interaction.editReply({
+            components: settingsComponents(settings),
+            embeds: [
+              embed({ title: `⚙️ ${i18n.__('USER.OPTIONS.SETTINGS.TITLE')}` }).addFields(settingsFields(settings)),
+            ],
+          });
+        }
+      }
+    }
+
+    if (interaction.isButton()) {
+      const { customId, message } = interaction;
+      switch (customId) {
+        case 'user_settings_ephemeral': {
+          await interaction.deferUpdate();
+          await interaction.editReply({ components: disableComponents(message.components) });
+          settings = await database.users.set(user.id, { ephemeralResponses: !isEphemeral });
+          return interaction.editReply({
+            components: settingsComponents(settings),
+            embeds: [
+              embed({ title: `⚙️ ${i18n.__('USER.OPTIONS.SETTINGS.TITLE')}` }).addFields(settingsFields(settings)),
+            ],
+          });
+        }
+      }
     }
   }
 }

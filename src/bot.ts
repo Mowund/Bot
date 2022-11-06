@@ -74,7 +74,7 @@ client.on('ready', async () => {
       const event = new (await import(`./interactions/${file}`)).default() as Command;
 
       for (const dt of event.structure as ChatInputApplicationCommandData[]) {
-        client.autoLocalizeCommand(dt);
+        client.localizeCommand(dt);
 
         const searchCmd = appCmds.find(c => c.name === dt.name),
           dataEquals = searchCmd?.equals(dt, true);

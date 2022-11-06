@@ -19,15 +19,16 @@ export default class Kill extends Command {
     ]);
   }
 
-  run(args: CommandArgs, interaction: BaseInteraction<'cached'>): Promise<any> {
+  async run(args: CommandArgs, interaction: BaseInteraction<'cached'>): Promise<any> {
     if (!interaction.isChatInputCommand()) return;
 
     const { client, embed } = args,
-      { i18n } = client,
+      { database, i18n } = client,
       { member, options, user } = interaction,
       userO = options.getUser('user') ?? user,
       memberO = options.getMember('user') ?? member,
-      ephemeralO = options.getBoolean('ephemeral') ?? true;
+      settings = await database.users.fetch(user.id),
+      isEphemeral = settings?.ephemeralResponses;
 
     return interaction.reply({
       embeds: [
@@ -39,7 +40,7 @@ export default class Kill extends Command {
           })
           .setDescription(i18n.__('KILL.DIED')),
       ],
-      ephemeral: ephemeralO,
+      ephemeral: isEphemeral,
     });
   }
 }

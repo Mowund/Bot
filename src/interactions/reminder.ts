@@ -64,8 +64,10 @@ export default class Reminder extends Command {
 
   async run(args: CommandArgs, interaction: BaseInteraction<'cached'>): Promise<any> {
     const { client, embed } = args,
-      { i18n } = client,
+      { database, i18n } = client,
       { channel, user } = interaction,
+      settings = await database.users.fetch(user.id),
+      isEphemeral = settings?.ephemeralResponses,
       minTime = 1000 * 60 * 3,
       maxTime = 1000 * 60 * 60 * 24 * 365.25 * 100,
       minRecursiveTime = minTime * 10,
@@ -99,8 +101,7 @@ export default class Reminder extends Command {
           .getString('content')
           ?.replace(/((\\n|\n)(\s*)?)+/g, '\n')
           .trim(),
-        timeO = options.getString('time'),
-        ephemeralO = options.getBoolean('ephemeral') ?? true;
+        timeO = options.getString('time');
 
       switch (options.getSubcommand()) {
         case 'create': {
@@ -133,7 +134,7 @@ export default class Reminder extends Command {
             });
           }
 
-          await interaction.deferReply({ ephemeral: ephemeralO });
+          await interaction.deferReply({ ephemeral: isEphemeral });
 
           const reminder = await client.database.reminders.set(reminderId, user.id, {
               channelId: interaction.guild ? channel.id : null,
@@ -157,7 +158,7 @@ export default class Reminder extends Command {
                 name: `${emojis.channelText} ${i18n.__('GENERIC.CHANNEL.CHANNEL')}`,
                 value: reminder.channelId
                   ? `<#${reminder.channelId}> - \`${reminder.channelId}\``
-                  : i18n.__('GENERIC.DIRECT_MESSAGE'),
+                  : `**${i18n.__('GENERIC.DIRECT_MESSAGE')}**`,
               },
               {
                 name: `📅 ${i18n.__('GENERIC.TIMESTAMP')}`,
@@ -187,7 +188,7 @@ export default class Reminder extends Command {
               new ButtonBuilder()
                 .setLabel(i18n.__('GENERIC.EDIT'))
                 .setEmoji('📝')
-                .setStyle(ButtonStyle.Secondary)
+                .setStyle(ButtonStyle.Primary)
                 .setCustomId('reminder_edit'),
             ),
           );
@@ -198,7 +199,7 @@ export default class Reminder extends Command {
           });
         }
         case 'list': {
-          await interaction.deferReply({ ephemeral: ephemeralO });
+          await interaction.deferReply({ ephemeral: isEphemeral });
 
           const reminders = await client.database.users.fetchAllReminders(user.id),
             selectMenu = new StringSelectMenuBuilder()
@@ -213,7 +214,7 @@ export default class Reminder extends Command {
               .forEach((r: Record<string, any>) => {
                 selectMenu.addOptions({
                   description: truncate(r.content, 100),
-                  label: new Date(r.timestamp).toLocaleString(i18n.locale),
+                  label: new Date(r.timestamp).toLocaleString(i18n.getLocale()),
                   value: r.id,
                 });
                 emb.addFields({
@@ -285,7 +286,7 @@ export default class Reminder extends Command {
               name: `${emojis.channelText} ${i18n.__('GENERIC.CHANNEL.CHANNEL')}`,
               value: reminder.channelId
                 ? `<#${reminder.channelId}> - \`${reminder.channelId}\``
-                : i18n.__('GENERIC.DIRECT_MESSAGE'),
+                : `**${i18n.__('GENERIC.DIRECT_MESSAGE')}**`,
             },
             {
               name: `📅 ${i18n.__('GENERIC.TIMESTAMP')}`,
@@ -341,7 +342,7 @@ export default class Reminder extends Command {
                 new ButtonBuilder()
                   .setEmoji('📝')
                   .setLabel(i18n.__('GENERIC.EDIT'))
-                  .setStyle(ButtonStyle.Secondary)
+                  .setStyle(ButtonStyle.Primary)
                   .setCustomId('reminder_edit')
                   .setDisabled(!reminder),
               ),
@@ -359,7 +360,7 @@ export default class Reminder extends Command {
                 .forEach((r: Record<string, any>) => {
                   selectMenu.addOptions({
                     description: truncate(r.content, 100),
-                    label: new Date(r.timestamp).toLocaleString(i18n.locale),
+                    label: new Date(r.timestamp).toLocaleString(i18n.getLocale()),
                     value: r.id,
                   });
                   emb.addFields({
@@ -399,8 +400,34 @@ export default class Reminder extends Command {
             embeds: [emb],
           });
         }
-        case 'reminder_edit': {
-          emb.setTitle(`🔔 ${i18n.__('REMINDER.EDITING')}`).setColor(Colors.Yellow);
+        case 'reminder_edit':
+        case 'reminder_recursive': {
+          if (customId === 'reminder_recursive') {
+            reminder = await client.database.reminders.set(reminderId, user.id, {
+              isRecursive: !reminder.isRecursive,
+            });
+
+            emb
+              .setTitle(`🔔 ${i18n.__('REMINDER.EDITED')}`)
+              .spliceFields(
+                4,
+                1,
+                reminder.isRecursive
+                  ? {
+                      name: `🔁 ${i18n.__('GENERIC.RECURSIVE')}`,
+                      value: i18n.__mf('REMINDER.RECURSIVE.ON', {
+                        timestamp: toUTS(reminder.timestamp + reminder.msTime),
+                      }),
+                    }
+                  : {
+                      name: `🔁 ${i18n.__('GENERIC.NOT_RECURSIVE')}`,
+                      value: i18n.__('REMINDER.RECURSIVE.OFF'),
+                    },
+              )
+              .setColor(Colors.Yellow);
+          } else {
+            emb.setTitle(`🔔 ${i18n.__('REMINDER.EDITING')}`).setColor(Colors.Yellow);
+          }
           rows.push(
             new ActionRowBuilder().addComponents(
               new ButtonBuilder()
@@ -408,6 +435,14 @@ export default class Reminder extends Command {
                 .setEmoji('🔎')
                 .setStyle(ButtonStyle.Primary)
                 .setCustomId('reminder_view'),
+              new ButtonBuilder()
+                .setLabel(i18n.__(`GENERIC.${reminder.isRecursive ? 'RECURSIVE' : 'NOT_RECURSIVE'}`))
+                .setEmoji('🔁')
+                .setStyle(reminder.isRecursive ? ButtonStyle.Success : ButtonStyle.Secondary)
+                .setCustomId('reminder_recursive')
+                .setDisabled(reminder.msTime < minRecursiveTime),
+            ),
+            new ActionRowBuilder().addComponents(
               new ButtonBuilder()
                 .setLabel(i18n.__('GENERIC.CONTENT.EDIT'))
                 .setEmoji('✏️')
@@ -418,14 +453,6 @@ export default class Reminder extends Command {
                 .setEmoji(emojis.channelText)
                 .setStyle(ButtonStyle.Secondary)
                 .setCustomId('reminder_edit_channel'),
-            ),
-            new ActionRowBuilder().addComponents(
-              new ButtonBuilder()
-                .setLabel(i18n.__(`GENERIC.${reminder.isRecursive ? 'RECURSIVE' : 'NOT_RECURSIVE'}`))
-                .setEmoji('🔁')
-                .setStyle(reminder.isRecursive ? ButtonStyle.Success : ButtonStyle.Secondary)
-                .setCustomId('reminder_recursive')
-                .setDisabled(reminder.msTime < minRecursiveTime),
               new ButtonBuilder()
                 .setLabel(i18n.__('GENERIC.DELETE'))
                 .setEmoji('🗑️')
@@ -435,56 +462,6 @@ export default class Reminder extends Command {
           );
 
           if (!message.webhookId) return interaction.reply({ components: rows, embeds: [emb], ephemeral: true });
-          return (interaction as ButtonInteraction).update({
-            components: rows,
-            embeds: [emb],
-          });
-        }
-        case 'reminder_recursive': {
-          reminder = await client.database.reminders.set(reminderId, user.id, {
-            isRecursive: !reminder.isRecursive,
-          });
-
-          rows.push(
-            new ActionRowBuilder().addComponents(
-              new ButtonBuilder()
-                .setLabel(i18n.__('GENERIC.VIEW'))
-                .setEmoji('🔎')
-                .setStyle(ButtonStyle.Primary)
-                .setCustomId('reminder_view'),
-              new ButtonBuilder()
-                .setLabel(i18n.__(`GENERIC.${reminder.isRecursive ? 'RECURSIVE' : 'NOT_RECURSIVE'}`))
-                .setEmoji('🔁')
-                .setStyle(reminder.isRecursive ? ButtonStyle.Success : ButtonStyle.Secondary)
-                .setCustomId('reminder_recursive')
-                .setDisabled(reminder.msTime < minRecursiveTime),
-              new ButtonBuilder()
-                .setLabel(i18n.__('GENERIC.DELETE'))
-                .setEmoji('🗑️')
-                .setStyle(ButtonStyle.Danger)
-                .setCustomId('reminder_delete'),
-            ),
-          );
-
-          emb
-            .setTitle(`🔔 ${i18n.__('REMINDER.EDITED')}`)
-            .spliceFields(
-              4,
-              1,
-              reminder.isRecursive
-                ? {
-                    name: `🔁 ${i18n.__('GENERIC.RECURSIVE')}`,
-                    value: i18n.__mf('REMINDER.RECURSIVE.ON', {
-                      timestamp: toUTS(reminder.timestamp + reminder.msTime),
-                    }),
-                  }
-                : {
-                    name: `🔁 ${i18n.__('GENERIC.NOT_RECURSIVE')}`,
-                    value: i18n.__('REMINDER.RECURSIVE.OFF'),
-                  },
-            )
-            .setColor(Colors.Yellow);
-
           return (interaction as ButtonInteraction).update({
             components: rows,
             embeds: [emb],
@@ -544,7 +521,7 @@ export default class Reminder extends Command {
                     .setMinLength(1)
                     .setMaxLength(1024)
                     .setStyle(TextInputStyle.Paragraph)
-                    .setPlaceholder(reminder.content),
+                    .setPlaceholder(truncate(reminder.content, 100)),
                 ),
               ),
           );
@@ -587,6 +564,7 @@ export default class Reminder extends Command {
           });
         // eslint-disable-next-line no-fallthrough
         case 'reminder_edit_channel': {
+          const isEdit = customId === 'reminder_edit_channel';
           return (interaction as ButtonInteraction).update({
             components: [
               new ActionRowBuilder<ButtonBuilder>().addComponents(
@@ -618,15 +596,15 @@ export default class Reminder extends Command {
             ],
             embeds: [
               emb
-                .setTitle(`🔔 ${i18n.__('REMINDER.EDITED')}`)
+                .setTitle(`🔔 ${i18n.__(`GENERIC.CHANNEL.${isEdit ? 'EDITING' : 'EDITED'}`)}`)
                 .spliceFields(2, 1, {
                   inline: true,
                   name: `${emojis.channelText} ${i18n.__('GENERIC.CHANNEL.CHANNEL')}`,
                   value: reminder.channelId
                     ? `<#${reminder.channelId}> - \`${reminder.channelId}\``
-                    : i18n.__('GENERIC.DIRECT_MESSAGE'),
+                    : `**${i18n.__('GENERIC.DIRECT_MESSAGE')}**`,
                 })
-                .setColor(Colors.Green),
+                .setColor(isEdit ? Colors.Yellow : Colors.Green),
             ],
           });
         }
