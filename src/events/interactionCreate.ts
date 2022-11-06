@@ -1,6 +1,6 @@
-import { ColorResolvable, Colors, EmbedBuilder, Events, InteractionType } from 'discord.js';
+import { Colors, EmbedBuilder, Events, InteractionType } from 'discord.js';
 import { Event } from '../../lib/structures/Event.js';
-import { App } from '../../lib/App.js';
+import { App, EmbedBuilderOptions } from '../../lib/App.js';
 import { debugLevel, defaultLocale } from '../defaults.js';
 
 export default class InteractionCreateEvent extends Event {
@@ -31,33 +31,25 @@ export default class InteractionCreateEvent extends Event {
         (user.accentColor === undefined ? (await user.fetch()).accentColor : user.accentColor) ||
         Colors.Blurple;
 
+    if (guild && !guild.available) return;
+
     if (!command && intName !== 'generic')
       return console.error(`${chalk.red(customId ?? commandName)} interaction not found as ${chalk.red(intName)}`);
 
-    const language = i18n.getLocales().includes(interaction.locale) ? interaction.locale : defaultLocale;
-
-    i18n.setLocale(language);
-
-    const embed = (
-      options: {
-        addParams?: Record<string, string>;
-        color?: ColorResolvable;
-        footer?: 'interacted' | 'requested' | 'none';
-        timestamp?: number;
-        title?: string;
-        type?: 'error' | 'success' | 'warning' | 'wip';
-      } = {},
-    ): EmbedBuilder => client.embedBuilder({ ...options, color: options.color ?? embColor, member, user });
+    const locale = i18n.getLocales().includes(interaction.locale) ? interaction.locale : defaultLocale,
+      localize = (phrase: string, replace?: Record<string, any>) => client.localize({ locale, phrase }, replace),
+      embed = (options: Omit<EmbedBuilderOptions, 'localizer' | 'member' | 'user'> = {}): EmbedBuilder =>
+        client.embedBuilder({ ...options, color: options.color ?? embColor, localizer: localize, member, user });
 
     try {
-      return command.run({ client, embed }, interaction);
+      return command.run({ client, embed, locale, localize }, interaction);
     } catch (err) {
       if (interaction.type === InteractionType.ApplicationCommandAutocomplete) return;
       console.error(err);
 
       const eOpts = {
         embeds: [
-          embed({ type: 'error' }).setDescription(`${i18n.__('ERROR.EXECUTING_INTERACTION')}\n\`\`\`js\n${err}\`\`\``),
+          embed({ type: 'error' }).setDescription(`${localize('ERROR.EXECUTING_INTERACTION')}\n\`\`\`js\n${err}\`\`\``),
         ],
         ephemeral: true,
       };

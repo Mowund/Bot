@@ -46,8 +46,8 @@ export default class Clear extends Command {
   }
 
   async run(args: CommandArgs, interaction: BaseInteraction<'cached'>): Promise<any> {
-    const { client, embed } = args,
-      { database, i18n } = client,
+    const { client, embed, localize } = args,
+      { database } = client,
       { channel, memberPermissions, user } = interaction,
       settings = await database.users.fetch(user.id),
       isEphemeral = settings?.ephemeralResponses;
@@ -66,7 +66,7 @@ export default class Clear extends Command {
         return interaction.editReply({
           embeds: [
             embed({ type: 'error' }).setDescription(
-              i18n.__mf('PERM.REQUIRES', { perm: i18n.__('PERM.MANAGE_MESSAGES') }),
+              localize('PERM.REQUIRES', { perm: localize('PERM.MANAGE_MESSAGES') }),
             ),
           ],
         });
@@ -82,7 +82,7 @@ export default class Clear extends Command {
 
       rows[0].addComponents(
         new ButtonBuilder()
-          .setLabel(i18n.__('GENERIC.YES'))
+          .setLabel(localize('GENERIC.YES'))
           .setEmoji('✅')
           .setStyle(ButtonStyle.Success)
           .setCustomId('clear_delete'),

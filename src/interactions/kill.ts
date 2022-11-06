@@ -22,8 +22,8 @@ export default class Kill extends Command {
   async run(args: CommandArgs, interaction: BaseInteraction<'cached'>): Promise<any> {
     if (!interaction.isChatInputCommand()) return;
 
-    const { client, embed } = args,
-      { database, i18n } = client,
+    const { client, embed, localize } = args,
+      { database } = client,
       { member, options, user } = interaction,
       userO = options.getUser('user') ?? user,
       memberO = options.getMember('user') ?? member,
@@ -38,7 +38,7 @@ export default class Kill extends Command {
             iconURL: (memberO ?? userO).displayAvatarURL(imgOpts),
             name: memberO?.displayName ?? userO.username,
           })
-          .setDescription(i18n.__('KILL.DIED')),
+          .setDescription(localize('KILL.DIED')),
       ],
       ephemeral: isEphemeral,
     });

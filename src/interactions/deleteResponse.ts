@@ -14,8 +14,7 @@ export default class DeleteResponse extends Command {
   async run(args: CommandArgs, interaction: BaseInteraction<'cached'>): Promise<any> {
     if (!interaction.isMessageContextMenuCommand()) return;
 
-    const { client, embed } = args,
-      { i18n } = client,
+    const { client, embed, localize } = args,
       { options, user } = interaction,
       messageO = options.getMessage('message');
 
@@ -27,7 +26,7 @@ export default class DeleteResponse extends Command {
       )
     ) {
       return interaction.reply({
-        embeds: [embed({ type: 'error' }).setDescription(i18n.__('ERROR.UNALLOWED.DELETE_RESPONSE'))],
+        embeds: [embed({ type: 'error' }).setDescription(localize('ERROR.UNALLOWED.DELETE_RESPONSE'))],
         ephemeral: true,
       });
     }

@@ -101,8 +101,8 @@ export default class Echo extends Command {
   async run(args: CommandArgs, interaction: BaseInteraction<'cached'>): Promise<any> {
     if (!interaction.isChatInputCommand()) return;
 
-    const { client, embed } = args,
-      { database, i18n } = client,
+    const { client, embed, localize } = args,
+      { database } = client,
       { member, memberPermissions, options, user } = interaction,
       settings = await database.users.fetch(user.id),
       isEphemeral = settings?.ephemeralResponses,
@@ -135,7 +135,7 @@ export default class Echo extends Command {
         return interaction.reply({
           embeds: [
             embed({ type: 'error' }).setDescription(
-              i18n.__mf('ECHO.INSUFFICIENT.PERMS', { perm: i18n.__('PERM.MANAGE_MESSAGES') }),
+              localize('ECHO.INSUFFICIENT.PERMS', { perm: localize('PERM.MANAGE_MESSAGES') }),
             ),
           ],
           ephemeral: true,
@@ -144,14 +144,14 @@ export default class Echo extends Command {
 
       if ((imageO && !isValidImage(imageO.contentType)) || (thumbnailO && !isValidImage(thumbnailO.contentType))) {
         return interaction.reply({
-          embeds: [embed({ type: 'error' }).setDescription(i18n.__('ERROR.INVALID.IMAGE.TYPE'))],
+          embeds: [embed({ type: 'error' }).setDescription(localize('ERROR.INVALID.IMAGE.TYPE'))],
           ephemeral: true,
         });
       }
 
       if (!contentO && !enableEmbed) {
         return interaction.reply({
-          embeds: [embed({ type: 'error' }).setDescription(i18n.__('ECHO.INSUFFICIENT.ARGS'))],
+          embeds: [embed({ type: 'error' }).setDescription(localize('ECHO.INSUFFICIENT.ARGS'))],
           ephemeral: true,
         });
       }
@@ -194,17 +194,17 @@ export default class Echo extends Command {
       if (channelO) {
         if (!channelO.permissionsFor(client.user).has(PermissionFlagsBits.SendMessages)) {
           return interaction.editReply({
-            embeds: [embed({ type: 'error' }).setDescription(i18n.__('ERROR.CANNOT_SEND_CHANNEL_MESSAGES'))],
+            embeds: [embed({ type: 'error' }).setDescription(localize('ERROR.CANNOT_SEND_CHANNEL_MESSAGES'))],
           });
         }
 
         const msg = await channelO.send(eMsg);
         return interaction.editReply({
           embeds: [
-            embed({ title: i18n.__('ECHO.SENT'), type: 'success' })
-              .setDescription(i18n.__mf('ECHO.GO_TO', { msgURL: msg.url }))
+            embed({ title: localize('ECHO.SENT'), type: 'success' })
+              .setDescription(localize('ECHO.GO_TO', { msgURL: msg.url }))
               .addFields({
-                name: i18n.__('GENERIC.CHANNEL.CHANNEL'),
+                name: localize('GENERIC.CHANNEL.CHANNEL'),
                 value: `${channelO} - \`${channelO.id}\``,
               }),
           ],

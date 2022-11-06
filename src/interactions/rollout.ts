@@ -35,8 +35,8 @@ export default class Rollout extends Command {
   async run(args: CommandArgs, interaction: BaseInteraction<'cached'>): Promise<any> {
     if (!botOwners.includes(interaction.user.id)) return;
 
-    const { client, embed } = args,
-      { database, experiments, i18n } = client,
+    const { client, embed, localize } = args,
+      { database, experiments } = client,
       { user } = interaction,
       settings = await database.users.fetch(user.id),
       isEphemeral = settings?.ephemeralResponses;
@@ -140,17 +140,17 @@ export default class Rollout extends Command {
           .addFields(
             {
               inline: true,
-              name: `🪪 ${i18n.__('GENERIC.ID')}`,
+              name: `🪪 ${localize('GENERIC.ID')}`,
               value: `\`${experiment.id}\``,
             },
             { inline: true, name: '#️⃣ Hash', value: `\`${experiment.hash}\`` },
             { inline: true, name: '🚩 Position', value: `\`${rPos}\`` },
             {
               inline: true,
-              name: `📅 ${i18n.__('GENERIC.CREATION_DATE')}`,
+              name: `📅 ${localize('GENERIC.CREATION_DATE')}`,
               value: toUTS(experiment.created_at * 1000),
             },
-            { inline: true, name: `🕑 ${i18n.__('ROLLOUT.LAST_UPDATE')}`, value: toUTS(experiment.updated_at * 1000) },
+            { inline: true, name: `🕑 ${localize('ROLLOUT.LAST_UPDATE')}`, value: toUTS(experiment.updated_at * 1000) },
           );
       // overrides = []
 

@@ -52,7 +52,6 @@ client.on('ready', async () => {
     });
 
     await (async function updateData() {
-      client.badDomains = (await fetchURL('https://bad-domains.walshy.dev/domains.json')) ?? client.badDomains;
       client.experiments = {
         data: (await fetchURL('https://distools.app/api/datamining/experiments')) ?? client.experiments?.data,
         lastUpdated: Date.now(),

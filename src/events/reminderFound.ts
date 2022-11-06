@@ -19,7 +19,7 @@ export default class ReminderFoundEvent extends Event {
   }
 
   async run(client: App, reminder: ReminderData): Promise<any> {
-    const { i18n } = client,
+    const { localize } = client,
       { channelId, content, id, isRecursive, msTime, timestamp, userId } = reminder,
       channel = client.channels.cache.get(channelId) as GuildTextBasedChannel;
 
@@ -38,24 +38,24 @@ export default class ReminderFoundEvent extends Event {
       idTimestamp = SnowflakeUtil.timestampFrom(id),
       row = new ActionRowBuilder<ButtonBuilder>().addComponents(
         new ButtonBuilder()
-          .setLabel(i18n.__('REMINDER.COMPONENT.LIST'))
+          .setLabel(localize('REMINDER.COMPONENT.LIST'))
           .setEmoji('🗒️')
           .setStyle(ButtonStyle.Primary)
           .setCustomId('reminder_list'),
       ),
       fields = [
         {
-          name: `📄 ${i18n.__('GENERIC.CONTENT.CONTENT')}`,
+          name: `📄 ${localize('GENERIC.CONTENT.CONTENT')}`,
           value: content,
         },
         {
           inline: true,
-          name: `🪪 ${i18n.__('GENERIC.ID')}`,
+          name: `🪪 ${localize('GENERIC.ID')}`,
           value: `\`${id}\``,
         },
         {
           inline: true,
-          name: `📅 ${i18n.__('GENERIC.CREATION_DATE')}`,
+          name: `📅 ${localize('GENERIC.CREATION_DATE')}`,
           value: toUTS(idTimestamp),
         },
       ],
@@ -74,13 +74,13 @@ export default class ReminderFoundEvent extends Event {
 
       params.reminderId = recReminderId;
       fields.push({
-        name: `🔁 ${i18n.__('GENERIC.RECURSIVE')}`,
-        value: i18n.__mf('REMINDER.RECURSIVE.ON', { timestamp: toUTS(recReminder.timestamp) }),
+        name: `🔁 ${localize('GENERIC.RECURSIVE')}`,
+        value: localize('REMINDER.RECURSIVE.ON', { timestamp: toUTS(recReminder.timestamp) }),
       });
 
       row.addComponents(
         new ButtonBuilder()
-          .setLabel(i18n.__('GENERIC.EDIT'))
+          .setLabel(localize('GENERIC.EDIT'))
           .setEmoji('📝')
           .setStyle(ButtonStyle.Secondary)
           .setCustomId('reminder_edit'),
@@ -93,7 +93,7 @@ export default class ReminderFoundEvent extends Event {
         color: Colors.Yellow,
         member,
         timestamp,
-        title: `${emojis.bellRinging} ${i18n.__('REMINDER.NEW')}`,
+        title: `${emojis.bellRinging} ${localize('REMINDER.NEW')}`,
         user,
       })
       .addFields(fields);

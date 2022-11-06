@@ -47,8 +47,8 @@ export default class User extends Command {
   }
 
   async run(args: CommandArgs, interaction: BaseInteraction<'cached'>): Promise<any> {
-    const { client, embed } = args,
-      { database, i18n } = client,
+    const { client, embed, localize } = args,
+      { database } = client,
       { guild, user } = interaction;
     let settings = await database.users.fetch(user.id);
     const isEphemeral = settings?.ephemeralResponses ?? true,
@@ -56,12 +56,12 @@ export default class User extends Command {
         new ActionRowBuilder<ButtonBuilder>().addComponents(
           data?.ephemeralResponses
             ? new ButtonBuilder()
-                .setLabel(i18n.__('GENERIC.EPHEMERAL'))
+                .setLabel(localize('GENERIC.EPHEMERAL'))
                 .setEmoji('👁️')
                 .setStyle(ButtonStyle.Success)
                 .setCustomId('user_settings_ephemeral')
             : new ButtonBuilder()
-                .setLabel(i18n.__('GENERIC.NOT_EPHEMERAL'))
+                .setLabel(localize('GENERIC.NOT_EPHEMERAL'))
                 .setEmoji('👁️')
                 .setStyle(ButtonStyle.Secondary)
                 .setCustomId('user_settings_ephemeral'),
@@ -70,12 +70,12 @@ export default class User extends Command {
       settingsFields = (data: UserData) => [
         data?.ephemeralResponses
           ? {
-              name: `${emojis.check} ${i18n.__('USER.OPTIONS.SETTINGS.EPHEMERAL_RESPONSES.NAME')}`,
-              value: i18n.__('USER.OPTIONS.SETTINGS.EPHEMERAL_RESPONSES.ENABLED'),
+              name: `${emojis.check} ${localize('USER.OPTIONS.SETTINGS.EPHEMERAL_RESPONSES.NAME')}`,
+              value: localize('USER.OPTIONS.SETTINGS.EPHEMERAL_RESPONSES.ENABLED'),
             }
           : {
-              name: `${emojis.no} ${i18n.__('USER.OPTIONS.SETTINGS.EPHEMERAL_RESPONSES.NAME')}`,
-              value: i18n.__('USER.OPTIONS.SETTINGS.EPHEMERAL_RESPONSES.DISABLED'),
+              name: `${emojis.no} ${localize('USER.OPTIONS.SETTINGS.EPHEMERAL_RESPONSES.NAME')}`,
+              value: localize('USER.OPTIONS.SETTINGS.EPHEMERAL_RESPONSES.DISABLED'),
             },
       ];
 
@@ -121,20 +121,20 @@ export default class User extends Command {
 
       const color = memberO?.displayColor || userO.accentColor || Colors.Blurple,
         embs = [
-          embed({ title: i18n.__('USER.OPTIONS.INFO.TITLE') })
+          embed({ title: localize('USER.OPTIONS.INFO.TITLE') })
             .setColor(color)
             .setAuthor({ iconURL: userO.displayAvatarURL(imgOpts), name: userO.tag })
             .setThumbnail((memberO ?? userO).displayAvatarURL(imgOpts))
             .setDescription(`${userO} ${flags.join(' ')}`)
             .addFields(
-              { inline: true, name: `🪪 ${i18n.__('GENERIC.ID')}`, value: `\`${userO.id}\`` },
-              { inline: true, name: `📅 ${i18n.__('GENERIC.CREATION_DATE')}`, value: toUTS(userO.createdTimestamp) },
+              { inline: true, name: `🪪 ${localize('GENERIC.ID')}`, value: `\`${userO.id}\`` },
+              { inline: true, name: `📅 ${localize('GENERIC.CREATION_DATE')}`, value: toUTS(userO.createdTimestamp) },
             ),
         ],
         rows = [
           new ActionRowBuilder<ButtonBuilder>().addComponents(
             new ButtonBuilder()
-              .setLabel(i18n.__('USER.OPTIONS.INFO.USER.AVATAR'))
+              .setLabel(localize('USER.OPTIONS.INFO.USER.AVATAR'))
               .setEmoji('🖼️')
               .setStyle(ButtonStyle.Link)
               .setURL(userO.displayAvatarURL(imgOpts)),
@@ -145,12 +145,12 @@ export default class User extends Command {
         const mRoles = memberO.roles.cache.filter(({ id }) => id !== guild.id);
         embs[0].addFields({
           inline: true,
-          name: `${emojis.serverJoin} ${i18n.__('USER.OPTIONS.INFO.MEMBER.JOINED')}`,
+          name: `${emojis.serverJoin} ${localize('USER.OPTIONS.INFO.MEMBER.JOINED')}`,
           value: toUTS(memberO.joinedTimestamp),
         });
         if (mRoles.size) {
           embs[0].addFields({
-            name: `${emojis.role} ${i18n.__('GENERIC.ROLES.ROLES')} [${mRoles.size}]`,
+            name: `${emojis.role} ${localize('GENERIC.ROLES.ROLES')} [${mRoles.size}]`,
             value: collMap(mRoles),
           });
         }
@@ -159,7 +159,7 @@ export default class User extends Command {
       if (memberO?.avatar) {
         rows[0].addComponents(
           new ButtonBuilder()
-            .setLabel(i18n.__('USER.OPTIONS.INFO.MEMBER.AVATAR'))
+            .setLabel(localize('USER.OPTIONS.INFO.MEMBER.AVATAR'))
             .setEmoji('🖼️')
             .setStyle(ButtonStyle.Link)
             .setURL(memberO.displayAvatarURL(imgOpts)),
@@ -168,13 +168,13 @@ export default class User extends Command {
 
       if (userO.banner) {
         const button = new ButtonBuilder()
-          .setLabel(i18n.__('USER.OPTIONS.INFO.USER.BANNER'))
+          .setLabel(localize('USER.OPTIONS.INFO.USER.BANNER'))
           .setEmoji('🖼️')
           .setStyle(ButtonStyle.Link)
           .setURL(userO.bannerURL(imgOpts));
 
         embs[0]
-          .addFields({ name: `🖼️ ${i18n.__('USER.OPTIONS.INFO.USER.BANNER')}`, value: '\u200B' })
+          .addFields({ name: `🖼️ ${localize('USER.OPTIONS.INFO.USER.BANNER')}`, value: '\u200B' })
           .setImage(userO.bannerURL(imgOpts));
         rows[0].addComponents(button);
       }
@@ -191,7 +191,7 @@ export default class User extends Command {
           return interaction.editReply({
             components: settingsComponents(settings),
             embeds: [
-              embed({ title: `⚙️ ${i18n.__('USER.OPTIONS.SETTINGS.TITLE')}` }).addFields(settingsFields(settings)),
+              embed({ title: `⚙️ ${localize('USER.OPTIONS.SETTINGS.TITLE')}` }).addFields(settingsFields(settings)),
             ],
           });
         }
@@ -208,7 +208,7 @@ export default class User extends Command {
           return interaction.editReply({
             components: settingsComponents(settings),
             embeds: [
-              embed({ title: `⚙️ ${i18n.__('USER.OPTIONS.SETTINGS.TITLE')}` }).addFields(settingsFields(settings)),
+              embed({ title: `⚙️ ${localize('USER.OPTIONS.SETTINGS.TITLE')}` }).addFields(settingsFields(settings)),
             ],
           });
         }

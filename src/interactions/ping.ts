@@ -14,32 +14,32 @@ export default class Ping extends Command {
   async run(args: CommandArgs, interaction: BaseInteraction<'cached'>): Promise<any> {
     if (!interaction.isChatInputCommand()) return;
 
-    const { client, embed } = args,
-      { database, i18n } = client,
+    const { client, embed, localize } = args,
+      { database } = client,
       { guildId, user } = interaction,
       settings = await database.users.fetch(user.id),
       isEphemeral = settings?.ephemeralResponses,
       itc = await interaction.deferReply({ ephemeral: isEphemeral, fetchReply: true }),
-      emb = embed({ title: `🏓 ${i18n.__('PING.TITLE')}` }).addFields(
+      emb = embed({ title: `🏓 ${localize('PING.TITLE')}` }).addFields(
         {
           inline: true,
-          name: `⌛ ${i18n.__('PING.RESPONSE_TIME')}`,
+          name: `⌛ ${localize('PING.RESPONSE_TIME')}`,
           value: `\`${itc.createdTimestamp - interaction.createdTimestamp}ms\``,
         },
         {
           inline: true,
-          name: `💓 ${i18n.__('PING.API_LATENCY')}`,
+          name: `💓 ${localize('PING.API_LATENCY')}`,
           value: `\`${Math.round(client.ws.ping)}ms\``,
         },
       );
 
     if (interaction.inGuild()) {
       emb.addFields({
-        name: `💎 ${i18n.__('PING.SHARD')}`,
-        value: `**${i18n.__('GENERIC.CURRENT')}:** \`${ShardClientUtil.shardIdForGuildId(
+        name: `💎 ${localize('PING.SHARD')}`,
+        value: `**${localize('GENERIC.CURRENT')}:** \`${ShardClientUtil.shardIdForGuildId(
           guildId,
           client.shard.count,
-        )}\`\n**${i18n.__('GENERIC.TOTAL')}:** \`${client.shard.count}\``,
+        )}\`\n**${localize('GENERIC.TOTAL')}:** \`${client.shard.count}\``,
       });
     }
 

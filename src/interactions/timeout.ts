@@ -35,8 +35,8 @@ export default class Timeout extends Command {
   }
 
   async run(args: CommandArgs, interaction: BaseInteraction<'cached'>): Promise<any> {
-    const { client, embed } = args,
-      { database, i18n } = client,
+    const { client, embed, localize } = args,
+      { database } = client,
       { guild, member, memberPermissions, user } = interaction,
       settings = await database.users.fetch(user.id),
       isEphemeral = settings?.ephemeralResponses,
@@ -53,22 +53,22 @@ export default class Timeout extends Command {
           ? {
               name:
                 msTime > maxDuration
-                  ? i18n.__mf('ERROR.INVALID.TIME_AUTOCOMPLETE', {
+                  ? localize('ERROR.INVALID.TIME_AUTOCOMPLETE', {
                       condition: 'greater',
                       input: msToTime(msTime),
-                      time: i18n.__mf('GENERIC.TIME.DAYS', { count: 28 }),
+                      time: localize('GENERIC.TIME.DAYS', { count: 28 }),
                     })
                   : msToTime(msTime),
               value: focused,
             }
           : {
-              name: i18n.__mf('TIMEOUT.OPTIONS.DURATION.DEFAULT', {
+              name: localize('TIMEOUT.OPTIONS.DURATION.DEFAULT', {
                 default: acMember
                   ? acMember.communicationDisabledUntilTimestamp > Date.now()
                     ? 'unset'
                     : 'set'
                   : 'notMember',
-                time: i18n.__mf('GENERIC.TIME.HOURS', { count: 1 }),
+                time: localize('GENERIC.TIME.HOURS', { count: 1 }),
               }),
               value: '',
             },
@@ -85,7 +85,7 @@ export default class Timeout extends Command {
         return interaction.reply({
           embeds: [
             embed({ type: 'error' }).setDescription(
-              i18n.__mf('ECHO.INSUFFICIENT.PERMS', { perm: i18n.__('PERM.MODERATE_MEMBERS') }),
+              localize('ECHO.INSUFFICIENT.PERMS', { perm: localize('PERM.MODERATE_MEMBERS') }),
             ),
           ],
           ephemeral: true,
@@ -94,16 +94,14 @@ export default class Timeout extends Command {
 
       if (!memberO) {
         return interaction.reply({
-          embeds: [
-            embed({ type: 'error' }).setDescription(i18n.__mf("Can't timeout who isn't a member of the server")),
-          ],
+          embeds: [embed({ type: 'error' }).setDescription(localize("Can't timeout who isn't a member of the server"))],
           ephemeral: true,
         });
       }
 
       if (guild.ownerId === memberO.id) {
         return interaction.reply({
-          embeds: [embed({ type: 'error' }).setDescription(i18n.__mf("Can't timeout the server owner"))],
+          embeds: [embed({ type: 'error' }).setDescription(localize("Can't timeout the server owner"))],
           ephemeral: true,
         });
       }
@@ -112,7 +110,7 @@ export default class Timeout extends Command {
         return interaction.reply({
           embeds: [
             embed({ type: 'error' }).setDescription(
-              i18n.__mf('The target has a role with a higher or same position as me'),
+              localize('The target has a role with a higher or same position as me'),
             ),
           ],
           ephemeral: true,
@@ -123,7 +121,7 @@ export default class Timeout extends Command {
         return interaction.reply({
           embeds: [
             embed({ type: 'error' }).setDescription(
-              i18n.__mf("You can't timeout who has a role with a higher or same position as you"),
+              localize("You can't timeout who has a role with a higher or same position as you"),
             ),
           ],
           ephemeral: true,
@@ -144,10 +142,10 @@ export default class Timeout extends Command {
         return interaction.reply({
           embeds: [
             embed({ type: 'error' }).setDescription(
-              i18n.__mf('ERROR.INVALID.TIME', {
+              localize('ERROR.INVALID.TIME', {
                 condition: msTime && 'greater',
                 input: msTime ? msToTime(msTime) : durationO,
-                time: i18n.__mf('GENERIC.TIME.DAYS', { count: 28 }),
+                time: localize('GENERIC.TIME.DAYS', { count: 28 }),
               }),
             ),
           ],

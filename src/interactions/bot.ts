@@ -34,8 +34,8 @@ export default class Bot extends Command {
   async run(args: CommandArgs, interaction: BaseInteraction<'cached'>): Promise<any> {
     if (!interaction.isChatInputCommand()) return;
 
-    const { client, embed } = args,
-      { database, globalCommandCount, i18n } = client,
+    const { client, embed, localize } = args,
+      { database, globalCommandCount } = client,
       { guild, guildId, options, user } = interaction,
       botMember = guild?.members.cache.get(client.user.id),
       settings = await database.users.fetch(user.id),
@@ -49,12 +49,12 @@ export default class Bot extends Command {
         const guildCommandCount =
             guildId && client.countCommands(await client.application.commands.fetch({ guildId: guildId })),
           embs = [
-            embed({ title: i18n.__mf('BOT.OPTIONS.INFO.TITLE', { botName: client.user.username }) })
+            embed({ title: localize('BOT.OPTIONS.INFO.TITLE', { botName: client.user.username }) })
               .setColor(botMember?.displayColor || Colors.Blurple)
               .addFields(
                 {
                   inline: true,
-                  name: `${emojis.serverDiscovery} ${i18n.__('GENERIC.SERVERS')}`,
+                  name: `${emojis.serverDiscovery} ${localize('GENERIC.SERVERS')}`,
                   value: `\`${((await client.shard.fetchClientValues('guilds.cache.size')) as number[]).reduce(
                     (acc, c) => acc + c,
                     0,
@@ -62,14 +62,14 @@ export default class Bot extends Command {
                 },
                 {
                   inline: true,
-                  name: `${emojis.members} ${i18n.__('GENERIC.MEMBERS')}`,
+                  name: `${emojis.members} ${localize('GENERIC.MEMBERS')}`,
                   value: `\`${(
                     await client.shard.broadcastEval(c => c.guilds.cache.reduce((acc, g) => acc + g.memberCount, 0))
                   ).reduce((acc, c) => acc + c, 0)}\``,
                 },
                 {
                   inline: true,
-                  name: `${emojis.commands} ${i18n.__('GENERIC.COMMANDS')} [${globalCommandCount.sum.all}${
+                  name: `${emojis.commands} ${localize('GENERIC.COMMANDS')} [${globalCommandCount.sum.all}${
                     guildCommandCount.sum.all ? ` + ${guildCommandCount.sum.all}` : ''
                   }]`,
                   value: `${emojis.slashCommand} \`${globalCommandCount.chatInput}\`${
@@ -80,7 +80,7 @@ export default class Bot extends Command {
                 },
                 {
                   inline: true,
-                  name: `${emojis.ramMemory} ${i18n.__('BOT.OPTIONS.INFO.MEMORY_USAGE')}`,
+                  name: `${emojis.ramMemory} ${localize('BOT.OPTIONS.INFO.MEMORY_USAGE')}`,
                   value: `\`${(process.memoryUsage().heapUsed / 1024 / 1024).toFixed(2)} MB\`/\`${(
                     process.memoryUsage().heapTotal /
                     1024 /
@@ -89,12 +89,12 @@ export default class Bot extends Command {
                 },
                 {
                   inline: true,
-                  name: `${emojis.discordJS} ${i18n.__('BOT.OPTIONS.INFO.DISCORDJS_VERSION')}`,
+                  name: `${emojis.discordJS} ${localize('BOT.OPTIONS.INFO.DISCORDJS_VERSION')}`,
                   value: `[\`${version}\`](https://discord.js.org)`,
                 },
                 {
                   inline: true,
-                  name: `${emojis.nodeJS} ${i18n.__('BOT.OPTIONS.INFO.NODEJS_VERSION')}`,
+                  name: `${emojis.nodeJS} ${localize('BOT.OPTIONS.INFO.NODEJS_VERSION')}`,
                   value: `[\`${process.version.slice(1)}\`](https://nodejs.org)`,
                 },
               ),
@@ -107,12 +107,12 @@ export default class Bot extends Command {
                 .setStyle(ButtonStyle.Link)
                 .setURL(pkg.repository.url),
               new ButtonBuilder()
-                .setLabel(i18n.__('BOT.OPTIONS.INFO.COMPONENT.INVITE_BOT'))
+                .setLabel(localize('BOT.OPTIONS.INFO.COMPONENT.INVITE_BOT'))
                 .setEmoji('📖')
                 .setStyle(ButtonStyle.Link)
                 .setURL(botInvite(client.user.id)),
               new ButtonBuilder()
-                .setLabel(i18n.__('BOT.OPTIONS.INFO.COMPONENT.SUPPORT_SERVER'))
+                .setLabel(localize('BOT.OPTIONS.INFO.COMPONENT.SUPPORT_SERVER'))
                 .setEmoji('📖')
                 .setStyle(ButtonStyle.Link)
                 .setURL(supportServer.invite),
@@ -122,23 +122,23 @@ export default class Bot extends Command {
         if (guild) {
           embs[0].addFields({
             inline: true,
-            name: `💎 ${i18n.__('PING.SHARD')}`,
-            value: `**${i18n.__('GENERIC.CURRENT')}:** \`${ShardClientUtil.shardIdForGuildId(
+            name: `💎 ${localize('PING.SHARD')}`,
+            value: `**${localize('GENERIC.CURRENT')}:** \`${ShardClientUtil.shardIdForGuildId(
               guildId,
               client.shard.count,
-            )}\`\n**${i18n.__('GENERIC.TOTAL')}:** \`${client.shard.count}\` `,
+            )}\`\n**${localize('GENERIC.TOTAL')}:** \`${client.shard.count}\` `,
           });
         }
 
         embs[0].addFields(
           {
             inline: true,
-            name: `🕑 ${i18n.__('GENERIC.UPTIME')}`,
+            name: `🕑 ${localize('GENERIC.UPTIME')}`,
             value: `\`${msToTime(client.uptime)}\` | ${toUTS(Date.now() - client.uptime)}`,
           },
           {
             inline: true,
-            name: `📅 ${i18n.__('GENERIC.CREATION_DATE')}`,
+            name: `📅 ${localize('GENERIC.CREATION_DATE')}`,
             value: toUTS(client.user.createdTimestamp),
           },
         );

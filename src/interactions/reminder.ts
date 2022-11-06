@@ -63,8 +63,8 @@ export default class Reminder extends Command {
   }
 
   async run(args: CommandArgs, interaction: BaseInteraction<'cached'>): Promise<any> {
-    const { client, embed } = args,
-      { database, i18n } = client,
+    const { client, embed, locale, localize } = args,
+      { database } = client,
       { channel, user } = interaction,
       settings = await database.users.fetch(user.id),
       isEphemeral = settings?.ephemeralResponses,
@@ -81,13 +81,13 @@ export default class Reminder extends Command {
         {
           name:
             !msTime || msTime < minTime || msTime > maxTime
-              ? i18n.__mf('ERROR.INVALID.TIME_AUTOCOMPLETE', {
+              ? localize('ERROR.INVALID.TIME_AUTOCOMPLETE', {
                   condition: msTime && (msTime > maxTime ? 'greater' : 'less'),
                   input: msToTime(msTime),
                   time:
                     msTime > maxTime
-                      ? i18n.__mf('GENERIC.TIME.YEARS', { count: maxTime / 365.25 / 24 / 60 / 60000 })
-                      : i18n.__mf('GENERIC.TIME.MINUTES', { count: minTime / 60000 }),
+                      ? localize('GENERIC.TIME.YEARS', { count: maxTime / 365.25 / 24 / 60 / 60000 })
+                      : localize('GENERIC.TIME.MINUTES', { count: minTime / 60000 }),
                 })
               : msToTime(msTime),
           value: focused,
@@ -111,7 +111,7 @@ export default class Reminder extends Command {
 
           if (!contentO) {
             return interaction.reply({
-              embeds: [embed({ type: 'error' }).setDescription(i18n.__('ERROR.REMINDER.EMPTY_CONTENT'))],
+              embeds: [embed({ type: 'error' }).setDescription(localize('ERROR.REMINDER.EMPTY_CONTENT'))],
               ephemeral: true,
             });
           }
@@ -120,13 +120,13 @@ export default class Reminder extends Command {
             return interaction.reply({
               embeds: [
                 embed({ type: 'error' }).setDescription(
-                  i18n.__mf('ERROR.INVALID.TIME', {
+                  localize('ERROR.INVALID.TIME', {
                     condition: msTime && (msTime > maxTime ? 'greater' : 'less'),
                     input: msTime ? msToTime(msTime) : timeO,
                     time:
                       msTime > maxTime
-                        ? i18n.__mf('GENERIC.TIME.YEARS', { count: maxTime / 365.25 / 24 / 60 / 60000 })
-                        : i18n.__mf('GENERIC.TIME.MINUTES', { count: minTime / 60000 }),
+                        ? localize('GENERIC.TIME.YEARS', { count: maxTime / 365.25 / 24 / 60 / 60000 })
+                        : localize('GENERIC.TIME.MINUTES', { count: minTime / 60000 }),
                   }),
                 ),
               ],
@@ -143,50 +143,50 @@ export default class Reminder extends Command {
               timestamp: summedTime,
               userId: user.id,
             }),
-            emb = embed({ title: i18n.__('REMINDER.CREATED'), type: 'success' }).addFields(
+            emb = embed({ title: localize('REMINDER.CREATED'), type: 'success' }).addFields(
               {
-                name: `📄 ${i18n.__('GENERIC.CONTENT.CONTENT')}`,
+                name: `📄 ${localize('GENERIC.CONTENT.CONTENT')}`,
                 value: reminder.content,
               },
               {
                 inline: true,
-                name: `🪪 ${i18n.__('GENERIC.ID')}`,
+                name: `🪪 ${localize('GENERIC.ID')}`,
                 value: `\`${reminder.id}\``,
               },
               {
                 inline: true,
-                name: `${emojis.channelText} ${i18n.__('GENERIC.CHANNEL.CHANNEL')}`,
+                name: `${emojis.channelText} ${localize('GENERIC.CHANNEL.CHANNEL')}`,
                 value: reminder.channelId
                   ? `<#${reminder.channelId}> - \`${reminder.channelId}\``
-                  : `**${i18n.__('GENERIC.DIRECT_MESSAGE')}**`,
+                  : `**${localize('GENERIC.DIRECT_MESSAGE')}**`,
               },
               {
-                name: `📅 ${i18n.__('GENERIC.TIMESTAMP')}`,
-                value: `${i18n.__mf('REMINDER.TIMESTAMP', { timestamp: toUTS(reminder.timestamp) })}\n${i18n.__mf(
+                name: `📅 ${localize('GENERIC.TIMESTAMP')}`,
+                value: `${localize('REMINDER.TIMESTAMP', { timestamp: toUTS(reminder.timestamp) })}\n${localize(
                   'REMINDER.CREATED_AT',
                   { timestamp: toUTS(SnowflakeUtil.timestampFrom(reminder.id)) },
                 )}`,
               },
               {
-                name: `🔁 ${i18n.__('GENERIC.NOT_RECURSIVE')}`,
+                name: `🔁 ${localize('GENERIC.NOT_RECURSIVE')}`,
                 value:
                   reminder.msTime < minRecursiveTime
-                    ? i18n.__mf('REMINDER.RECURSIVE.DISABLED', {
-                        time: i18n.__mf('GENERIC.TIME.MINUTES', { count: minRecursiveTime / 60000 }),
+                    ? localize('REMINDER.RECURSIVE.DISABLED', {
+                        time: localize('GENERIC.TIME.MINUTES', { count: minRecursiveTime / 60000 }),
                       })
-                    : i18n.__('REMINDER.RECURSIVE.OFF'),
+                    : localize('REMINDER.RECURSIVE.OFF'),
               },
             );
 
           rows.push(
             new ActionRowBuilder<ButtonBuilder>().addComponents(
               new ButtonBuilder()
-                .setLabel(i18n.__('REMINDER.COMPONENT.LIST'))
+                .setLabel(localize('REMINDER.COMPONENT.LIST'))
                 .setEmoji('🗒️')
                 .setStyle(ButtonStyle.Primary)
                 .setCustomId('reminder_list'),
               new ButtonBuilder()
-                .setLabel(i18n.__('GENERIC.EDIT'))
+                .setLabel(localize('GENERIC.EDIT'))
                 .setEmoji('📝')
                 .setStyle(ButtonStyle.Primary)
                 .setCustomId('reminder_edit'),
@@ -203,18 +203,18 @@ export default class Reminder extends Command {
 
           const reminders = await client.database.users.fetchAllReminders(user.id),
             selectMenu = new StringSelectMenuBuilder()
-              .setPlaceholder(i18n.__('REMINDER.SELECT_LIST'))
+              .setPlaceholder(localize('REMINDER.SELECT_LIST'))
               .setCustomId('reminder_select');
 
           let emb: EmbedBuilder;
           if (reminders.size) {
-            emb = embed({ title: `🔔 ${i18n.__('REMINDER.LIST')}` });
+            emb = embed({ title: `🔔 ${localize('REMINDER.LIST')}` });
             reminders
               .sort((a, b) => a.timestamp - b.timestamp)
               .forEach((r: Record<string, any>) => {
                 selectMenu.addOptions({
                   description: truncate(r.content, 100),
-                  label: new Date(r.timestamp).toLocaleString(i18n.getLocale()),
+                  label: new Date(r.timestamp).toLocaleString(locale),
                   value: r.id,
                 });
                 emb.addFields({
@@ -225,9 +225,9 @@ export default class Reminder extends Command {
 
             rows.push(new ActionRowBuilder().addComponents(selectMenu));
           } else {
-            emb = embed({ title: `🔕 ${i18n.__('REMINDER.LIST')}` })
+            emb = embed({ title: `🔕 ${localize('REMINDER.LIST')}` })
               .setColor(Colors.Red)
-              .setDescription(i18n.__('ERROR.REMINDER.EMPTY'));
+              .setDescription(localize('ERROR.REMINDER.EMPTY'));
           }
 
           return interaction.editReply({
@@ -252,7 +252,7 @@ export default class Reminder extends Command {
         !(!message.interaction && isList)
       ) {
         return interaction.reply({
-          embeds: [embed({ type: 'error' }).setDescription(i18n.__('ERROR.UNALLOWED.COMMAND'))],
+          embeds: [embed({ type: 'error' }).setDescription(localize('ERROR.UNALLOWED.COMMAND'))],
           ephemeral: true,
         });
       }
@@ -260,7 +260,7 @@ export default class Reminder extends Command {
       const reminderId =
         interaction instanceof StringSelectMenuInteraction
           ? interaction.values[0]
-          : urlArgs.get('reminderId') || getFieldValue(message.embeds[0], i18n.__('GENERIC.ID'))?.replaceAll('`', '');
+          : urlArgs.get('reminderId') || getFieldValue(message.embeds[0], localize('GENERIC.ID'))?.replaceAll('`', '');
 
       let reminder = reminderId ? await client.database.reminders.fetch(reminderId, user.id) : null,
         emb = embed(
@@ -271,48 +271,48 @@ export default class Reminder extends Command {
 
       if (!isList) {
         if (reminder) {
-          emb.setTitle(`🔔 ${i18n.__('REMINDER.INFO')}`).addFields(
+          emb.setTitle(`🔔 ${localize('REMINDER.INFO')}`).addFields(
             {
-              name: `📄 ${i18n.__('GENERIC.CONTENT.CONTENT')}`,
+              name: `📄 ${localize('GENERIC.CONTENT.CONTENT')}`,
               value: reminder.content,
             },
             {
               inline: true,
-              name: `🪪 ${i18n.__('GENERIC.ID')}`,
+              name: `🪪 ${localize('GENERIC.ID')}`,
               value: `\`${reminder.id}\``,
             },
             {
               inline: true,
-              name: `${emojis.channelText} ${i18n.__('GENERIC.CHANNEL.CHANNEL')}`,
+              name: `${emojis.channelText} ${localize('GENERIC.CHANNEL.CHANNEL')}`,
               value: reminder.channelId
                 ? `<#${reminder.channelId}> - \`${reminder.channelId}\``
-                : `**${i18n.__('GENERIC.DIRECT_MESSAGE')}**`,
+                : `**${localize('GENERIC.DIRECT_MESSAGE')}**`,
             },
             {
-              name: `📅 ${i18n.__('GENERIC.TIMESTAMP')}`,
-              value: `${i18n.__mf('REMINDER.TIMESTAMP', { timestamp: toUTS(reminder.timestamp) })}\n${i18n.__mf(
+              name: `📅 ${localize('GENERIC.TIMESTAMP')}`,
+              value: `${localize('REMINDER.TIMESTAMP', { timestamp: toUTS(reminder.timestamp) })}\n${localize(
                 'REMINDER.CREATED_AT',
                 { timestamp: toUTS(SnowflakeUtil.timestampFrom(reminder.id)) },
               )}`,
             },
             reminder.isRecursive
               ? {
-                  name: `🔁 ${i18n.__('GENERIC.RECURSIVE')}`,
-                  value: i18n.__mf('REMINDER.RECURSIVE.ON', { timestamp: toUTS(reminder.timestamp + reminder.msTime) }),
+                  name: `🔁 ${localize('GENERIC.RECURSIVE')}`,
+                  value: localize('REMINDER.RECURSIVE.ON', { timestamp: toUTS(reminder.timestamp + reminder.msTime) }),
                 }
               : {
-                  name: `🔁 ${i18n.__('GENERIC.NOT_RECURSIVE')}`,
+                  name: `🔁 ${localize('GENERIC.NOT_RECURSIVE')}`,
                   value:
                     reminder.msTime < minRecursiveTime
-                      ? i18n.__mf('REMINDER.RECURSIVE.DISABLED', {
-                          time: i18n.__mf('GENERIC.TIME.MINUTES', { count: minRecursiveTime / 60000 }),
+                      ? localize('REMINDER.RECURSIVE.DISABLED', {
+                          time: localize('GENERIC.TIME.MINUTES', { count: minRecursiveTime / 60000 }),
                         })
-                      : i18n.__('REMINDER.RECURSIVE.OFF'),
+                      : localize('REMINDER.RECURSIVE.OFF'),
                 },
           );
         } else {
           emb = EmbedBuilder.from(message.embeds[0])
-            .setTitle(`🔕 ${i18n.__('REMINDER.INFO')}`)
+            .setTitle(`🔕 ${localize('REMINDER.INFO')}`)
             .setColor(Colors.Red);
           customId = 'reminder_view';
         }
@@ -335,13 +335,13 @@ export default class Reminder extends Command {
             rows.push(
               new ActionRowBuilder().addComponents(
                 new ButtonBuilder()
-                  .setLabel(i18n.__('REMINDER.COMPONENT.LIST'))
+                  .setLabel(localize('REMINDER.COMPONENT.LIST'))
                   .setEmoji('🗒️')
                   .setStyle(ButtonStyle.Primary)
                   .setCustomId('reminder_list'),
                 new ButtonBuilder()
                   .setEmoji('📝')
-                  .setLabel(i18n.__('GENERIC.EDIT'))
+                  .setLabel(localize('GENERIC.EDIT'))
                   .setStyle(ButtonStyle.Primary)
                   .setCustomId('reminder_edit')
                   .setDisabled(!reminder),
@@ -350,17 +350,17 @@ export default class Reminder extends Command {
           } else {
             const reminders = await client.database.users.fetchAllReminders(user.id),
               selectMenu = new StringSelectMenuBuilder()
-                .setPlaceholder(i18n.__('REMINDER.SELECT_LIST'))
+                .setPlaceholder(localize('REMINDER.SELECT_LIST'))
                 .setCustomId('reminder_select');
 
             if (reminders.size) {
-              emb.setTitle(`🔔 ${i18n.__('REMINDER.LIST')}`);
+              emb.setTitle(`🔔 ${localize('REMINDER.LIST')}`);
               reminders
                 .sort((a, b) => a.timestamp - b.timestamp)
                 .forEach((r: Record<string, any>) => {
                   selectMenu.addOptions({
                     description: truncate(r.content, 100),
-                    label: new Date(r.timestamp).toLocaleString(i18n.getLocale()),
+                    label: new Date(r.timestamp).toLocaleString(locale),
                     value: r.id,
                   });
                   emb.addFields({
@@ -372,9 +372,9 @@ export default class Reminder extends Command {
               rows.push(new ActionRowBuilder().addComponents(selectMenu));
             } else {
               emb
-                .setTitle(`🔕 ${i18n.__('REMINDER.LIST')}`)
+                .setTitle(`🔕 ${localize('REMINDER.LIST')}`)
                 .setColor(Colors.Red)
-                .setDescription(i18n.__('ERROR.REMINDER.EMPTY'));
+                .setDescription(localize('ERROR.REMINDER.EMPTY'));
             }
           }
 
@@ -382,7 +382,7 @@ export default class Reminder extends Command {
             await interaction.followUp({
               embeds: [
                 embed({ type: 'error' }).setDescription(
-                  i18n.__mf('ERROR.REMINDER.NOT_FOUND', { reminderId: reminderId }),
+                  localize('ERROR.REMINDER.NOT_FOUND', { reminderId: reminderId }),
                 ),
               ],
               ephemeral: true,
@@ -408,35 +408,35 @@ export default class Reminder extends Command {
             });
 
             emb
-              .setTitle(`🔔 ${i18n.__('REMINDER.EDITED')}`)
+              .setTitle(`🔔 ${localize('REMINDER.EDITED')}`)
               .spliceFields(
                 4,
                 1,
                 reminder.isRecursive
                   ? {
-                      name: `🔁 ${i18n.__('GENERIC.RECURSIVE')}`,
-                      value: i18n.__mf('REMINDER.RECURSIVE.ON', {
+                      name: `🔁 ${localize('GENERIC.RECURSIVE')}`,
+                      value: localize('REMINDER.RECURSIVE.ON', {
                         timestamp: toUTS(reminder.timestamp + reminder.msTime),
                       }),
                     }
                   : {
-                      name: `🔁 ${i18n.__('GENERIC.NOT_RECURSIVE')}`,
-                      value: i18n.__('REMINDER.RECURSIVE.OFF'),
+                      name: `🔁 ${localize('GENERIC.NOT_RECURSIVE')}`,
+                      value: localize('REMINDER.RECURSIVE.OFF'),
                     },
               )
               .setColor(Colors.Yellow);
           } else {
-            emb.setTitle(`🔔 ${i18n.__('REMINDER.EDITING')}`).setColor(Colors.Yellow);
+            emb.setTitle(`🔔 ${localize('REMINDER.EDITING')}`).setColor(Colors.Yellow);
           }
           rows.push(
             new ActionRowBuilder().addComponents(
               new ButtonBuilder()
-                .setLabel(i18n.__('GENERIC.VIEW'))
+                .setLabel(localize('GENERIC.VIEW'))
                 .setEmoji('🔎')
                 .setStyle(ButtonStyle.Primary)
                 .setCustomId('reminder_view'),
               new ButtonBuilder()
-                .setLabel(i18n.__(`GENERIC.${reminder.isRecursive ? 'RECURSIVE' : 'NOT_RECURSIVE'}`))
+                .setLabel(localize(`GENERIC.${reminder.isRecursive ? 'RECURSIVE' : 'NOT_RECURSIVE'}`))
                 .setEmoji('🔁')
                 .setStyle(reminder.isRecursive ? ButtonStyle.Success : ButtonStyle.Secondary)
                 .setCustomId('reminder_recursive')
@@ -444,17 +444,17 @@ export default class Reminder extends Command {
             ),
             new ActionRowBuilder().addComponents(
               new ButtonBuilder()
-                .setLabel(i18n.__('GENERIC.CONTENT.EDIT'))
+                .setLabel(localize('GENERIC.CONTENT.EDIT'))
                 .setEmoji('✏️')
                 .setStyle(ButtonStyle.Secondary)
                 .setCustomId('reminder_edit_content'),
               new ButtonBuilder()
-                .setLabel(i18n.__('GENERIC.CHANNEL.EDIT'))
+                .setLabel(localize('GENERIC.CHANNEL.EDIT'))
                 .setEmoji(emojis.channelText)
                 .setStyle(ButtonStyle.Secondary)
                 .setCustomId('reminder_edit_channel'),
               new ButtonBuilder()
-                .setLabel(i18n.__('GENERIC.DELETE'))
+                .setLabel(localize('GENERIC.DELETE'))
                 .setEmoji('🗑️')
                 .setStyle(ButtonStyle.Danger)
                 .setCustomId('reminder_delete'),
@@ -471,12 +471,12 @@ export default class Reminder extends Command {
           rows.push(
             new ActionRowBuilder().addComponents(
               new ButtonBuilder()
-                .setLabel(i18n.__('GENERIC.BACK'))
+                .setLabel(localize('GENERIC.BACK'))
                 .setEmoji('↩️')
                 .setStyle(ButtonStyle.Primary)
                 .setCustomId('reminder_edit'),
               new ButtonBuilder()
-                .setLabel(i18n.__('GENERIC.YES'))
+                .setLabel(localize('GENERIC.YES'))
                 .setEmoji('✅')
                 .setStyle(ButtonStyle.Success)
                 .setCustomId('reminder_delete_confirm'),
@@ -486,8 +486,8 @@ export default class Reminder extends Command {
             components: rows,
             embeds: [
               emb
-                .setTitle(`🔔 ${i18n.__('REMINDER.DELETING')}`)
-                .setDescription(i18n.__('REMINDER.DELETING_DESCRIPTION'))
+                .setTitle(`🔔 ${localize('REMINDER.DELETING')}`)
+                .setDescription(localize('REMINDER.DELETING_DESCRIPTION'))
                 .setColor(Colors.Orange),
             ],
           });
@@ -497,7 +497,7 @@ export default class Reminder extends Command {
           rows.push(
             new ActionRowBuilder().addComponents(
               new ButtonBuilder()
-                .setLabel(i18n.__('REMINDER.COMPONENT.LIST'))
+                .setLabel(localize('REMINDER.COMPONENT.LIST'))
                 .setEmoji('🗒️')
                 .setStyle(ButtonStyle.Primary)
                 .setCustomId('reminder_list'),
@@ -505,19 +505,19 @@ export default class Reminder extends Command {
           );
           return (interaction as ButtonInteraction).update({
             components: rows,
-            embeds: [emb.setTitle(`🔕 ${i18n.__('REMINDER.DELETED')}`).setColor(Colors.Red)],
+            embeds: [emb.setTitle(`🔕 ${localize('REMINDER.DELETED')}`).setColor(Colors.Red)],
           });
         }
         case 'reminder_edit_content': {
           return (interaction as ButtonInteraction).showModal(
             new ModalBuilder()
-              .setTitle(i18n.__('GENERIC.CONTENT.EDITING'))
+              .setTitle(localize('GENERIC.CONTENT.EDITING'))
               .setCustomId('reminder_edit_content_submit')
               .addComponents(
                 new ActionRowBuilder<TextInputBuilder>().addComponents(
                   new TextInputBuilder()
                     .setCustomId('reminder_edit_content_input')
-                    .setLabel(i18n.__('GENERIC.CONTENT.EDITING_LABEL'))
+                    .setLabel(localize('GENERIC.CONTENT.EDITING_LABEL'))
                     .setMinLength(1)
                     .setMaxLength(1024)
                     .setStyle(TextInputStyle.Paragraph)
@@ -535,7 +535,7 @@ export default class Reminder extends Command {
 
           if (!inputF) {
             return interaction.reply({
-              embeds: [embed({ type: 'error' }).setDescription(i18n.__('ERROR.REMINDER.EMPTY_CONTENT'))],
+              embeds: [embed({ type: 'error' }).setDescription(localize('ERROR.REMINDER.EMPTY_CONTENT'))],
               ephemeral: true,
             });
           }
@@ -547,9 +547,9 @@ export default class Reminder extends Command {
           return (interaction as ButtonInteraction).update({
             embeds: [
               emb
-                .setTitle(`🔔 ${i18n.__('GENERIC.CONTENT.EDITED')}`)
+                .setTitle(`🔔 ${localize('GENERIC.CONTENT.EDITED')}`)
                 .spliceFields(0, 1, {
-                  name: `📄 ${i18n.__('GENERIC.CONTENT.CONTENT')}`,
+                  name: `📄 ${localize('GENERIC.CONTENT.CONTENT')}`,
                   value: reminder.content,
                 })
                 .setColor(Colors.Green),
@@ -569,12 +569,12 @@ export default class Reminder extends Command {
             components: [
               new ActionRowBuilder<ButtonBuilder>().addComponents(
                 new ButtonBuilder()
-                  .setLabel(i18n.__('GENERIC.BACK'))
+                  .setLabel(localize('GENERIC.BACK'))
                   .setEmoji('↩️')
                   .setStyle(ButtonStyle.Primary)
                   .setCustomId('reminder_edit'),
                 new ButtonBuilder()
-                  .setLabel(i18n.__(`GENERIC.${reminder.channelId ? 'NOT_DIRECT_MESSAGE' : 'DIRECT_MESSAGE'}`))
+                  .setLabel(localize(`GENERIC.${reminder.channelId ? 'NOT_DIRECT_MESSAGE' : 'DIRECT_MESSAGE'}`))
                   .setEmoji(emojis.user)
                   .setStyle(reminder.channelId ? ButtonStyle.Secondary : ButtonStyle.Success)
                   .setCustomId('reminder_dm')
@@ -582,7 +582,7 @@ export default class Reminder extends Command {
               ),
               new ActionRowBuilder<ChannelSelectMenuBuilder>().addComponents(
                 new ChannelSelectMenuBuilder()
-                  .setPlaceholder(i18n.__('GENERIC.CHANNEL.SELECT_PLACEHOLDER'))
+                  .setPlaceholder(localize('GENERIC.CHANNEL.SELECT_PLACEHOLDER'))
                   .setChannelTypes(
                     ChannelType.AnnouncementThread,
                     ChannelType.GuildAnnouncement,
@@ -596,13 +596,13 @@ export default class Reminder extends Command {
             ],
             embeds: [
               emb
-                .setTitle(`🔔 ${i18n.__(`GENERIC.CHANNEL.${isEdit ? 'EDITING' : 'EDITED'}`)}`)
+                .setTitle(`🔔 ${localize(`GENERIC.CHANNEL.${isEdit ? 'EDITING' : 'EDITED'}`)}`)
                 .spliceFields(2, 1, {
                   inline: true,
-                  name: `${emojis.channelText} ${i18n.__('GENERIC.CHANNEL.CHANNEL')}`,
+                  name: `${emojis.channelText} ${localize('GENERIC.CHANNEL.CHANNEL')}`,
                   value: reminder.channelId
                     ? `<#${reminder.channelId}> - \`${reminder.channelId}\``
-                    : `**${i18n.__('GENERIC.DIRECT_MESSAGE')}**`,
+                    : `**${localize('GENERIC.DIRECT_MESSAGE')}**`,
                 })
                 .setColor(isEdit ? Colors.Yellow : Colors.Green),
             ],

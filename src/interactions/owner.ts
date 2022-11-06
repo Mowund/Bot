@@ -71,6 +71,18 @@ export default class Owner extends Command {
               type: ApplicationCommandOptionType.SubcommandGroup,
             },
             {
+              description: 'OWNER.OPTIONS.LOCALIZATION.DESCRIPTION',
+              name: 'OWNER.OPTIONS.LOCALIZATION.NAME',
+              options: [
+                {
+                  description: 'OWNER.OPTIONS.LOCALIZATION.OPTIONS.UPDATE.DESCRIPTION',
+                  name: 'OWNER.OPTIONS.LOCALIZATION.OPTIONS.UPDATE.NAME',
+                  type: ApplicationCommandOptionType.Subcommand,
+                },
+              ],
+              type: ApplicationCommandOptionType.SubcommandGroup,
+            },
+            {
               description: 'OWNER.OPTIONS.SHARD.DESCRIPTION',
               name: 'OWNER.OPTIONS.SHARD.NAME',
               options: [
@@ -111,8 +123,8 @@ export default class Owner extends Command {
   async run(args: CommandArgs, interaction: BaseInteraction<'cached'>): Promise<any> {
     if (!interaction.isChatInputCommand()) return;
 
-    const { client, embed } = args,
-      { chalk, database, i18n } = client,
+    const { client, embed, localize } = args,
+      { chalk, database } = client,
       { options, user } = interaction,
       settings = await database.users.fetch(user.id),
       isEphemeral = settings?.ephemeralResponses,
@@ -125,7 +137,7 @@ export default class Owner extends Command {
 
     if (!botOwners.includes(user.id)) {
       return interaction.editReply({
-        embeds: [embed({ type: 'error' }).setDescription(i18n.__('ERROR.DEVELOPERS_ONLY'))],
+        embeds: [embed({ type: 'error' }).setDescription(localize('ERROR.DEVELOPERS_ONLY'))],
       });
     }
 
@@ -139,7 +151,7 @@ export default class Owner extends Command {
 
     if (guildO && !guild) {
       return interaction.editReply({
-        embeds: [embed({ type: 'error' }).setDescription(i18n.__('ERROR.GUILD_NOT_FOUND'))],
+        embeds: [embed({ type: 'error' }).setDescription(localize('ERROR.GUILD_NOT_FOUND'))],
       });
     }
 
@@ -159,8 +171,8 @@ export default class Owner extends Command {
           return interaction.editReply({
             embeds: [
               embed({ type: 'success' }).addFields(
-                { name: i18n.__('GENERIC.OUTPUT'), value: `\`\`\`js\n${truncate(evaled, 1012)}\`\`\`` },
-                { name: i18n.__('GENERIC.TYPE'), value: `\`\`\`js\n${evaledType}\`\`\`` },
+                { name: localize('GENERIC.OUTPUT'), value: `\`\`\`js\n${truncate(evaled, 1012)}\`\`\`` },
+                { name: localize('GENERIC.TYPE'), value: `\`\`\`js\n${evaledType}\`\`\`` },
               ),
             ],
           });
@@ -169,7 +181,7 @@ export default class Owner extends Command {
           return interaction.editReply({
             embeds: [
               embed({ type: 'error' }).addFields({
-                name: i18n.__('GENERIC.OUTPUT'),
+                name: localize('GENERIC.OUTPUT'),
                 value: `\`\`\`js\n${err}\`\`\``,
               }),
             ],
@@ -248,7 +260,7 @@ export default class Owner extends Command {
               return interaction.editReply({
                 embeds: [
                   embed({ type: 'error' }).setDescription(
-                    `${i18n.__('ERROR.RELOADING_APPLICATION_COMMAND')}\n\`\`\`js\n${err}\`\`\``,
+                    `${localize('ERROR.RELOADING_APPLICATION_COMMAND')}\n\`\`\`js\n${err}\`\`\``,
                   ),
                 ],
               });
@@ -275,10 +287,10 @@ export default class Owner extends Command {
                     (gOnly ? o.guildId : !o.guildId)
                       ? `**${
                           o.type === ApplicationCommandType.Message
-                            ? i18n.__('GENERIC.MESSAGE')
+                            ? localize('GENERIC.MESSAGE')
                             : o.type === ApplicationCommandType.User
-                            ? i18n.__('GENERIC.USER')
-                            : i18n.__('GENERIC.CHAT')
+                            ? localize('GENERIC.USER')
+                            : localize('GENERIC.CHAT')
                         }**: \`${o.name}\``
                       : '',
                   )
@@ -289,11 +301,11 @@ export default class Owner extends Command {
               delCmdGuild = cmdMap(delCmds, true);
 
             if (updCmds.length) {
-              const e = embed({ title: i18n.__('OWNER.OPTIONS.COMMAND.COMMANDS.UPDATED'), type: 'success' });
+              const e = embed({ title: localize('OWNER.OPTIONS.COMMAND.COMMANDS.UPDATED'), type: 'success' });
               if (updCmdGlobal) {
                 e.addFields({
                   inline: true,
-                  name: i18n.__('OWNER.OPTIONS.COMMAND.COMMANDS.GLOBAL'),
+                  name: localize('OWNER.OPTIONS.COMMAND.COMMANDS.GLOBAL'),
                   value: updCmdGlobal,
                 });
               }
@@ -302,21 +314,21 @@ export default class Owner extends Command {
                 e.addFields({
                   inline: true,
                   name: guild
-                    ? i18n.__mf('OWNER.OPTIONS.COMMAND.COMMANDS.SPECIFIED_GUILD', { guildName: guild.name })
-                    : i18n.__('OWNER.OPTIONS.COMMAND.COMMANDS.GUILD'),
+                    ? localize('OWNER.OPTIONS.COMMAND.COMMANDS.SPECIFIED_GUILD', { guildName: guild.name })
+                    : localize('OWNER.OPTIONS.COMMAND.COMMANDS.GUILD'),
                   value: updCmdGuild,
                 });
               }
               embs.push(e);
             }
             if (delCmds.length) {
-              const e = embed({ title: `🗑️ ${i18n.__('OWNER.OPTIONS.COMMAND.COMMANDS.DELETED')}` }).setColor(
+              const e = embed({ title: `🗑️ ${localize('OWNER.OPTIONS.COMMAND.COMMANDS.DELETED')}` }).setColor(
                 Colors.Red,
               );
               if (delCmdGlobal) {
                 e.addFields({
                   inline: true,
-                  name: i18n.__('OWNER.OPTIONS.COMMAND.COMMANDS.GLOBAL'),
+                  name: localize('OWNER.OPTIONS.COMMAND.COMMANDS.GLOBAL'),
                   value: delCmdGlobal,
                 });
               }
@@ -325,8 +337,8 @@ export default class Owner extends Command {
                 e.addFields({
                   inline: true,
                   name: guild
-                    ? i18n.__mf('OWNER.OPTIONS.COMMAND.COMMANDS.SPECIFIED_GUILD', { guildName: guild.name })
-                    : i18n.__('OWNER.OPTIONS.COMMAND.COMMANDS.GUILD'),
+                    ? localize('OWNER.OPTIONS.COMMAND.COMMANDS.SPECIFIED_GUILD', { guildName: guild.name })
+                    : localize('OWNER.OPTIONS.COMMAND.COMMANDS.GUILD'),
                   value: delCmdGuild,
                 });
               }
@@ -336,7 +348,21 @@ export default class Owner extends Command {
             return interaction.editReply({
               embeds: embs.length
                 ? embs
-                : [embed({ type: 'warning' }).setDescription(i18n.__('OWNER.OPTIONS.COMMAND.NO_UPDATE'))],
+                : [embed({ type: 'warning' }).setDescription(localize('OWNER.OPTIONS.COMMAND.NO_UPDATE'))],
+            });
+          }
+        }
+        break;
+      }
+      case 'localization': {
+        switch (options.getSubcommand()) {
+          case 'update': {
+            await interaction.editReply({
+              embeds: [embed({ type: 'loading' }).setDescription(localize('OWNER.OPTIONS.LOCALIZATION.UPDATING'))],
+            });
+            await client.updateLocalizations();
+            return interaction.editReply({
+              embeds: [embed({ type: 'success' }).setDescription(localize('OWNER.OPTIONS.LOCALIZATION.UPDATED'))],
             });
           }
         }
@@ -350,7 +376,7 @@ export default class Owner extends Command {
               timeoutO = options.getInteger('timeout') ?? 30000;
 
             await interaction.editReply({
-              embeds: [embed({ type: 'warning' }).setDescription(i18n.__('OWNER.SHARD.RESPAWNING'))],
+              embeds: [embed({ type: 'warning' }).setDescription(localize('OWNER.OPTIONS.SHARD.RESPAWNING'))],
             });
 
             return client.shard.respawnAll({

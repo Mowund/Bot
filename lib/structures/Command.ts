@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-empty-function, @typescript-eslint/no-unused-vars */
 
 import { ApplicationCommandData, BaseInteraction, ColorResolvable, EmbedBuilder } from 'discord.js';
-import { App } from '../App';
+import { App, EmbedBuilderOptions } from '../App';
 
 export class Command {
   structure: ApplicationCommandData[];
@@ -30,12 +30,7 @@ export interface CommandArgs {
    * @param options.title Change the title but still including the type's emoji
    * @param options.type The type of the embed
    */
-  embed(options?: {
-    addParams?: Record<string, string>;
-    color?: ColorResolvable;
-    footer?: 'interacted' | 'requested' | 'none';
-    timestamp?: number;
-    title?: string;
-    type?: 'error' | 'success' | 'warning' | 'wip';
-  }): EmbedBuilder;
+  embed(options?: Omit<EmbedBuilderOptions, 'member' | 'user'>): EmbedBuilder;
+  locale: string;
+  localize: (phrase: string, replace?: Record<string, any>) => string;
 }

@@ -21,9 +21,9 @@ import {
   User,
 } from 'discord.js';
 import firebase, { firestore } from 'firebase-admin';
-import i18n, { I18n } from 'i18n';
+import i18n, { GlobalCatalog, I18n, LocaleCatalog } from 'i18n';
 import { Chalk, ChalkInstance } from 'chalk';
-import { defaultLocale, imgOpts, supportServer } from '../src/defaults.js';
+import { defaultLocale, emojis, imgOpts, supportServer } from '../src/defaults.js';
 import { addSearchParams } from '../src/utils.js';
 import { Command } from './structures/Command.js';
 import { DatabaseManager } from './managers/DatabaseManager.js';
@@ -55,40 +55,68 @@ export class App extends Client {
   }
   async login(token?: string) {
     this.octokit = new Octokit({ auth: process.env.GITHUB_TOKEN });
-
-    i18n.configure({
-      defaultLocale: defaultLocale,
-      locales: await this.getBotStaticCatalog(true),
-      objectNotation: true,
-      retryInDefaultLocale: true,
-      staticCatalog: await this.getBotStaticCatalog(),
-    });
-
-    this.otherLocales = i18n.getLocales().filter((l: string) => l !== defaultLocale);
-
+    await this.updateLocalizations();
     return super.login(token);
   }
 
-  localize = (object: Record<string, any>, key: string) => {
+  localize = (phraseOrOptions: string | i18n.TranslateOptions, replace?: Record<string, any>) =>
+    replace ? i18n.__mf(phraseOrOptions, replace) : i18n.__(phraseOrOptions);
+
+  localizeObject(object: Record<string, any>, key: string) {
     object[`${key}Localizations`] ??= {};
 
-    for (const locale of this.otherLocales) {
-      i18n.setLocale(locale);
-      object[`${key}Localizations`][locale] = i18n.__(object[key]);
-    }
+    for (const locale of this.otherLocales)
+      object[`${key}Localizations`][locale] = this.localize({ locale, phrase: object[key] });
 
-    i18n.setLocale(defaultLocale);
-    object[key] = i18n.__(object[key]);
-  };
+    object[key] = this.localize({ locale: defaultLocale, phrase: object[key] });
+  }
 
-  localizeCommand = (data: Record<string, any>) => {
-    if ('name' in data) this.localize(data, 'name');
-    if ('description' in data) this.localize(data, 'description');
+  localizeCommand(data: Record<string, any>) {
+    if ('name' in data) this.localizeObject(data, 'name');
+    if ('description' in data) this.localizeObject(data, 'description');
     if ('options' in data) for (const opt of data.options) this.localizeCommand(opt);
     if ('choices' in data) for (const ch of data.choices) this.localizeCommand(ch);
-  };
+  }
 
-  countCommands = (commands: Collection<string, ApplicationCommandData>) => {
+  async updateLocalizations() {
+    const folders = (
+        await this.octokit.request('GET /repos/{owner}/{repo}/contents/{path}', {
+          owner: 'Mowund',
+          path: 'locales',
+          repo: 'i18n',
+        })
+      ).data as { name: string; path: string }[],
+      locales: string[] = [],
+      staticCatalog: GlobalCatalog = {};
+
+    for (const folder of folders) {
+      locales.push(folder.name);
+      staticCatalog[folder.name] = JSON.parse(
+        Buffer.from(
+          (
+            (await this.octokit.request('GET /repos/{owner}/{repo}/contents/{path}', {
+              owner: 'Mowund',
+              path: `${folder.path}/bot.json`,
+              repo: 'i18n',
+            })) as { data: { content: string } }
+          ).data.content,
+          'base64',
+        ).toString(),
+      );
+    }
+
+    this.otherLocales = locales.filter((l: string) => l !== defaultLocale);
+
+    i18n.configure({
+      defaultLocale: defaultLocale,
+      locales: locales,
+      objectNotation: true,
+      retryInDefaultLocale: true,
+      staticCatalog: staticCatalog,
+    });
+  }
+
+  countCommands(commands: Collection<string, ApplicationCommandData>) {
     const chatInput = commands
         .filter(c => c.type === ApplicationCommandType.ChatInput)
         .reduce(
@@ -119,25 +147,16 @@ export class App extends Client {
       },
       user,
     };
-  };
+  }
 
-  embedBuilder(options: {
-    addParams?: Record<string, string>;
-    color?: ColorResolvable;
-    footer?: 'interacted' | 'requested' | 'none';
-    member?: GuildMember;
-    timestamp?: number;
-    title?: string;
-    type?: 'error' | 'success' | 'warning' | 'wip';
-    user: User;
-  }) {
+  embedBuilder(options: EmbedBuilderOptions) {
     const emb = new EmbedBuilder().setTimestamp(options.timestamp ?? Date.now());
 
     if (options.footer !== 'none') {
       emb.setFooter({
         iconURL: addSearchParams(new URL((options.member ?? options.user).displayAvatarURL(imgOpts)), options.addParams)
           .href,
-        text: i18n.__mf(`GENERIC.${options.footer === 'interacted' ? 'INTERACTED_BY' : 'REQUESTED_BY'}`, {
+        text: options.localizer(`GENERIC.${options.footer === 'interacted' ? 'INTERACTED_BY' : 'REQUESTED_BY'}`, {
           userName: options.member?.displayName ?? options.user.username,
         }),
       });
@@ -145,16 +164,20 @@ export class App extends Client {
 
     switch (options.type) {
       case 'error':
-        return emb.setColor(Colors.Red).setTitle(`❌ ${options.title || i18n.__('GENERIC.ERROR')}`);
+        return emb.setColor(Colors.Red).setTitle(`❌ ${options.title || options.localizer('GENERIC.ERROR')}`);
+      case 'loading':
+        return emb
+          .setColor(Colors.Blurple)
+          .setTitle(`${emojis.loading} ${options.title || options.localizer('GENERIC.LOADING')}`);
       case 'success':
-        return emb.setColor(Colors.Green).setTitle(`✅ ${options.title || i18n.__('GENERIC.SUCCESS')}`);
+        return emb.setColor(Colors.Green).setTitle(`✅ ${options.title || options.localizer('GENERIC.SUCCESS')}`);
       case 'warning':
-        return emb.setColor(Colors.Yellow).setTitle(`⚠️ ${options.title || i18n.__('GENERIC.WARNING')}`);
+        return emb.setColor(Colors.Yellow).setTitle(`⚠️ ${options.title || options.localizer('GENERIC.WARNING')}`);
       case 'wip':
         return emb
           .setColor(Colors.Orange)
-          .setTitle(`🔨 ${options.title || i18n.__('GENERIC.WIP')}`)
-          .setDescription(i18n.__('GENERIC.WIP_COMMAND'));
+          .setTitle(`🔨 ${options.title || options.localizer('GENERIC.WIP')}`)
+          .setDescription(options.localizer('GENERIC.WIP_COMMAND'));
       default:
         return (options.title ? emb.setTitle(options.title) : emb).setColor(options.color ?? null);
     }
@@ -173,7 +196,7 @@ export class App extends Client {
       })
     ).data as { name: string; path: string }[];
 
-    let list;
+    let list: any;
     if (supportedLanguages) {
       list = [];
       for (const folder of folders) list.push(folder.name);
@@ -199,7 +222,7 @@ export class App extends Client {
   }
 
   /** Updates Mowund support server description */
-  updateMowundDescription = () =>
+  updateMowundDescription() {
     this.shard.broadcastEval(
       async (c: this, { serverId }) =>
         c.guilds.cache.get(serverId)?.edit({
@@ -209,6 +232,19 @@ export class App extends Client {
         }),
       { context: { serverId: supportServer.id } },
     );
+  }
+}
+
+export interface EmbedBuilderOptions {
+  addParams?: Record<string, string>;
+  color?: ColorResolvable;
+  footer?: 'interacted' | 'requested' | 'none';
+  localizer?: (phrase: string, replace?: Record<string, any>) => string;
+  member?: GuildMember;
+  timestamp?: number;
+  title?: string;
+  type?: 'error' | 'loading' | 'success' | 'warning' | 'wip';
+  user: User;
 }
 
 export interface Experiment {
