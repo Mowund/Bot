@@ -151,6 +151,7 @@ export class App extends Client {
 
   embedBuilder(options: EmbedBuilderOptions) {
     const emb = new EmbedBuilder().setTimestamp(options.timestamp ?? Date.now());
+    options.localizer ??= this.localize;
 
     if (options.footer !== 'none') {
       emb.setFooter({

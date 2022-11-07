@@ -93,6 +93,7 @@ export default class ReminderFoundEvent extends Event {
       .embedBuilder({
         addParams: params,
         color: Colors.Yellow,
+        localizer: localize,
         member,
         timestamp,
         title: `${emojis.bellRinging} ${localize('REMINDER.NEW')}`,
