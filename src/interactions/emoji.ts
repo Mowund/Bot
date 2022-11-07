@@ -435,7 +435,9 @@ export default class Emoji extends Command {
               embeds: [
                 emb
                   .setTitle(
-                    `${emojis.loading} EMOJI.${isAddId ? (emjCodePoint ? 'ADDING_UNICODE' : 'ADDING') : 'READDING'}`,
+                    `${emojis.loading} ${localize(
+                      `EMOJI.${isAddId ? (emjCodePoint ? 'ADDING_UNICODE' : 'ADDING') : 'READDING'}`,
+                    )}`,
                   )
                   .setColor(Colors.Blurple),
               ],

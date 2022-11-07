@@ -20,7 +20,10 @@ export class DatabaseGuildsManager extends CachedManager<Snowflake, GuildData, G
     const db = this.client.firestore.collection('guilds').doc(id),
       existing = this.cache.get(id);
     let cachedData =
-        (existing || (((await db.get()) as firestore.DocumentSnapshot<firestore.DocumentData>)?.data() as GuildData)) ??
+        (existing ||
+          (((await db.get()) as firestore.DocumentSnapshot<firestore.DocumentData>)?.data() as
+            | GuildData
+            | undefined)) ??
         null,
       newData = existing ? data : Object.assign(data, { id });
 
@@ -43,7 +46,7 @@ export class DatabaseGuildsManager extends CachedManager<Snowflake, GuildData, G
     const existing = this.cache.get(id);
     if (!force && existing) return existing;
 
-    let data = (await this.client.firestore.collection('guilds').doc(id).get()).data() as GuildData;
+    let data = (await this.client.firestore.collection('guilds').doc(id).get()).data() as GuildData | undefined;
     if (!data) return;
 
     data = new GuildData(this.client, Object.assign(Object.create(data), data));

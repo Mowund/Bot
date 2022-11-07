@@ -9,7 +9,7 @@ export default class InteractionCreateEvent extends Event {
   }
 
   async run(client: App, interaction: any): Promise<any> {
-    const { chalk, i18n } = client,
+    const { chalk, database, i18n } = client,
       {
         channel,
         channelId,
@@ -36,10 +36,18 @@ export default class InteractionCreateEvent extends Event {
     if (!command && intName !== 'generic')
       return console.error(`${chalk.red(customId ?? commandName)} interaction not found as ${chalk.red(intName)}`);
 
-    const locale = i18n.getLocales().includes(interaction.locale) ? interaction.locale : defaultLocale,
+    const locale =
+        (await database.users.fetch(user.id))?.locale ||
+        (i18n.getLocales().includes(interaction.locale) ? interaction.locale : defaultLocale),
       localize = (phrase: string, replace?: Record<string, any>) => client.localize({ locale, phrase }, replace),
-      embed = (options: Omit<EmbedBuilderOptions, 'localizer' | 'member' | 'user'> = {}): EmbedBuilder =>
-        client.embedBuilder({ ...options, color: options.color ?? embColor, localizer: localize, member, user });
+      embed = (options: Omit<EmbedBuilderOptions, 'member' | 'user'> = {}): EmbedBuilder =>
+        client.embedBuilder({
+          ...options,
+          color: options.color ?? embColor,
+          localizer: options.localizer ?? localize,
+          member,
+          user,
+        });
 
     try {
       return command.run({ client, embed, locale, localize }, interaction);

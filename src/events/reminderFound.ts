@@ -19,7 +19,7 @@ export default class ReminderFoundEvent extends Event {
   }
 
   async run(client: App, reminder: ReminderData): Promise<any> {
-    const { localize } = client,
+    const { database } = client,
       { channelId, content, id, isRecursive, msTime, timestamp, userId } = reminder,
       channel = client.channels.cache.get(channelId) as GuildTextBasedChannel;
 
@@ -33,7 +33,9 @@ export default class ReminderFoundEvent extends Event {
 
     await client.database.reminders.delete(id, userId);
 
-    const member = channel?.guild.members.cache.get(userId),
+    const locale = (await database.users.fetch(userId))?.locale || 'en-US',
+      localize = (phrase: string, replace?: Record<string, any>) => client.localize({ locale, phrase }, replace),
+      member = channel?.guild.members.cache.get(userId),
       user = await client.users.fetch(userId),
       idTimestamp = SnowflakeUtil.timestampFrom(id),
       row = new ActionRowBuilder<ButtonBuilder>().addComponents(

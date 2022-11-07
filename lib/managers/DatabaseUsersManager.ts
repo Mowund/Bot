@@ -21,7 +21,8 @@ export class DatabaseUsersManager extends CachedManager<Snowflake, UserData, Use
     const db = this.client.firestore.collection('users').doc(id),
       existing = this.cache.get(id);
     let cachedData =
-        (existing || (((await db.get()) as firestore.DocumentSnapshot<firestore.DocumentData>)?.data() as UserData)) ??
+        (existing ||
+          (((await db.get()) as firestore.DocumentSnapshot<firestore.DocumentData>)?.data() as UserData | undefined)) ??
         null,
       newData = existing ? data : Object.assign(data, { id });
 
@@ -45,12 +46,11 @@ export class DatabaseUsersManager extends CachedManager<Snowflake, UserData, Use
     const existing = this.cache.get(id);
     if (!force && existing) return existing;
 
-    let data = (await this.client.firestore.collection('users').doc(id).get()).data() as UserData;
+    let data = (await this.client.firestore.collection('users').doc(id).get()).data() as UserData | undefined;
     const reminders = await this.fetchAllReminders(id, { cache: cache });
 
-    if (reminders.size) data = { id, reminders } as unknown as UserData;
-
     if (!data && !reminders.size) return;
+
     data = new UserData(this.client, Object.assign(Object.create(data), reminders.size ? { id, reminders } : data));
     if (cache) {
       if (existing) existing.patch(data);

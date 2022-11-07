@@ -7,11 +7,13 @@ import {
   ApplicationCommandType,
   BaseInteraction,
   Colors,
+  StringSelectMenuInteraction,
+  StringSelectMenuBuilder,
 } from 'discord.js';
 import { Command, CommandArgs } from '../../lib/structures/Command.js';
 import { UserData } from '../../lib/structures/UserData.js';
-import { emojis, imgOpts } from '../defaults.js';
-import { toUTS, userFlagToEmoji, collMap, monthDiff, disableComponents } from '../utils.js';
+import { defaultLocale, emojis, imgOpts } from '../defaults.js';
+import { toUTS, userFlagToEmoji, collMap, monthDiff } from '../utils.js';
 
 export default class User extends Command {
   constructor() {
@@ -47,10 +49,12 @@ export default class User extends Command {
   }
 
   async run(args: CommandArgs, interaction: BaseInteraction<'cached'>): Promise<any> {
-    const { client, embed, localize } = args,
-      { database } = client,
+    const { client, embed } = args,
+      { database, i18n } = client,
       { guild, user } = interaction;
-    let settings = await database.users.fetch(user.id);
+    let { locale, localize } = args,
+      settings = await database.users.fetch(user.id);
+
     const isEphemeral = settings?.ephemeralResponses ?? true,
       settingsComponents = (data: UserData) => [
         new ActionRowBuilder<ButtonBuilder>().addComponents(
@@ -65,18 +69,30 @@ export default class User extends Command {
                 .setEmoji('👁️')
                 .setStyle(ButtonStyle.Secondary)
                 .setCustomId('user_settings_ephemeral'),
+          new ButtonBuilder()
+            .setLabel(localize('USER.OPTIONS.SETTINGS.LOCALE.EDIT'))
+            .setEmoji('📝')
+            .setStyle(ButtonStyle.Primary)
+            .setCustomId('user_settings_locale'),
         ),
       ],
       settingsFields = (data: UserData) => [
         data?.ephemeralResponses
           ? {
+              inline: true,
               name: `${emojis.check} ${localize('USER.OPTIONS.SETTINGS.EPHEMERAL_RESPONSES.NAME')}`,
               value: localize('USER.OPTIONS.SETTINGS.EPHEMERAL_RESPONSES.ENABLED'),
             }
           : {
+              inline: true,
               name: `${emojis.no} ${localize('USER.OPTIONS.SETTINGS.EPHEMERAL_RESPONSES.NAME')}`,
               value: localize('USER.OPTIONS.SETTINGS.EPHEMERAL_RESPONSES.DISABLED'),
             },
+        {
+          inline: true,
+          name: `${localize('GENERIC.LOCALE.EMOJI')} ${localize('USER.OPTIONS.SETTINGS.LOCALE.NAME')}`,
+          value: localize('GENERIC.LOCALE.NAME'),
+        },
       ];
 
     if (
@@ -198,17 +214,90 @@ export default class User extends Command {
       }
     }
 
-    if (interaction.isButton()) {
-      const { customId, message } = interaction;
+    if (interaction.isButton() || interaction.isStringSelectMenu()) {
+      const { customId } = interaction;
       switch (customId) {
-        case 'user_settings_ephemeral': {
-          await interaction.deferUpdate();
-          await interaction.editReply({ components: disableComponents(message.components) });
-          settings = await database.users.set(user.id, { ephemeralResponses: !isEphemeral });
-          return interaction.editReply({
+        case 'user_settings': {
+          return interaction.update({
             components: settingsComponents(settings),
             embeds: [
               embed({ title: `⚙️ ${localize('USER.OPTIONS.SETTINGS.TITLE')}` }).addFields(settingsFields(settings)),
+            ],
+          });
+        }
+        case 'user_settings_ephemeral': {
+          settings = await database.users.set(user.id, { ephemeralResponses: !isEphemeral });
+          return interaction.update({
+            components: settingsComponents(settings),
+            embeds: [
+              embed({ title: `⚙️ ${localize('USER.OPTIONS.SETTINGS.TITLE')}` }).addFields(settingsFields(settings)),
+            ],
+          });
+        }
+        case 'user_settings_locale_auto':
+        case 'user_settings_locale_submit': {
+          const isAuto = customId === 'user_settings_locale_auto';
+          locale = isAuto
+            ? i18n.getLocales().includes(interaction.locale)
+              ? interaction.locale
+              : defaultLocale
+            : (interaction as StringSelectMenuInteraction).values[0];
+          settings = await database.users.set(user.id, {
+            locale: isAuto ? null : locale,
+          });
+          localize = (phrase: string, replace?: Record<string, any>) => client.localize({ locale, phrase }, replace);
+        }
+        // eslint-disable-next-line no-fallthrough
+        case 'user_settings_locale': {
+          const dbLocale = settings?.locale,
+            selectMenu = new StringSelectMenuBuilder()
+              .setPlaceholder(localize('USER.OPTIONS.SETTINGS.LOCALE.SELECT_PLACEHOLDER'))
+              .setCustomId('user_settings_locale_submit');
+
+          selectMenu.addOptions(
+            i18n
+              .getLocales()
+              .map((r: string) => ({
+                default: r === locale,
+                description: (r === defaultLocale ? `(${localize('GENERIC.DEFAULT')}) ` : '') + r,
+                emoji: client.localize({ locale: r, phrase: 'GENERIC.LOCALE.EMOJI' }),
+                label: client.localize({ locale: r, phrase: 'GENERIC.LOCALE.NAME' }),
+                value: r,
+              }))
+              .sort((a, b) => a.label.normalize().localeCompare(b.label.normalize())),
+          );
+
+          return interaction.update({
+            components: [
+              new ActionRowBuilder<ButtonBuilder>().addComponents(
+                new ButtonBuilder()
+                  .setLabel(localize('GENERIC.BACK'))
+                  .setEmoji('↩️')
+                  .setStyle(ButtonStyle.Primary)
+                  .setCustomId('user_settings'),
+                new ButtonBuilder()
+                  .setLabel(dbLocale ? localize('GENERIC.NOT_AUTOMATIC') : localize('GENERIC.AUTOMATIC'))
+                  .setEmoji(emojis.integration)
+                  .setStyle(dbLocale ? ButtonStyle.Secondary : ButtonStyle.Success)
+                  .setCustomId('user_settings_locale_auto')
+                  .setDisabled(!dbLocale),
+              ),
+              new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(selectMenu),
+            ],
+            embeds: [
+              embed(
+                customId === 'user_settings_locale_submit'
+                  ? {
+                      color: Colors.Green,
+                      localizer: localize,
+                      title: `⚙️ ${localize('USER.OPTIONS.SETTINGS.LOCALE.EDITED')}`,
+                    }
+                  : {
+                      color: Colors.Yellow,
+                      localizer: localize,
+                      title: `⚙️ ${localize('USER.OPTIONS.SETTINGS.LOCALE.EDITING')}`,
+                    },
+              ).addFields(settingsFields(settings)),
             ],
           });
         }

@@ -60,7 +60,7 @@ export class DatabaseRemindersManager extends CachedManager<Snowflake, ReminderD
 
     let data = (
       await this.client.firestore.collection('users').doc(userId).collection('reminders').doc(id).get()
-    ).data() as ReminderData;
+    ).data() as ReminderData | undefined;
 
     if (!data) return;
     data = new ReminderData(this.client, Object.assign(Object.create(data), data));

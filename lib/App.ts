@@ -38,7 +38,7 @@ export class App extends Client {
   globalCommandCount: { chatInput: number; message: number; sum: { all: number; contextMenu: number }; user: number };
   i18n: I18n;
   octokit: Octokit;
-  private otherLocales: string[];
+  private nonDefaultLocales: string[];
 
   constructor(options: ClientOptions) {
     super(options);
@@ -65,7 +65,7 @@ export class App extends Client {
   localizeObject(object: Record<string, any>, key: string) {
     object[`${key}Localizations`] ??= {};
 
-    for (const locale of this.otherLocales)
+    for (const locale of this.nonDefaultLocales)
       object[`${key}Localizations`][locale] = this.localize({ locale, phrase: object[key] });
 
     object[key] = this.localize({ locale: defaultLocale, phrase: object[key] });
@@ -105,7 +105,7 @@ export class App extends Client {
       );
     }
 
-    this.otherLocales = locales.filter((l: string) => l !== defaultLocale);
+    this.nonDefaultLocales = locales.filter((l: string) => l !== defaultLocale);
 
     i18n.configure({
       defaultLocale: defaultLocale,
