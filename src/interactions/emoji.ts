@@ -711,30 +711,30 @@ export default class Emoji extends Command {
         case 'emoji_remove_roles':
         case 'emoji_remove_roles_submit':
         case 'emoji_reset_roles': {
-          const isEdit = customId === 'emoji_edit_roles',
+          const emjRoles = emj.roles.cache,
+            isEdit = customId === 'emoji_edit_roles',
             isRemove =
               !customId.startsWith('emoji_add_roles') &&
               (message.components.at(-1).components.at(-1).customId === 'emoji_remove_roles_submit' ||
                 customId.startsWith('emoji_remove_roles')),
             isSubmit = customId.endsWith('_submit');
-          let changedCount: number, title: string;
+          let title: string;
 
           if (isSubmit) {
-            const { roles } = interaction as RoleSelectMenuInteraction<'cached'>,
-              emjRoles = emj.roles.cache;
+            const { roles } = interaction as RoleSelectMenuInteraction<'cached'>;
 
             if (isRemove) {
               emj = await emj.roles.remove(roles);
-              changedCount = emjRoles.size - emj.roles.cache.size;
               title = localize('GENERIC.ROLES.REMOVING', {
-                count: changedCount,
+                count: emjRoles.size - emj.roles.cache.size,
               });
+              emb.setColor(Colors.Red);
             } else {
               emj = await emj.roles.add(roles);
-              changedCount = emj.roles.cache.size - emjRoles.size;
               title = localize('GENERIC.ROLES.ADDING', {
-                count: changedCount,
+                count: emj.roles.cache.size - emjRoles.size,
               });
+              emb.setColor(Colors.Green);
             }
 
             emb.spliceFields(4, 1, {
@@ -744,14 +744,19 @@ export default class Emoji extends Command {
           } else if (customId === 'emoji_reset_roles') {
             emj = await emj.roles.set([]);
             title = localize('GENERIC.ROLES.RESET');
-            emb.spliceFields(4, 1, {
+            emb.setColor(Colors.Red).spliceFields(4, 1, {
               name: `${emojis.role} ${localize('GENERIC.ROLES.ROLES')} [0]`,
               value: '@everyone',
             });
+          } else if (isEdit) {
+            title = localize('GENERIC.ROLES.EDITING');
+            emb.setColor(Colors.Orange);
+          } else if (isRemove) {
+            title = localize('GENERIC.ROLES.REMOVING', { count: 0 });
+            emb.setColor(Colors.Red);
           } else {
-            title = isEdit
-              ? localize('GENERIC.ROLES.EDIT')
-              : localize(isRemove ? 'GENERIC.ROLES.REMOVING' : 'GENERIC.ROLES.ADDING', { count: 0 });
+            title = localize('GENERIC.ROLES.ADDING', { count: 0 });
+            emb.setColor(Colors.Green);
           }
 
           return (interaction as ButtonInteraction | RoleSelectMenuInteraction).update({
@@ -800,11 +805,7 @@ export default class Emoji extends Command {
                   .setDisabled(isEdit || (isRemove && !emj.roles.cache.size)),
               ),
             ],
-            embeds: [
-              emb
-                .setColor(changedCount ? (isRemove ? Colors.Red : Colors.Green) : Colors.Orange)
-                .setTitle(emjDisplay + title),
-            ],
+            embeds: [emb.setTitle(emjDisplay + title)],
           });
         }
       }
