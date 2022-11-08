@@ -2,6 +2,7 @@
 
 import { ApplicationCommandData, BaseInteraction, ColorResolvable, EmbedBuilder } from 'discord.js';
 import { App, EmbedBuilderOptions } from '../App';
+import { UserData } from './UserData';
 
 export class Command {
   structure: ApplicationCommandData[];
@@ -31,6 +32,6 @@ export interface CommandArgs {
    * @param options.type The type of the embed
    */
   embed(options?: Omit<EmbedBuilderOptions, 'member' | 'user'>): EmbedBuilder;
-  locale: string;
   localize: (phrase: string, replace?: Record<string, any>) => string;
+  userSettings: UserData | undefined;
 }

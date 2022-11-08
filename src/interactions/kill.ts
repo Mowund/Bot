@@ -19,16 +19,14 @@ export default class Kill extends Command {
     ]);
   }
 
-  async run(args: CommandArgs, interaction: BaseInteraction<'cached'>): Promise<any> {
+  run(args: CommandArgs, interaction: BaseInteraction<'cached'>): Promise<any> {
     if (!interaction.isChatInputCommand()) return;
 
-    const { client, embed, localize } = args,
-      { database } = client,
+    const { embed, localize, userSettings } = args,
       { member, options, user } = interaction,
       userO = options.getUser('user') ?? user,
       memberO = options.getMember('user') ?? member,
-      settings = await database.users.fetch(user.id),
-      isEphemeral = settings?.ephemeralResponses;
+      isEphemeral = userSettings.ephemeralResponses;
 
     return interaction.reply({
       embeds: [

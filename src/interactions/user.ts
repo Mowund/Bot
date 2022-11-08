@@ -52,10 +52,9 @@ export default class User extends Command {
     const { client, embed } = args,
       { database, i18n } = client,
       { guild, user } = interaction;
-    let { locale, localize } = args,
-      settings = await database.users.fetch(user.id);
+    let { localize, userSettings } = args;
 
-    const isEphemeral = settings?.ephemeralResponses ?? true,
+    const isEphemeral = userSettings.ephemeralResponses ?? true,
       settingsComponents = (data: UserData) => [
         new ActionRowBuilder<ButtonBuilder>().addComponents(
           data?.ephemeralResponses
@@ -205,9 +204,9 @@ export default class User extends Command {
       switch (options.getSubcommand()) {
         case 'settings': {
           return interaction.editReply({
-            components: settingsComponents(settings),
+            components: settingsComponents(userSettings),
             embeds: [
-              embed({ title: `⚙️ ${localize('USER.OPTIONS.SETTINGS.TITLE')}` }).addFields(settingsFields(settings)),
+              embed({ title: `⚙️ ${localize('USER.OPTIONS.SETTINGS.TITLE')}` }).addFields(settingsFields(userSettings)),
             ],
           });
         }
@@ -219,46 +218,51 @@ export default class User extends Command {
       switch (customId) {
         case 'user_settings': {
           return interaction.update({
-            components: settingsComponents(settings),
+            components: settingsComponents(userSettings),
             embeds: [
-              embed({ title: `⚙️ ${localize('USER.OPTIONS.SETTINGS.TITLE')}` }).addFields(settingsFields(settings)),
+              embed({ title: `⚙️ ${localize('USER.OPTIONS.SETTINGS.TITLE')}` }).addFields(settingsFields(userSettings)),
             ],
           });
         }
         case 'user_settings_ephemeral': {
-          settings = await database.users.set(user.id, { ephemeralResponses: !isEphemeral });
+          userSettings = await database.users.set(user.id, { ephemeralResponses: !isEphemeral });
           return interaction.update({
-            components: settingsComponents(settings),
+            components: settingsComponents(userSettings),
             embeds: [
-              embed({ title: `⚙️ ${localize('USER.OPTIONS.SETTINGS.TITLE')}` }).addFields(settingsFields(settings)),
+              embed({ title: `⚙️ ${localize('USER.OPTIONS.SETTINGS.TITLE')}` }).addFields(settingsFields(userSettings)),
             ],
           });
         }
         case 'user_settings_locale_auto':
         case 'user_settings_locale_submit': {
-          const isAuto = customId === 'user_settings_locale_auto';
-          locale = isAuto
-            ? i18n.getLocales().includes(interaction.locale)
-              ? interaction.locale
-              : defaultLocale
-            : (interaction as StringSelectMenuInteraction).values[0];
-          settings = await database.users.set(user.id, {
-            locale: isAuto ? null : locale,
-          });
-          localize = (phrase: string, replace?: Record<string, any>) => client.localize({ locale, phrase }, replace);
+          if (customId === 'user_settings_locale_auto') {
+            userSettings = await database.users.set(user.id, {
+              autoLocale: !userSettings.autoLocale,
+              locale:
+                (!userSettings.autoLocale && i18n.getLocales().includes(interaction.locale) && interaction.locale) ||
+                userSettings.locale,
+            });
+          } else {
+            userSettings = await database.users.set(user.id, {
+              autoLocale: false,
+              locale: (interaction as StringSelectMenuInteraction).values[0],
+            });
+          }
+          localize = (phrase: string, replace?: Record<string, any>) =>
+            client.localize({ locale: userSettings.locale, phrase }, replace);
         }
         // eslint-disable-next-line no-fallthrough
         case 'user_settings_locale': {
-          const dbLocale = settings?.locale,
-            selectMenu = new StringSelectMenuBuilder()
-              .setPlaceholder(localize('USER.OPTIONS.SETTINGS.LOCALE.SELECT_PLACEHOLDER'))
-              .setCustomId('user_settings_locale_submit');
+          console.log(localize('USER.OPTIONS.SETTINGS.LOCALE.SELECT_PLACEHOLDER'));
+          const selectMenu = new StringSelectMenuBuilder()
+            .setPlaceholder(localize('USER.OPTIONS.SETTINGS.LOCALE.SELECT_PLACEHOLDER'))
+            .setCustomId('user_settings_locale_submit');
 
           selectMenu.addOptions(
             i18n
               .getLocales()
               .map((r: string) => ({
-                default: r === locale,
+                default: r === userSettings.locale,
                 description: (r === defaultLocale ? `(${localize('GENERIC.DEFAULT')}) ` : '') + r,
                 emoji: client.localize({ locale: r, phrase: 'GENERIC.LOCALE.EMOJI' }),
                 label: client.localize({ locale: r, phrase: 'GENERIC.LOCALE.NAME' }),
@@ -276,11 +280,10 @@ export default class User extends Command {
                   .setStyle(ButtonStyle.Primary)
                   .setCustomId('user_settings'),
                 new ButtonBuilder()
-                  .setLabel(dbLocale ? localize('GENERIC.NOT_AUTOMATIC') : localize('GENERIC.AUTOMATIC'))
+                  .setLabel(userSettings.autoLocale ? localize('GENERIC.AUTOMATIC') : localize('GENERIC.NOT_AUTOMATIC'))
                   .setEmoji(emojis.integration)
-                  .setStyle(dbLocale ? ButtonStyle.Secondary : ButtonStyle.Success)
-                  .setCustomId('user_settings_locale_auto')
-                  .setDisabled(!dbLocale),
+                  .setStyle(userSettings.autoLocale ? ButtonStyle.Success : ButtonStyle.Secondary)
+                  .setCustomId('user_settings_locale_auto'),
               ),
               new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(selectMenu),
             ],
@@ -297,7 +300,7 @@ export default class User extends Command {
                       localizer: localize,
                       title: `⚙️ ${localize('USER.OPTIONS.SETTINGS.LOCALE.EDITING')}`,
                     },
-              ).addFields(settingsFields(settings)),
+              ).addFields(settingsFields(userSettings)),
             ],
           });
         }

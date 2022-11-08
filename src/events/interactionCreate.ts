@@ -36,9 +36,26 @@ export default class InteractionCreateEvent extends Event {
     if (!command && intName !== 'generic')
       return console.error(`${chalk.red(customId ?? commandName)} interaction not found as ${chalk.red(intName)}`);
 
-    const locale =
-        (await database.users.fetch(user.id))?.locale ||
-        (i18n.getLocales().includes(interaction.locale) ? interaction.locale : defaultLocale),
+    let userSettings =
+      (await database.users.fetch(user.id)) ||
+      (await database.users.set(
+        user.id,
+        { locale: i18n.getLocales().includes(interaction.locale) ? interaction.locale : defaultLocale },
+        { setFromCache: true },
+      ));
+
+    if (
+      !customId.startsWith('user_settings_locale_') &&
+      userSettings.autoLocale &&
+      userSettings.locale !== interaction.locale &&
+      i18n.getLocales().includes(interaction.locale)
+    ) {
+      userSettings = await database.users.set(user.id, {
+        locale: interaction.locale,
+      });
+    }
+
+    const { locale } = userSettings,
       localize = (phrase: string, replace?: Record<string, any>) => client.localize({ locale, phrase }, replace),
       embed = (options: Omit<EmbedBuilderOptions, 'member' | 'user'> = {}): EmbedBuilder =>
         client.embedBuilder({
@@ -50,7 +67,7 @@ export default class InteractionCreateEvent extends Event {
         });
 
     try {
-      return command.run({ client, embed, locale, localize }, interaction);
+      return command.run({ client, embed, localize, userSettings }, interaction);
     } catch (err) {
       if (interaction.type === InteractionType.ApplicationCommandAutocomplete) return;
       console.error(err);

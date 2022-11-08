@@ -35,11 +35,9 @@ export default class Timeout extends Command {
   }
 
   async run(args: CommandArgs, interaction: BaseInteraction<'cached'>): Promise<any> {
-    const { client, embed, localize } = args,
-      { database } = client,
+    const { embed, localize, userSettings } = args,
       { guild, member, memberPermissions, user } = interaction,
-      settings = await database.users.fetch(user.id),
-      isEphemeral = settings?.ephemeralResponses,
+      isEphemeral = userSettings.ephemeralResponses,
       maxDuration = 2419200000;
 
     if (interaction.isAutocomplete()) {

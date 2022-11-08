@@ -63,11 +63,9 @@ export default class Reminder extends Command {
   }
 
   async run(args: CommandArgs, interaction: BaseInteraction<'cached'>): Promise<any> {
-    const { client, embed, locale, localize } = args,
-      { database } = client,
+    const { client, embed, localize, userSettings } = args,
       { channel, user } = interaction,
-      settings = await database.users.fetch(user.id),
-      isEphemeral = settings?.ephemeralResponses,
+      isEphemeral = userSettings.ephemeralResponses,
       minTime = 1000 * 60 * 3,
       maxTime = 1000 * 60 * 60 * 24 * 365.25 * 100,
       minRecursiveTime = minTime * 10,
@@ -214,7 +212,7 @@ export default class Reminder extends Command {
               .forEach((r: Record<string, any>) => {
                 selectMenu.addOptions({
                   description: truncate(r.content, 100),
-                  label: new Date(r.timestamp).toLocaleString(locale),
+                  label: new Date(r.timestamp).toLocaleString(userSettings.locale),
                   value: r.id,
                 });
                 emb.addFields({
@@ -360,7 +358,7 @@ export default class Reminder extends Command {
                 .forEach((r: Record<string, any>) => {
                   selectMenu.addOptions({
                     description: truncate(r.content, 100),
-                    label: new Date(r.timestamp).toLocaleString(locale),
+                    label: new Date(r.timestamp).toLocaleString(userSettings.locale),
                     value: r.id,
                   });
                   emb.addFields({

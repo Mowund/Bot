@@ -34,12 +34,11 @@ export default class Bot extends Command {
   async run(args: CommandArgs, interaction: BaseInteraction<'cached'>): Promise<any> {
     if (!interaction.isChatInputCommand()) return;
 
-    const { client, embed, localize } = args,
-      { database, globalCommandCount } = client,
-      { guild, guildId, options, user } = interaction,
+    const { client, embed, localize, userSettings } = args,
+      { globalCommandCount } = client,
+      { guild, guildId, options } = interaction,
       botMember = guild?.members.cache.get(client.user.id),
-      settings = await database.users.fetch(user.id),
-      isEphemeral = settings?.ephemeralResponses,
+      isEphemeral = userSettings.ephemeralResponses,
       pkg = JSON.parse(readFileSync(new URL('../../../package.json', import.meta.url)).toString());
 
     switch (options.getSubcommand()) {

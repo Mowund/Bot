@@ -60,11 +60,9 @@ export default class RoleMenu extends Command {
   }
 
   async run(args: CommandArgs, interaction: BaseInteraction<'cached'>): Promise<any> {
-    const { client, embed } = args,
-      { database } = client,
+    const { client, embed, userSettings } = args,
       { guild, user } = interaction,
-      settings = await database.users.fetch(user.id),
-      isEphemeral = settings?.ephemeralResponses;
+      isEphemeral = userSettings.ephemeralResponses;
 
     if (interaction.isChatInputCommand()) {
       const { options } = interaction,
