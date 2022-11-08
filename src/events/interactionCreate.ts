@@ -45,7 +45,7 @@ export default class InteractionCreateEvent extends Event {
       ));
 
     if (
-      !customId.startsWith('user_settings_locale_') &&
+      !customId?.startsWith('user_settings_locale_') &&
       userSettings.autoLocale &&
       userSettings.locale !== interaction.locale &&
       i18n.getLocales().includes(interaction.locale)
