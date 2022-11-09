@@ -7,40 +7,40 @@ jobs:
   continuous-integration:
     runs-on: ubuntu-latest
     steps:
-      # Step 1
-      - uses: actions/checkout@v2
-      # Step 2
-      - name: Setup Node.js environment
-        uses: actions/setup-node@v3.5.1
+      - name: Checkout repository
+      - uses: actions/checkout@v3
+
+      - name: Install Node.js
+        uses: actions/setup-node@v3
         with:
           node-version-file: 'package.json'
-      # Step 3
-      - name: Install dependencies
-        run: pip install -r requirements.txt
-      # Step 4
+          cache: 'yarn'
+
+      - name: Install Dependencies
+        run: yarn --immutable
+
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-2
-      # Step 5
+
       - name: Start Application
-        run: npm start
+        run: yarn start
 
   continuous-deployment:
     runs-on: ubuntu-latest
     needs: [continuous-integration]
     if: github.ref == 'refs/heads/main'
     steps:
-     # Step 1
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-2
-     # Step 2
+
       - name: Create CodeDeploy Deployment
         id: deploy
         run: |
