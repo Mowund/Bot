@@ -240,10 +240,10 @@ export default class Reminder extends Command {
       interaction.isStringSelectMenu() ||
       interaction.isModalSubmit()
     ) {
-      let { customId } = interaction;
-      const { message } = interaction,
-        urlArgs = new URLSearchParams(message.embeds.at(-1)?.footer?.iconURL),
+      let { customId } = interaction,
         isList = customId === 'reminder_list';
+      const { message } = interaction,
+        urlArgs = new URLSearchParams(message.embeds.at(-1)?.footer?.iconURL);
 
       if (
         !(message.interaction?.user.id === user.id || urlArgs.get('messageOwners') === user.id) &&
@@ -308,6 +308,8 @@ export default class Reminder extends Command {
                       : localize('REMINDER.RECURSIVE.OFF'),
                 },
           );
+        } else if (customId === 'reminder_select') {
+          isList = true;
         } else {
           emb = EmbedBuilder.from(message.embeds[0])
             .setTitle(`🔕 ${localize('REMINDER.INFO')}`)
@@ -376,7 +378,7 @@ export default class Reminder extends Command {
             }
           }
 
-          if (!isList && !reminder) {
+          if ((!isList || customId === 'reminder_select') && !reminder) {
             await interaction.followUp({
               embeds: [
                 embed({ type: 'error' }).setDescription(
