@@ -16,7 +16,6 @@ import {
 import { App } from '../lib/App.js';
 import { Command } from '../lib/structures/Command.js';
 import { debugLevel } from './defaults.js';
-import { fetchURL } from './utils.js';
 import 'log-timestamp';
 
 const __filename = fileURLToPath(import.meta.url),
@@ -51,18 +50,8 @@ client.on('ready', async () => {
       status: PresenceUpdateStatus.Idle,
     });
 
-    await (async function updateData() {
-      client.experiments = {
-        data: (await fetchURL('https://distools.app/api/datamining/experiments')) ?? client.experiments?.data,
-        lastUpdated: Date.now(),
-      };
-
-      if (debugLevel > 1) console.log(client.chalk.cyan('Data updated'));
-      setTimeout(updateData, 300000);
-    })();
-
     client.globalCommandCount = client.countCommands(await client.application.commands.fetch());
-    await client.updateMowundDescription();
+    client.updateMowundDescription();
 
     const appCmds = await client.application.commands.fetch({ withLocalizations: true });
     let delCmds = [];
