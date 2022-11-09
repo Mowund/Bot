@@ -26,8 +26,8 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-2
 
-      - name: Start Application
-        run: yarn start
+      - name: Build Application
+        run: yarn build
 
   continuous-deployment:
     runs-on: ubuntu-latest
