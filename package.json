@@ -24,9 +24,8 @@
     "clean": "rimraf dist/",
     "compile": "tsc",
     "cpr": "copyfiles -u 1 src/**/*.json dist/",
-    "dev": "NODE_ENV=development yarn build && node dist/src/index.js",
     "lint": "eslint ./",
-    "start": "NODE_ENV=production yarn build && node dist/src/index.js"
+    "start": "yarn build && node dist/src/index.js"
   },
   "dependencies": {
     "@octokit/core": "^4.0.4",
