@@ -72,9 +72,8 @@ export default class Emoji extends Command {
   }
 
   async run(args: CommandArgs, interaction: BaseInteraction<'cached'>): Promise<any> {
-    const { client, embed, localize, userSettings } = args,
+    const { client, embed, isEphemeral, localize } = args,
       { appPermissions, guild, memberPermissions, user } = interaction,
-      isEphemeral = userSettings.ephemeralResponses,
       emojiLimit = premiumLimits[guild.premiumTier].emojis;
 
     let addBtnVsby = 0,

@@ -123,10 +123,9 @@ export default class Owner extends Command {
   async run(args: CommandArgs, interaction: BaseInteraction<'cached'>): Promise<any> {
     if (!interaction.isChatInputCommand()) return;
 
-    const { client, embed, localize, userSettings } = args,
+    const { client, embed, isEphemeral, localize } = args,
       { chalk } = client,
       { options, user } = interaction,
-      isEphemeral = userSettings.ephemeralResponses,
       idO = options.getString('id'),
       guildO = options.getString('guild'),
       __filename = fileURLToPath(import.meta.url),

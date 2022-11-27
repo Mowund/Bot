@@ -35,9 +35,8 @@ export default class Rollout extends Command {
   async run(args: CommandArgs, interaction: BaseInteraction<'cached'>): Promise<any> {
     if (!botOwners.includes(interaction.user.id)) return;
 
-    const { client, embed, localize, userSettings } = args,
-      { experiments } = client,
-      isEphemeral = userSettings.ephemeralResponses;
+    const { client, embed, isEphemeral, localize } = args,
+      { experiments } = client;
 
     if (interaction.isAutocomplete()) {
       const focused = interaction.options.getFocused(),

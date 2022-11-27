@@ -19,8 +19,7 @@ export default class ReminderFoundEvent extends Event {
   }
 
   async run(client: App, reminder: ReminderData): Promise<any> {
-    const { database } = client,
-      { channelId, content, id, isRecursive, msTime, timestamp, userId } = reminder,
+    const { channelId, content, id, isRecursive, msTime, timestamp, userId } = reminder,
       channel = client.channels.cache.get(channelId) as GuildTextBasedChannel;
 
     if (
@@ -31,9 +30,10 @@ export default class ReminderFoundEvent extends Event {
     )
       return;
 
-    await client.database.reminders.delete(id, userId);
+    const userSettings = await client.database.users.fetch(userId);
+    await userSettings.reminders.delete(id);
 
-    const locale = (await database.users.fetch(userId))?.locale || 'en-US',
+    const locale = userSettings?.locale || 'en-US',
       localize = (phrase: string, replace?: Record<string, any>) => client.localize({ locale, phrase }, replace),
       member = channel?.guild.members.cache.get(userId),
       user = await client.users.fetch(userId),
@@ -65,7 +65,7 @@ export default class ReminderFoundEvent extends Event {
 
     if (isRecursive) {
       const recReminderId = SnowflakeUtil.generate().toString(),
-        recReminder = await client.database.reminders.set(recReminderId, user.id, {
+        recReminder = await userSettings.reminders.set(recReminderId, {
           channelId: channelId,
           content: content,
           isRecursive,

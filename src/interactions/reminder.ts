@@ -63,9 +63,8 @@ export default class Reminder extends Command {
   }
 
   async run(args: CommandArgs, interaction: BaseInteraction<'cached'>): Promise<any> {
-    const { client, embed, localize, userSettings } = args,
+    const { client, embed, isEphemeral, localize, userSettings } = args,
       { channel, user } = interaction,
-      isEphemeral = userSettings.ephemeralResponses,
       minTime = 1000 * 60 * 3,
       maxTime = 1000 * 60 * 60 * 24 * 365.25 * 100,
       minRecursiveTime = minTime * 10,
@@ -134,7 +133,7 @@ export default class Reminder extends Command {
 
           await interaction.deferReply({ ephemeral: isEphemeral });
 
-          const reminder = await client.database.reminders.set(reminderId, user.id, {
+          const reminder = await userSettings.reminders.set(reminderId, {
               channelId: interaction.guild ? channel.id : null,
               content: contentO,
               msTime,
@@ -199,10 +198,12 @@ export default class Reminder extends Command {
         case 'list': {
           await interaction.deferReply({ ephemeral: isEphemeral });
 
-          const reminders = await client.database.users.fetchAllReminders(user.id),
+          const reminders = await client.database.users.cache.get(user.id).reminders.fetch(),
             selectMenu = new StringSelectMenuBuilder()
               .setPlaceholder(localize('REMINDER.SELECT_LIST'))
               .setCustomId('reminder_select');
+
+          console.log(reminders);
 
           let emb: EmbedBuilder;
           if (reminders.size) {
@@ -210,6 +211,7 @@ export default class Reminder extends Command {
             reminders
               .sort((a, b) => a.timestamp - b.timestamp)
               .forEach((r: Record<string, any>) => {
+                console.log(r);
                 selectMenu.addOptions({
                   description: truncate(r.content, 100),
                   label: new Date(r.timestamp).toLocaleString(userSettings.locale),
@@ -260,7 +262,7 @@ export default class Reminder extends Command {
           ? interaction.values[0]
           : urlArgs.get('reminderId') || getFieldValue(message.embeds[0], localize('GENERIC.ID'))?.replaceAll('`', '');
 
-      let reminder = reminderId ? await client.database.reminders.fetch(reminderId, user.id) : null,
+      let reminder = reminderId ? await userSettings.reminders.fetch({ reminderId }) : null,
         emb = embed(
           message.interaction?.user.id === client.user.id || !message.interaction
             ? { addParams: { messageOwners: user.id }, footer: 'interacted' }
@@ -348,7 +350,7 @@ export default class Reminder extends Command {
               ),
             );
           } else {
-            const reminders = await client.database.users.fetchAllReminders(user.id),
+            const reminders = await userSettings.reminders.fetch(),
               selectMenu = new StringSelectMenuBuilder()
                 .setPlaceholder(localize('REMINDER.SELECT_LIST'))
                 .setCustomId('reminder_select');
@@ -403,7 +405,7 @@ export default class Reminder extends Command {
         case 'reminder_edit':
         case 'reminder_recursive': {
           if (customId === 'reminder_recursive') {
-            reminder = await client.database.reminders.set(reminderId, user.id, {
+            reminder = await userSettings.reminders.set(reminderId, {
               isRecursive: !reminder.isRecursive,
             });
 
@@ -493,7 +495,7 @@ export default class Reminder extends Command {
           });
         }
         case 'reminder_delete_confirm': {
-          await client.database.reminders.delete(reminderId, user.id);
+          await userSettings.reminders.delete(reminderId);
           rows.push(
             new ActionRowBuilder().addComponents(
               new ButtonBuilder()
@@ -540,7 +542,7 @@ export default class Reminder extends Command {
             });
           }
 
-          reminder = await client.database.reminders.set(reminderId, user.id, {
+          reminder = await userSettings.reminders.set(reminderId, {
             content: inputF,
           });
 
@@ -558,7 +560,7 @@ export default class Reminder extends Command {
         }
         case 'reminder_dm':
         case 'reminder_edit_channel_submit':
-          reminder = await client.database.reminders.set(reminderId, user.id, {
+          reminder = await userSettings.reminders.set(reminderId, {
             channelId:
               customId === 'reminder_dm' ? null : (interaction as ChannelSelectMenuInteraction).channels.first().id,
           });

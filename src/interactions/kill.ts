@@ -22,11 +22,10 @@ export default class Kill extends Command {
   run(args: CommandArgs, interaction: BaseInteraction<'cached'>): Promise<any> {
     if (!interaction.isChatInputCommand()) return;
 
-    const { embed, localize, userSettings } = args,
+    const { embed, isEphemeral, localize } = args,
       { member, options, user } = interaction,
       userO = options.getUser('user') ?? user,
-      memberO = options.getMember('user') ?? member,
-      isEphemeral = userSettings.ephemeralResponses;
+      memberO = options.getMember('user') ?? member;
 
     return interaction.reply({
       embeds: [

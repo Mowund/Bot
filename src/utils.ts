@@ -6,7 +6,6 @@ import {
   Collection,
   Embed,
   Snowflake,
-  UserFlags,
   TimestampStyles,
   TimestampStylesString,
   StringSelectMenuBuilder,
@@ -18,7 +17,6 @@ import {
   MessageActionRowComponentBuilder,
 } from 'discord.js';
 import { firestore } from 'firebase-admin';
-import { emojis } from './defaults.js';
 
 export const isValidImage = (contentType: string) => ['image/jpeg', 'image/png', 'image/gif'].includes(contentType);
 
@@ -220,42 +218,6 @@ export const simplify = (string: string) =>
  */
 export const botInvite = (id: Snowflake) =>
   `https://discord.com/api/oauth2/authorize?client_id=${id}&permissions=1644971949559&scope=bot%20applications.commands`;
-
-/**
- * Converts an user flag to an emoji
- * @returns The emoji
- * @param flag The user flag
- */
-export const userFlagToEmoji = (flag: keyof typeof UserFlags) => {
-  switch (flag) {
-    case 'Staff':
-      return emojis.discordEmployee;
-    case 'Partner':
-      return emojis.partneredServerOwner;
-    case 'Hypesquad':
-      return emojis.hypeSquadEvents;
-    case 'HypeSquadOnlineHouse1':
-      return emojis.bravery;
-    case 'HypeSquadOnlineHouse2':
-      return emojis.brilliance;
-    case 'HypeSquadOnlineHouse3':
-      return emojis.balance;
-    case 'BugHunterLevel1':
-      return emojis.bugHunterLvl1;
-    case 'BugHunterLevel2':
-      return emojis.bugHunterLvl2;
-    case 'PremiumEarlySupporter':
-      return emojis.earlySupporter;
-    case 'VerifiedDeveloper':
-      return emojis.earlyVerifiedBotDeveloper;
-    case 'TeamPseudoUser':
-      return emojis.teamUser;
-    case 'CertifiedModerator':
-      return emojis.certifiedMod;
-    case 'BotHTTPInteractions':
-      return emojis.commands;
-  }
-};
 
 export const msToTime = (ms: number) => {
   const years = Math.floor(ms / 31536000000),

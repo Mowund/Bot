@@ -6,7 +6,7 @@ import { App } from '../App.js';
 import { removeEmpty, SearchOptions, testConditions } from '../../src/utils.js';
 import { ReminderData, ReminderDataSetOptions } from '../structures/ReminderData.js';
 
-export class DatabaseRemindersManager extends CachedManager<Snowflake, ReminderData, RemindersDatabaseResolvable> {
+export class RemindersDataManager extends CachedManager<Snowflake, ReminderData, RemindersDatabaseResolvable> {
   declare client: App;
 
   constructor(client: App) {
@@ -22,9 +22,6 @@ export class DatabaseRemindersManager extends CachedManager<Snowflake, ReminderD
     const id = this.resolveId(reminder);
     if (!id) throw new DiscordjsTypeError(DiscordjsErrorCodes.InvalidType, 'reminder', 'ReminderData', true);
 
-    if (!this.cache.filter(r => r.userId === userId).size)
-      await this.client.database.users.fetchAllReminders(userId, { force: true });
-
     const db = this.client.firestore.collection('users').doc(userId).collection('reminders').doc(id),
       existing = this.cache.get(id);
     let cachedData =
@@ -36,11 +33,8 @@ export class DatabaseRemindersManager extends CachedManager<Snowflake, ReminderD
     if (!existing) {
       cachedData = new ReminderData(this.client, Object.assign(Object.create(cachedData), newData));
       this.cache.set(id, cachedData);
-      this.client.database.users.cache
-        .get(userId)
-        ?.patch({ reminders: await this.client.database.users.fetchAllReminders(userId) });
     } else {
-      cachedData.patch(newData);
+      cachedData._patch(newData);
     }
 
     if (setFromCache) newData = cachedData;
@@ -52,9 +46,6 @@ export class DatabaseRemindersManager extends CachedManager<Snowflake, ReminderD
   }
 
   async fetch(id: Snowflake, userId: Snowflake, { cache = true, force = false } = {}) {
-    if (cache && !this.cache.filter(r => r.userId === userId).size)
-      await this.client.database.users.fetchAllReminders(userId, { force: true });
-
     const existing = this.cache.get(id);
     if (!force && existing) return existing;
 
@@ -66,14 +57,8 @@ export class DatabaseRemindersManager extends CachedManager<Snowflake, ReminderD
     data = new ReminderData(this.client, Object.assign(Object.create(data), data));
 
     if (cache) {
-      if (existing) {
-        existing.patch(data);
-      } else {
-        this.cache.set(id, data);
-        this.client.database.users.cache
-          .get(userId)
-          .patch({ reminders: await this.client.database.users.fetchAllReminders(userId) });
-      }
+      if (existing) existing._patch(data);
+      else this.cache.set(id, data);
     }
 
     return data;
@@ -95,16 +80,10 @@ export class DatabaseRemindersManager extends CachedManager<Snowflake, ReminderD
     }
 
     if (cache) {
-      data.forEach(async d => {
+      data.forEach(d => {
         const cachedData = this.cache.get(d.id);
-        if (cachedData) {
-          cachedData.patch(d);
-        } else {
-          this.cache.set(d.id, d);
-          this.client.database.users.cache
-            .get(d.userId)
-            ?.patch({ reminders: await this.client.database.users.fetchAllReminders(d.userId) });
-        }
+        if (cachedData) cachedData._patch(d);
+        else this.cache.set(d.id, d);
       });
     }
 
@@ -116,10 +95,8 @@ export class DatabaseRemindersManager extends CachedManager<Snowflake, ReminderD
     if (!id) throw new DiscordjsTypeError(DiscordjsErrorCodes.InvalidType, 'reminder', 'ReminderData', true);
 
     await this.client.firestore.collection('users').doc(userId).collection('reminders').doc(id).delete();
-    if (!leaveCached) {
-      this.cache.delete(id);
-      this.client.database.users.cache.get(userId)?.reminders?.delete(id);
-    }
+    if (!leaveCached) this.cache.delete(id);
+
     return this.cache;
   }
 }

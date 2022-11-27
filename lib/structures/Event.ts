@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-empty-function, @typescript-eslint/no-unused-vars */
 
 import { Events } from 'discord.js';
-import { App } from '../App';
+import { App } from '../App.js';
 
 export class Event {
   name: AppEvents | Events;

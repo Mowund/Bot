@@ -12,8 +12,8 @@ import {
 } from 'discord.js';
 import { Command, CommandArgs } from '../../lib/structures/Command.js';
 import { UserData } from '../../lib/structures/UserData.js';
-import { defaultLocale, emojis, imgOpts } from '../defaults.js';
-import { toUTS, userFlagToEmoji, collMap, monthDiff } from '../utils.js';
+import { defaultLocale, emojis, flagEmojis, imgOpts } from '../defaults.js';
+import { toUTS, collMap, monthDiff } from '../utils.js';
 
 export default class User extends Command {
   constructor() {
@@ -49,13 +49,12 @@ export default class User extends Command {
   }
 
   async run(args: CommandArgs, interaction: BaseInteraction<'cached'>): Promise<any> {
-    const { client, embed } = args,
+    const { client, embed, isEphemeral } = args,
       { database, i18n } = client,
       { guild, user } = interaction;
     let { localize, userSettings } = args;
 
-    const isEphemeral = userSettings.ephemeralResponses ?? true,
-      settingsComponents = (data: UserData) => [
+    const settingsComponents = (data: UserData) => [
         new ActionRowBuilder<ButtonBuilder>().addComponents(
           data?.ephemeralResponses
             ? new ButtonBuilder()
@@ -132,12 +131,13 @@ export default class User extends Command {
         );
       }
 
-      for (const flag of userO.flags.toArray()) flags.push(userFlagToEmoji(flag));
+      for (const flag of userO.flags.toArray()) flags.push(flagEmojis[flag]);
 
-      const color = memberO?.displayColor || userO.accentColor || Colors.Blurple,
-        embs = [
-          embed({ title: localize('USER.OPTIONS.INFO.TITLE') })
-            .setColor(color)
+      const embs = [
+          embed({
+            color: memberO?.displayColor || userO.accentColor || Colors.Blurple,
+            title: localize('USER.OPTIONS.INFO.TITLE'),
+          })
             .setAuthor({ iconURL: userO.displayAvatarURL(imgOpts), name: userO.tag })
             .setThumbnail((memberO ?? userO).displayAvatarURL(imgOpts))
             .setDescription(`${userO} ${flags.join(' ')}`)
@@ -214,7 +214,15 @@ export default class User extends Command {
     }
 
     if (interaction.isButton() || interaction.isStringSelectMenu()) {
-      const { customId } = interaction;
+      const { customId, message } = interaction;
+
+      if (message.interaction.user.id !== user.id) {
+        return interaction.reply({
+          embeds: [embed({ type: 'error' }).setDescription(localize('ERROR.UNALLOWED.COMMAND'))],
+          ephemeral: true,
+        });
+      }
+
       switch (customId) {
         case 'user_settings': {
           return interaction.update({

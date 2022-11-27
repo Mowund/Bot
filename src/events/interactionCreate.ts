@@ -55,8 +55,17 @@ export default class InteractionCreateEvent extends Event {
       });
     }
 
-    const { locale } = userSettings,
-      localize = (phrase: string, replace?: Record<string, any>) => client.localize({ locale, phrase }, replace),
+    const guildSettings = await database.guilds.fetch(guildId),
+      nonEphChannelIds = guildSettings?.allowNonEphemeral?.channelIds,
+      nonEphRoleIds = guildSettings?.allowNonEphemeral?.roleIds,
+      isEphemeral =
+        userSettings.ephemeralResponses ||
+        (nonEphChannelIds &&
+          !nonEphChannelIds.includes(channelId) &&
+          nonEphRoleIds &&
+          !nonEphRoleIds.some(r => member?.roles.cache.has(r))),
+      localize = (phrase: string, replace?: Record<string, any>) =>
+        client.localize({ locale: userSettings.locale, phrase }, replace),
       embed = (options: Omit<EmbedBuilderOptions, 'member' | 'user'> = {}): EmbedBuilder =>
         client.embedBuilder({
           ...options,
@@ -67,7 +76,7 @@ export default class InteractionCreateEvent extends Event {
         });
 
     try {
-      return command.run({ client, embed, localize, userSettings }, interaction);
+      return command.run({ client, embed, guildSettings, isEphemeral, localize, userSettings }, interaction);
     } catch (err) {
       if (interaction.type === InteractionType.ApplicationCommandAutocomplete) return;
       console.error(err);

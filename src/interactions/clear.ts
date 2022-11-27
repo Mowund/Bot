@@ -46,9 +46,8 @@ export default class Clear extends Command {
   }
 
   async run(args: CommandArgs, interaction: BaseInteraction<'cached'>): Promise<any> {
-    const { embed, localize, userSettings } = args,
-      { channel, memberPermissions, user } = interaction,
-      isEphemeral = userSettings.ephemeralResponses;
+    const { embed, isEphemeral, localize } = args,
+      { channel, memberPermissions, user } = interaction;
 
     // TODO: Create a confirmation menu
     // TODO: Delete user-specific messages

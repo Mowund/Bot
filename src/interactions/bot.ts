@@ -34,11 +34,10 @@ export default class Bot extends Command {
   async run(args: CommandArgs, interaction: BaseInteraction<'cached'>): Promise<any> {
     if (!interaction.isChatInputCommand()) return;
 
-    const { client, embed, localize, userSettings } = args,
+    const { client, embed, isEphemeral, localize } = args,
       { globalCommandCount } = client,
       { guild, guildId, options } = interaction,
       botMember = guild?.members.cache.get(client.user.id),
-      isEphemeral = userSettings.ephemeralResponses,
       pkg = JSON.parse(readFileSync(new URL('../../../package.json', import.meta.url)).toString());
 
     switch (options.getSubcommand()) {
@@ -94,7 +93,7 @@ export default class Bot extends Command {
                 {
                   inline: true,
                   name: `${emojis.nodeJS} ${localize('BOT.OPTIONS.INFO.NODEJS_VERSION')}`,
-                  value: `[\`${process.version.slice(1)}\`](https://nodejs.org)`,
+                  value: `[\`${process.versions.node}\`](https://nodejs.org)`,
                 },
               ),
           ],

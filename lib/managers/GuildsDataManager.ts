@@ -6,7 +6,7 @@ import { App } from '../App.js';
 import { removeEmpty, SearchOptions, testConditions } from '../../src/utils.js';
 import { GuildData, GuildDataSetOptions } from '../structures/GuildData.js';
 
-export class DatabaseGuildsManager extends CachedManager<Snowflake, GuildData, GuildsDatabaseResolvable> {
+export class GuildsDataManager extends CachedManager<Snowflake, GuildData, GuildsDatabaseResolvable> {
   declare client: App;
 
   constructor(client: App) {
@@ -31,7 +31,7 @@ export class DatabaseGuildsManager extends CachedManager<Snowflake, GuildData, G
       cachedData = new GuildData(this.client, Object.assign(Object.create(cachedData), newData));
       this.cache.set(id, cachedData);
     } else {
-      cachedData.patch(newData);
+      cachedData._patch(newData);
     }
 
     if (setFromCache) newData = cachedData;
@@ -51,7 +51,7 @@ export class DatabaseGuildsManager extends CachedManager<Snowflake, GuildData, G
 
     data = new GuildData(this.client, Object.assign(Object.create(data), data));
     if (cache) {
-      if (existing) existing.patch(data);
+      if (existing) existing._patch(data);
       else this.cache.set(id, data);
     }
     return data;
@@ -75,7 +75,7 @@ export class DatabaseGuildsManager extends CachedManager<Snowflake, GuildData, G
     if (cache) {
       data.forEach(d => {
         const cachedData = this.cache.get(d.id);
-        if (cachedData) cachedData.patch(d);
+        if (cachedData) cachedData._patch(d);
         else this.cache.set(d.id, d);
       });
     }

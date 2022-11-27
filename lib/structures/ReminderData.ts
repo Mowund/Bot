@@ -1,6 +1,8 @@
 /* eslint-disable @typescript-eslint/no-empty-function, @typescript-eslint/no-unused-vars */
 
-import { Base, Client, Snowflake } from 'discord.js';
+import { Snowflake } from 'discord.js';
+import { App } from '../App.js';
+import { Base } from './Base.js';
 
 export class ReminderData extends Base {
   id: Snowflake;
@@ -11,7 +13,7 @@ export class ReminderData extends Base {
   timestamp: number;
   userId: Snowflake;
 
-  constructor(client: Client, data: ReminderData) {
+  constructor(client: App, data: ReminderData) {
     super(client);
 
     this.id = data.id;
@@ -23,7 +25,15 @@ export class ReminderData extends Base {
     this.userId = data.userId;
   }
 
-  patch(data: any) {
+  async set(data: ReminderDataSetOptions, { merge = true, setFromCache = false } = {}) {
+    return (await this.client.database.users.fetch(this.userId)).reminders.set(this.id, data, { merge, setFromCache });
+  }
+
+  async delete({ leaveCached = false } = {}) {
+    return (await this.client.database.users.fetch(this.userId)).reminders.delete(this.id, { leaveCached });
+  }
+
+  _patch(data: any) {
     if ('channelId' in data) this.channelId = data.channelId;
     if ('content' in data) this.content = data.content;
     if ('isRecursive' in data) this.isRecursive = data.isRecursive;

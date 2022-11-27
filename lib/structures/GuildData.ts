@@ -1,31 +1,42 @@
 /* eslint-disable @typescript-eslint/no-empty-function, @typescript-eslint/no-unused-vars */
 
-import { Base, Client, Snowflake } from 'discord.js';
+import { Snowflake } from 'discord.js';
+import { App } from '../App.js';
+import { Base } from './Base.js';
 
 export class GuildData extends Base {
   id: Snowflake;
-  language?: string;
-  log?: { badDomains?: boolean; channel?: Snowflake };
+  allowNonEphemeral?: { channelIds?: Snowflake[]; roleIds?: Snowflake[] };
 
-  constructor(client: Client, data: GuildData) {
+  constructor(client: App, data: GuildData) {
     super(client);
 
     this.id = data.id;
-    this.language = data.language;
-    this.log = {
-      badDomains: data.log?.badDomains || false,
-      channel: data.log?.channel || null,
+    this.allowNonEphemeral = {
+      channelIds: data.allowNonEphemeral?.channelIds && Object.values(data.allowNonEphemeral.channelIds),
+      roleIds: data.allowNonEphemeral?.roleIds && Object.values(data.allowNonEphemeral.roleIds),
     };
   }
 
-  patch(data: any) {
-    if ('language' in data) this.language = data.language;
-    if ('log' in data) this.log = data.log;
+  set(data: GuildDataSetOptions, { merge = true, setFromCache = false } = {}) {
+    return this.client.database.guilds.set(this.id, data, { merge, setFromCache });
+  }
+
+  delete({ leaveCached = false } = {}) {
+    return this.client.database.guilds.delete(this.id, { leaveCached });
+  }
+
+  _patch(data: any) {
+    if ('allowNonEphemeral' in data) {
+      this.allowNonEphemeral = {
+        channelIds: Object.values(data.allowNonEphemeral?.channelIds),
+        roleIds: Object.values(data.allowNonEphemeral?.roleIds),
+      };
+    }
     return data;
   }
 }
 
 export interface GuildDataSetOptions {
-  language?: string;
-  log?: { badDomains?: boolean; channel?: Snowflake };
+  allowNonEphemeral?: { channelIds?: Snowflake[]; roleIds?: Snowflake[] };
 }

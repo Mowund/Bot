@@ -101,9 +101,8 @@ export default class Echo extends Command {
   async run(args: CommandArgs, interaction: BaseInteraction<'cached'>): Promise<any> {
     if (!interaction.isChatInputCommand()) return;
 
-    const { client, embed, localize, userSettings } = args,
+    const { client, embed, isEphemeral, localize } = args,
       { member, memberPermissions, options, user } = interaction,
-      isEphemeral = userSettings.ephemeralResponses,
       contentO = options.getString('content')?.replaceAll('\\n', '\n').trim(),
       descriptionO = options.getString('description')?.replaceAll('\\n', '\n').trim(),
       titleO = options.getString('title'),
