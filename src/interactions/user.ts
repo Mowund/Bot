@@ -261,7 +261,6 @@ export default class User extends Command {
         }
         // eslint-disable-next-line no-fallthrough
         case 'user_settings_locale': {
-          console.log(localize('USER.OPTIONS.SETTINGS.LOCALE.SELECT_PLACEHOLDER'));
           const selectMenu = new StringSelectMenuBuilder()
             .setPlaceholder(localize('USER.OPTIONS.SETTINGS.LOCALE.SELECT_PLACEHOLDER'))
             .setCustomId('user_settings_locale_submit');

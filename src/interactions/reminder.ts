@@ -203,15 +203,12 @@ export default class Reminder extends Command {
               .setPlaceholder(localize('REMINDER.SELECT_LIST'))
               .setCustomId('reminder_select');
 
-          console.log(reminders);
-
           let emb: EmbedBuilder;
           if (reminders.size) {
             emb = embed({ title: `🔔 ${localize('REMINDER.LIST')}` });
             reminders
               .sort((a, b) => a.timestamp - b.timestamp)
               .forEach((r: Record<string, any>) => {
-                console.log(r);
                 selectMenu.addOptions({
                   description: truncate(r.content, 100),
                   label: new Date(r.timestamp).toLocaleString(userSettings.locale),

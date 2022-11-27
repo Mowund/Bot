@@ -42,15 +42,12 @@ export class UsersDataManager extends CachedManager<Snowflake, UserData, UsersDa
 
   async fetch(id: Snowflake, { cache = true, force = false } = {}) {
     const existing = this.cache.get(id);
-    console.log(existing);
     if (!force && existing) return existing;
 
     let data = (await this.client.firestore.collection('users').doc(id).get()).data() as UserData | undefined;
     if (!data) return;
-    console.log(data);
 
     data = new UserData(this.client, Object.assign(Object.create(data), data));
-    console.log(data);
     if (cache) {
       if (existing) existing._patch(data);
       else this.cache.set(id, data);
